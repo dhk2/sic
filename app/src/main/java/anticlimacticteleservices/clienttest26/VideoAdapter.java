@@ -81,7 +81,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                 text.setText(vid.toString());
                 ImageView image = (ImageView) dialog.findViewById(R.id.thumbNailView);
                 Picasso.get().load(vid.getThumbnail()).into(image);
-                Button dialogButton = (Button) dialog.findViewById(R.id.closebutton);
+                Button dialogButton = (Button) dialog.findViewById(R.id.closeButton);
                 // if button is clicked, close the custom dialog
                 dialogButton.setOnClickListener(new View.OnClickListener() {
                     @Override
