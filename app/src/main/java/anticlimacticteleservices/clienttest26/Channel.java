@@ -24,14 +24,29 @@ public class Channel {
     private String url;
     private String thumbnailurl;
     private String description;
+    private String profileImage;
+    private String sourceID;
+
     private ArrayList<Video> videos;
     final SimpleDateFormat bdf = new SimpleDateFormat("MMM dd, yyyy");
     final SimpleDateFormat ydf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
     final SimpleDateFormat bdf2 = new SimpleDateFormat( "                   hh:mm zzz    MMMM dd    yyyy");
-
+    public Channel(){
+        this.title="";
+        this.author="";
+        this.url="";
+        this.thumbnailurl="";
+        this.description="";
+        this.profileImage="";
+        this.sourceID="";
+        this.videos=new ArrayList<Video>();
+    }
     public Channel(String url) {
         final String location = url;
-
+        this.url = url;
+        this.description="";
+        this.thumbnailurl="";
+        this.profileImage="";
         int counter = 0;
 
         videos=new ArrayList<Video>();
@@ -42,12 +57,12 @@ public class Channel {
                 public void run() {
                     try {
                         Document doc = Jsoup.connect(location).get();
-                        String tempAuthor = doc.title();
-
+                        title = doc.title();
+                        author = doc.getElementsByTag("Author").first().getElementsByTag("name").text();
                         Elements entries = doc.getElementsByTag("entry");
                         for (Element entry : entries) {
-                            System.out.println("((("+entry+")))");
-                            System.out.println("(("+entry.getElementsByTag("published").first().text());
+                          //  System.out.println("((("+entry+")))");
+                           // System.out.println("(("+entry.getElementsByTag("published").first().text());
 
 
                             Video nv = new Video(entry.getElementsByTag("link").first().attr("href"));
@@ -56,7 +71,7 @@ public class Channel {
                             nv.setThumbnail(media.first().getElementsByTag("media:thumbnail").first().attr("url"));
                             //nv.setThumbnail(entry.getElementsByTag("media:group").first().getElementsByTag("media:thumbnail").first().attr("url"));
                             nv.setDescription(media.first().getElementsByTag("media:description").first().text());
-                            nv.setAuthor(tempAuthor);
+                            nv.setAuthor(title);
                             try {
                                 Date pd = ydf.parse(entry.getElementsByTag("published").first().text());
                                 nv.setDate(pd);
@@ -88,6 +103,10 @@ public class Channel {
                     try {
                         Document doc = Jsoup.connect(location).get();
                         String tempAuthor = doc.title();
+                        profileImage = (doc.getElementById("fileupload-medium-icon-2").attr("data-src"));
+                        description = doc.getElementById("channel-description").text();
+                        title=doc.title();
+                        System.out.println(doc.getElementsByClass("channel-banner").attr("data-src"));
 
                         Elements videoList = doc.getElementsByClass("channel-videos-list");
                         Elements entries = videoList.first().getElementsByClass("row");
@@ -99,16 +118,16 @@ public class Channel {
                             nv.setDescription(entry.getElementsByClass("channel-videos-text").first().text());
                             nv.setThumbnail(entry.getElementsByTag("img").first().attr("data-src"));
                             nv.setTitle(entry.getElementsByClass("channel-videos-title").first().text());
+                            nv.setAuthor(entry.getElementsByClass("channel-banner").text());
                             //System.out.println(entry.getElementsByClass("channel-videos-details").first().getElementsByTag("span").text());
-
-                            try {
+                             try {
                                 Date pd = bdf.parse(entry.getElementsByClass("channel-videos-details").first().getElementsByTag("span").text());
                                 nv.setDate(pd);
                             } catch (ParseException ex) {
                                 Log.v("Exception", ex.getLocalizedMessage());
                             }
-                            System.out.println(nv);
-                            System.out.println("trying to get mp4 value form "+nv.getUrl());
+                            //System.out.println(nv);
+                           // System.out.println("trying to get mp4 value form "+nv.getUrl());
                             Document hackDoc = Jsoup.connect(nv.getUrl()).get();
                             nv.setMp4(hackDoc.getElementsByTag("Source").first().attr("src"));
                             try {
@@ -125,15 +144,17 @@ public class Channel {
                     } catch (IOException e) {
                         System.out.println("I/O Error: " + e.getMessage());
                     }
+                //System.out.println(this);
                 }
             });
         }
     }
     public String toString(){
         return("title:"+this.title+"\n"+
-                "url:"+this.url+this.url+"\n"+
+                "url:"+this.url+"\n"+
                 "thumbnail:"+this.thumbnailurl+"\n"+
                 "author:"+this.author+"\n"+
+                "profile image"+this.profileImage+"\n"+
                 "description:"+this.description+"\n");
     }
     public String getUrl(){
@@ -169,7 +190,9 @@ public class Channel {
     public void setDescription(String value) {
         this.description = value;
     }
-
+    public void addVideo(Video vid){
+        videos.add(vid);
+    }
 
 
 

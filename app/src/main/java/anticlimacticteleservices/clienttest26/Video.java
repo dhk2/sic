@@ -14,6 +14,7 @@ public class Video implements Comparable<Video>  {
     private String description;
     private String views;
     private String rating;
+    private String sourceID;
 
     public Video() {
         this.title = "";
@@ -28,6 +29,7 @@ public class Video implements Comparable<Video>  {
         this.mp4 = "";
         this.rating = "0";
         this.views = "0";
+        this.sourceID="";
     }
 
     public Video(String location) {
@@ -47,16 +49,19 @@ public class Video implements Comparable<Video>  {
 
     public String toString() {
         return ("title:" + this.title + "\n" +
+                "description:" + this.description + "\n" +
+                "author:" + this.author + "\n" +
                 "url:" + this.url + "\n" +
                 "thumbnail:" + this.thumbnailurl + "\n" +
                 "author:" + this.author + "\n" +
                 "watched:" + this.watched + "\n" +
                 "uploaded:"+ this.date.toString()+"\n"+
                 "magnet link:" + this.magnet + "\n" +
-                "description:" + this.description + "\n" +
                 "views:" + this.views + "\n" +
                 "rating:" + this.rating + "\n" +
+                "Source ID:"+this.sourceID+"\n"+
                 "mp4 file" + this.mp4);
+
 
     }
 

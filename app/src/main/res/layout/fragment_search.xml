@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:gravity="top">
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/search_text"
+        android:inputType="text"/>
+
+    <CheckBox
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id="@+id/search_youtube"
+        android:text="search youtube"/>
+
+    <CheckBox
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id="@+id/search_bitchute"
+        android:text="search bitchute"/>
+
+    <RadioGroup
+        android:id="@+id/radio_search_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/radio_video"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="videos" />
+
+        <RadioButton
+            android:id="@+id/radio_channel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="channels" />
+
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/search_button"
+        android:layout_width="108dp"
+        android:layout_height="wrap_content"
+        android:text="Search" />
+
+    <LinearLayout
+        android:id="@+id/fragment"
+        android:layout_width="match_parent"
+        android:layout_height="659dp"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="8dp"></LinearLayout>
+</LinearLayout>

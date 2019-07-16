@@ -10,6 +10,7 @@ cardview:cardElevation="3dp"
 cardview:cardUseCompatPadding="true">
 
 <RelativeLayout
+    android:id="@+id/RecView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -44,13 +45,12 @@ cardview:cardUseCompatPadding="true">
         android:textSize="18dp"
         android:textStyle="bold"/>
 
-    <EditText
+    <TextView
         android:id="@+id/author"
         android:background="#80FFFFFF"
         android:layout_width="411dp"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="textPersonName"
         android:text="" />
 
 </RelativeLayout>

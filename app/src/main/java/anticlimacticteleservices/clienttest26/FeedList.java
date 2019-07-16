@@ -18,6 +18,9 @@ public class FeedList {
             "https://www.youtube.com/feeds/videos.xml?channel_id=UC-yewGHQbNFpDrGM0diZOLA",
             "https://www.youtube.com/feeds/videos.xml?channel_id=UC0aVoboXBUx2-tVIWHc3W2Q",
             "https://www.bitchute.com/channel/veemonro/",
+            "https://www.bitchute.com/channel/sargonofakkad/",
+            "https://www.bitchute.com/channel/styxhexenhammer666/",
+
             "https://www.bitchute.com/channel/no-bullshit/",
             "https://www.youtube.com/feeds/videos.xml?channel_id=UCe02lGcO-ahAURWuxAJnjdA"};
 

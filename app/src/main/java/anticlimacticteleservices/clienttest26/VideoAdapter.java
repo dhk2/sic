@@ -8,25 +8,30 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import static android.app.PendingIntent.getActivity;
 import static android.provider.AlarmClock.EXTRA_MESSAGE;
-import static android.support.v4.content.ContextCompat.startActivity;
+//import static android.support.v4.content.ContextCompat.startActivity;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHolder> {
-    private List<Video> videos;
+   private List<Video> videos = new ArrayList<>();
 
     public class CustomViewHolder extends RecyclerView.ViewHolder {
         public TextView name;
@@ -41,7 +46,12 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
             author = view.findViewById(R.id.author);
         }
     }
+    public VideoAdapter(){
+        //used to avoid null error
 
+        videos.add(new Video("https://www.youtube.com/watch?v=2ips2mM7Zqw"));
+
+    }
     public VideoAdapter(List<Video> videos) {
         this.videos = videos;
     }
@@ -49,7 +59,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
     @Override
     public CustomViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.videolist, parent, false);
+                .inflate(R.layout.videolist, null, false);
 
         return new CustomViewHolder(itemView);
     }
@@ -77,8 +87,9 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                 dialog.setTitle(vid.getTitle());
 
                 // set the custom dialog components - text, image and button
-                TextView text = (TextView) dialog.findViewById(R.id.videoDetails);
-                text.setText(vid.toString());
+                WebView webView = (WebView) dialog.findViewById(R.id.videoDetails);
+
+                webView.loadData(vid.toString(), "text/html", "UTF-8");
                 ImageView image = (ImageView) dialog.findViewById(R.id.thumbNailView);
                 Picasso.get().load(vid.getThumbnail()).into(image);
                 Button dialogButton = (Button) dialog.findViewById(R.id.closeButton);
@@ -108,23 +119,37 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                         int adapterPos = holder.getAdapterPosition();
 
                         Video vid = videos.get(position);
-                        Uri uri;
+                        Uri uri = null;
                         System.out.println("starting to do my shit");
 //                        System.out.println(vid);
                         int vlcRequestCode = 42;
-                        if (vid.getMp4().isEmpty()) {
+                        if (vid.getUrl().indexOf("bitchute")>0) {
+                            if (vid.getMp4().isEmpty()) {
+                                try {
+                                    Document hackDoc = Jsoup.connect(vid.getUrl()).get();
+                                    vid.setMp4(hackDoc.getElementsByTag("Source").first().attr("src"));
+                                    uri = Uri.parse(vid.getMp4());
+                                } catch (MalformedURLException e) {
+                                    System.out.println("Malformed URL: " + e.getMessage());
+                                } catch (IOException e) {
+                                    System.out.println("I/O Error: " + e.getMessage());
+                                }
+                            }
+                            else {
+                                uri = Uri.parse(vid.getMp4());
+                            }
+                        }
+                        else
+                        {
                             uri = Uri.parse(vid.getUrl());
                         }
-                        else {
-                            uri = Uri.parse(vid.getMp4());
-                        }
-//                        System.out.println(uri);
+
                         Intent vlcIntent = new Intent(Intent.ACTION_VIEW);
-                            vlcIntent.setPackage("org.videolan.vlc");
-                            vlcIntent.setDataAndTypeAndNormalize(uri, "video/*");
-                            vlcIntent.putExtra("title", vid.getTitle());
-                            v.getContext().startActivity(vlcIntent);
-                            //System.out.println(vlcIntent.toString());
+                        vlcIntent.setPackage("org.videolan.vlc");
+                        vlcIntent.setDataAndTypeAndNormalize(uri, "video/*");
+                        vlcIntent.putExtra("title", vid.getTitle());
+                        v.getContext().startActivity(vlcIntent);
+                        //System.out.println(vlcIntent.toString());
 
                     }
                 } );
