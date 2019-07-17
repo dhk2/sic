@@ -126,10 +126,10 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navView = findViewById(R.id.nav_view);
         //mTextMessage = findViewById(R.id.message);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
+        setTitle("Loading video feed");
         Subscription favorites = new Subscription  ("favorites");
         FeedList dave = new FeedList();
-/*
+
         Set<String>  mySet = new HashSet<String>();
         for (String s : dave.getPages()){
             mySet.add(s);
@@ -138,9 +138,9 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putStringSet("channelUrls", mySet);
         editor.commit();
-*/
-        SharedPreferences prefs = this.getSharedPreferences( "com.mycompany.client", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
+
+        prefs = this.getSharedPreferences( "com.mycompany.client", Context.MODE_PRIVATE);
+        editor = prefs.edit();
         Set<String> bob = prefs.getStringSet("channelUrls",null);
         String doug[] = new String[bob.size()];
         doug = bob.toArray(doug);
@@ -155,10 +155,20 @@ public class MainActivity extends AppCompatActivity {
         System.out.println(dave.getPages());
         new StartUp().execute(doug);
     }
-    private class StartUp extends AsyncTask<String, Void, String> {
+    private class StartUp extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... params) {
  //           String url = params[0];
+            int oneTenth;
+            int feedCounter=1;
+            String progress="Loading video feed";
+            if (params.length>10){
+                oneTenth=(params.length/10);
+            }
+            else
+            {
+                oneTenth=1;
+            }
             List<Video> aVideos=new ArrayList<Video>();
             System.out.println("starting video Feed filler"+params);
             Channel chan = new Channel();
@@ -172,8 +182,8 @@ public class MainActivity extends AppCompatActivity {
                         chan.setUrl(url);
                         Elements entries = doc.getElementsByTag("entry");
                         for (Element entry : entries) {
-                          //  System.out.println("(((" + entry + ")))");
-                           // System.out.println("((" + entry.getElementsByTag("published").first().text());
+                            //  System.out.println("(((" + entry + ")))");
+                            // System.out.println("((" + entry.getElementsByTag("published").first().text());
                             Video nv = new Video(entry.getElementsByTag("link").first().attr("href"));
                             nv.setTitle(entry.getElementsByTag("title").first().html());
                             Elements media = entry.getElementsByTag("media:group");
@@ -191,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
                             nv.setAuthor(doc.getElementsByTag("title").first().text());
                             chan.addVideo((nv));
                             videoFeed.add(nv);
-                           // System.out.println(doc.title());
+                            // System.out.println(doc.title());
                             //System.out.println("title:"+entry.getElementsByTag("title").first());
                         }    //                       System.out.println(nv);
                     } catch (MalformedURLException e) {
@@ -223,8 +233,8 @@ public class MainActivity extends AppCompatActivity {
                             } catch (ParseException ex) {
                                 Log.v("Exception", ex.getLocalizedMessage());
                             }
-                           // Document hackDoc = Jsoup.connect(nv.getUrl()).get();
-                          //  nv.setMp4(hackDoc.getElementsByTag("Source").first().attr("src"));
+                            // Document hackDoc = Jsoup.connect(nv.getUrl()).get();
+                            //  nv.setMp4(hackDoc.getElementsByTag("Source").first().attr("src"));
                             nv.setAuthor(doc.title());
                             videoFeed.add(nv);
                             chan.addVideo((nv));
@@ -240,6 +250,13 @@ public class MainActivity extends AppCompatActivity {
                 }
                 System.out.println(chan);
                 channels.add(chan);
+                feedCounter++;
+                if (feedCounter > oneTenth) {
+                    progress = progress + ".";
+  //                  setTitle(progress);
+                    feedCounter = 0;
+                   // onProgressUpdate(progress);
+                }
             }
             System.out.println("channel size"+channels.size());
             return "done";
@@ -257,14 +274,16 @@ public class MainActivity extends AppCompatActivity {
             FragmentTransaction fragmentTransaction = manager.beginTransaction();
             fragmentTransaction.replace(R.id.fragment,frag);
             fragmentTransaction.commit();
-
+            setTitle("video feed");
        }
         @Override
         protected void onPreExecute() {
         }
 
         @Override
-        protected void onProgressUpdate(Void... values) {
+        protected void onProgressUpdate(String... values) {
+        setTitle(getTitle()+".");
+
         }
 
     }

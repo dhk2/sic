@@ -13,14 +13,20 @@ import android.app.*;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.*;
+import android.widget.TextView;
+
 public class Search {
-    private ArrayList<Video> videos;
+    private ArrayList<Video> sVideos;
+    private ArrayList<Channel> sChannels;
     private Document doc;
+    private boolean searching;
     public Search(String term) {
+
+        searching=true;
         String fixedTerm=term.replaceAll("\\s+", "+");
         final String location = "https://www.youtube.com/results?search_query="+fixedTerm;
         final String location2 = "https://search.bitchute.com/renderer?query="+fixedTerm+"&use=bitchute-json&name=Search&login=bcadmin&key=7ea2d72b62aa4f762cc5a348ef6642b8&fqr.kind=video";
-        this.videos=new ArrayList<Video>();
+        this.sVideos=new ArrayList<Video>();
         AsyncTaskRunner youtubeScraper = new AsyncTaskRunner();
  //       youtubeScraper.execute(location);
         AsyncTaskRunner2 bitchuteScraper = new AsyncTaskRunner2();
@@ -28,11 +34,17 @@ public class Search {
 
     }
     public ArrayList<Video> getVideos(){
-        return this.videos;
+        System.out.println(sVideos.size());
+        System.out.println(searching);
+
+        return this.sVideos;
     }
     public Document getDoc(){
         System.out.println(this.doc.html());
         return this.doc;
+    }
+    public boolean getStatus(){
+        return searching;
     }
     private class AsyncTaskRunner extends AsyncTask<String, String, String> {
 
@@ -81,7 +93,7 @@ public class Search {
                     if ((!thumbnail.isEmpty()) && (nv.getUrl().indexOf("atch")>0)) {
                         System.out.println("adding video " + nv.getUrl());
                         nv.setThumbnail(thumbnail);
-                        videos.add(nv);
+                        sVideos.add(nv);
                         thumbnail = "";
                     }
                 }
@@ -99,12 +111,16 @@ public class Search {
         @Override
         protected void onPostExecute(String result) {
             // execution of result of Long time consuming operation
-            System.out.println(videos.size());
+            System.out.println(sVideos.size());
+            searching=false;
+
+
         }
 
 
         @Override
         protected void onPreExecute() {
+            searching=true;
             System.out.println("starting to scrape youtube");
         }
 
@@ -123,6 +139,7 @@ public class Search {
             try {
                 System.out.println("scraping bitchute search at "+params[0]);
                 doc = Jsoup.connect(params[0]).get();
+                //System.out.println(doc);
                 //System.out.println(doc.title());
                 Elements results = doc.getElementsByClass("osscmnrdr oss-result");
                 Elements parts = results.first().getAllElements();
@@ -149,7 +166,7 @@ public class Search {
                                 System.out.println("trying to get mp4 value form "+nv.getUrl());
                                 Document hackDoc = Jsoup.connect(nv.getUrl()).get();
                                 nv.setMp4(hackDoc.getElementsByTag("Source").first().attr("src"));
-                                videos.add(nv);
+                                sVideos.add(nv);
                                 System.out.println("looped it dupe");
 
                                 break;
@@ -173,7 +190,7 @@ public class Search {
 
 
 
-                            videos.add(nv);
+                            sVideos.add(nv);
 
                     }
 //                    System.out.println("link"+r.attr("href"));
@@ -241,7 +258,7 @@ public class Search {
         @Override
         protected void onPostExecute(String result) {
             // execution of result of Long time consuming operation
-            System.out.println(videos.size());
+            System.out.println(sVideos.size());
         }
 
 

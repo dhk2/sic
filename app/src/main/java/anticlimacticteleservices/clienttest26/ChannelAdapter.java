@@ -72,7 +72,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
         if (!channel.getThumbnail().isEmpty()){
             Picasso.get().load(channel.getThumbnail()).into(holder.image);
         }
-
+        holder.name.setText(channel.getTitle());
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override

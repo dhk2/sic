@@ -51,10 +51,11 @@
         android:text="Search" />
 
     <LinearLayout
-        android:id="@+id/fragment"
+        android:id="@+id/search_subfragment"
         android:layout_width="match_parent"
         android:layout_height="659dp"
         android:orientation="vertical"
         tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="8dp"></LinearLayout>
+        tools:layout_editor_absoluteY="8dp"/>
+
 </LinearLayout>
