@@ -25,7 +25,9 @@ public class VideoFragment extends Fragment {
     public VideoFragment() {
 
     }
-
+    public interface VideoFragmentListener {
+        void videoFragmentListener();
+    }
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.

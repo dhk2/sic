@@ -18,27 +18,39 @@ cardview:cardUseCompatPadding="true">
         android:id="@+id/channelthumbnail"
         android:layout_width="98dp"
         android:layout_height="97dp"
+        android:layout_alignEnd="@+id/channelName"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="291dp"
         android:scaleType="centerCrop" />
 
     <TextView
         android:id="@+id/channelName"
-        android:layout_width="283dp"
-        android:layout_height="85dp"
+        android:layout_width="211dp"
+        android:layout_height="74dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginStart="8dp"
         android:layout_marginLeft="12dp"
-        android:layout_marginTop="0dp"
-        android:layout_marginEnd="15dp"
-        android:layout_toEndOf="@+id/thumbnail"
+        android:layout_marginTop="22dp"
+        android:layout_marginEnd="-8dp"
         android:maxLines="3"
         android:padding="8dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         android:textColor="#444"
         android:textSize="18dp"
         android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="147dp"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/channelName"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="53dp"
+        android:layout_marginEnd="11dp"
+        android:text="Unsubscribe" />
 
 </RelativeLayout>
 

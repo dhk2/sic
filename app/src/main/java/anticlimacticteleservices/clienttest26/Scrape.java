@@ -11,11 +11,7 @@ public class Scrape extends AsyncTask<String[], Void, String[]> {
   @Override
   protected void onPreExecute() {
      super.onPreExecute();
-    dialog = new ProgressDialog(context);
-    dialog.setTitle("Searching...");
-    dialog.setMessage("Please wait...");
-    dialog.setIndeterminate(true);
-    dialog.show();
+
   }
 
   @Override
@@ -32,14 +28,14 @@ https://www.youtube.com/results?sp=EgIQAg%253D%253D&search_query=dino
 
 Videos:
 https://www.youtube.com/results?sp=EgIQAQ%253D%253D&search_query=dino
-*//    
+*/
     
     return result; //return result
 }
 
 protected void onPostExecute(String[] result) {
     dialog.dismiss();
-    Collections.sort(videoFeed);
+  //  Collections.sort(videoFeed);
  // need to pass the list of videos back to the video fragment that orignally sent the request
  // a listener implementation most likely
  //https://github.com/codepath/android_guides/wiki/Creating-and-Using-Fragments

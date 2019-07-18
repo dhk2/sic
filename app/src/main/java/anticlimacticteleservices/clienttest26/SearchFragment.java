@@ -30,37 +30,28 @@ public class SearchFragment extends Fragment {
     private RecyclerView videoRecyclerView;
     private RecyclerView channelRecyclerView;
     private ChannelAdapter cAdapter;
-    private List<Video> sfvideo;
-    private TextView tv;
-    
-    public inferface searchFragmentListener {
-        void onScrapedSent()
-    
+    private List<Video> sfvideos;
+    View inflated;
+
     public SearchFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment SearchFragment.
-     */
-    // TODO: Rename and change types and number of parameters
+
+
     public static SearchFragment newInstance(String param1, String param2) {
-        SearchFragment fragment = new SearchFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
+
+        SearchFragment fragment = new SearchFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);\
+        super.onCreate(savedInstanceState);
         sfvideos = new ArrayList<>();
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
@@ -72,9 +63,8 @@ public class SearchFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View inflated = inflater.inflate(R.layout.fragment_search, container, false);
- 
-        return inflated;
+         inflated = inflater.inflate(R.layout.fragment_search, container, false);
+         return inflated;
     }
 
     @Override
@@ -82,7 +72,6 @@ public class SearchFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Button searchButton =inflated.findViewById(R.id.search_button);
         final EditText sText = inflated.findViewById(R.id.search_text);
-
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,7 +82,7 @@ public class SearchFragment extends Fragment {
 
                 Fragment subFragment = new VideoFragment();
                 //TODO the video setting needs to be done postexecute on the searches.
-                ((VideoFragment) subFragment).setvideos(sfVideo);
+                //((VideoFragment) subFragment).setvideos(sfVideos);
                 getChildFragmentManager().beginTransaction().replace(R.id.search_subfragment, subFragment).commit();
      /*           
        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();

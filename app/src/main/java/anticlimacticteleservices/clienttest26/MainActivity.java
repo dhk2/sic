@@ -43,14 +43,14 @@ public class MainActivity extends AppCompatActivity {
     Fragment fragment;
     FragmentTransaction transaction;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener;
-
+    public static UserData masterData;
     public Channel hah;
     public Search huh;
     public Subscription heh;
     public List<Video> videoFeed = new ArrayList<>();
     final SimpleDateFormat bdf = new SimpleDateFormat("MMM dd, yyyy");
     final SimpleDateFormat ydf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-
+    public static SharedPreferences preferences;
  //   Fragment vfragment = new VideoFragment();
  //   Fragment cfragment = new ChannelFragment();
  //   Fragment sfragment = new SearchFragment();
@@ -128,31 +128,26 @@ public class MainActivity extends AppCompatActivity {
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         setTitle("Loading video feed");
         Subscription favorites = new Subscription  ("favorites");
-        FeedList dave = new FeedList();
+        //FeedList dave = new FeedList();
 
-        Set<String>  mySet = new HashSet<String>();
-        for (String s : dave.getPages()){
-            mySet.add(s);
-        }
-        SharedPreferences prefs = this.getSharedPreferences( "com.mycompany.client", Context.MODE_PRIVATE);
+        preferences = getSharedPreferences( getPackageName() + "_preferences", MODE_PRIVATE);
+
+
+        masterData = new UserData();
+        //masterData.getFeedLinks();
+       // Set<String>  mySet = masterData.getFeedLinks();
+
+   /*     SharedPreferences prefs = this.getSharedPreferences( "com.mycompany.client", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putStringSet("channelUrls", mySet);
         editor.commit();
 
         prefs = this.getSharedPreferences( "com.mycompany.client", Context.MODE_PRIVATE);
         editor = prefs.edit();
-        Set<String> bob = prefs.getStringSet("channelUrls",null);
+     */
+        Set<String> bob = masterData.getFeedLinks();
         String doug[] = new String[bob.size()];
         doug = bob.toArray(doug);
-        System.out.println(doug);
-        for (String d : doug){
-            System.out.println(d);
-
-        }
-
-
-
-        System.out.println(dave.getPages());
         new StartUp().execute(doug);
     }
     private class StartUp extends AsyncTask<String, String, String> {
@@ -162,13 +157,6 @@ public class MainActivity extends AppCompatActivity {
             int oneTenth;
             int feedCounter=1;
             String progress="Loading video feed";
-            if (params.length>10){
-                oneTenth=(params.length/10);
-            }
-            else
-            {
-                oneTenth=1;
-            }
             List<Video> aVideos=new ArrayList<Video>();
             System.out.println("starting video Feed filler"+params);
             Channel chan = new Channel();
@@ -251,12 +239,6 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println(chan);
                 channels.add(chan);
                 feedCounter++;
-                if (feedCounter > oneTenth) {
-                    progress = progress + ".";
-  //                  setTitle(progress);
-                    feedCounter = 0;
-                   // onProgressUpdate(progress);
-                }
             }
             System.out.println("channel size"+channels.size());
             return "done";
