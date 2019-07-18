@@ -23,9 +23,17 @@ public class Scrape extends AsyncTask<String[], Void, String[]> {
     String[] result = new String[10];
     String[] passed = passing[0]; //get passed array
     System.out.println(passed[0]);
-    
-    //Some calculations...
+    String fixedTerm=passed[0].replaceAll("\\s+", "+");
+    final String location = "https://www.youtube.com/results?search_query="+fixedTerm;
+    final String location2 = "https://search.bitchute.com/renderer?query="+fixedTerm+"&use=bitchute-json&name=Search&login=bcadmin&key=7ea2d72b62aa4f762cc5a348ef6642b8&fqr.kind=video";
+/*
+Channels:
+https://www.youtube.com/results?sp=EgIQAg%253D%253D&search_query=dino
 
+Videos:
+https://www.youtube.com/results?sp=EgIQAQ%253D%253D&search_query=dino
+*//    
+    
     return result; //return result
 }
 
