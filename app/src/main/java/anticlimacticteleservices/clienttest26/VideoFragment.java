@@ -71,4 +71,13 @@ public class VideoFragment extends Fragment {
         vAdapter.notifyDataSetChanged();
     System.out.println("videos set");
     }
+    public void addvideos(List<Video> videos) {
+        vfVideos.addAll((videos));
+        vAdapter.notifyDataSetChanged();
+    System.out.println("videos added");
+    }
+    public void clearvideos(List<Video> videos) {
+        vfVideos.clear();
+    System.out.println("videos cleared");
+    }    
 }
