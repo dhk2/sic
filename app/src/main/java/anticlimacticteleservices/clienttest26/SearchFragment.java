@@ -22,20 +22,20 @@ import java.util.List;
 
 
 public class SearchFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     private VideoAdapter vAdapter;
     private RecyclerView videoRecyclerView;
     private RecyclerView channelRecyclerView;
     private ChannelAdapter cAdapter;
-    List<Video> sfvideo;
-    TextView tv;
+    private List<Video> sfvideo;
+    private TextView tv;
+    
+    public inferface searchFragmentListener {
+        void onScrapedSent()
+    
     public SearchFragment() {
         // Required empty public constructor
     }
