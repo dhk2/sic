@@ -15,6 +15,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.Checkable;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -40,12 +43,15 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
     public class CustomViewHolder extends RecyclerView.ViewHolder {
         public TextView name;
         public ImageView image;
+        public Button subscribed;
 //        final Context context = this;
 
         public CustomViewHolder(View view) {
             super(view);
             name = view.findViewById(R.id.channelName);
             image = view.findViewById(R.id.channelthumbnail);
+            subscribed = view.findViewById(R.id.button);
+
          }
     }
     public ChannelAdapter(){}
@@ -65,7 +71,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
 
     @Override
     public void onBindViewHolder(CustomViewHolder hold, final int position) {
-        Channel channel = channels.get(position);
+        final Channel channel = channels.get(position);
         final CustomViewHolder holder = hold;
 
         //holder.name.setText(channel.getTitle());
@@ -73,6 +79,60 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
             Picasso.get().load(channel.getThumbnail()).into(holder.image);
         }
         holder.name.setText(channel.getTitle());
+        holder.subscribed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("need to code up the actual subscribe/unsubscribe activity still");
+                Set<String> tempSub = new HashSet<String>();
+                subscriptionList = MainActivity.masterData.getFeedLinks();
+                subscriptionArray = new String[subscriptionList.size()];
+                subscriptionArray = subscriptionList.toArray(subscriptionArray);
+
+                if(holder.subscribed.getText().equals("Unsubscribe")){
+                    for (String s : subscriptionArray){
+                        if (!s.equals(channel.getUrl())){
+                            tempSub.add(s);
+                        }
+                        else
+                        {
+                            System.out.println("removed "+channel.getUrl());
+                            System.out.println("otherwise known as "+channel.getTitle());
+
+                        }
+                    }
+                    System.out.println(tempSub.size()+"   "+subscriptionArray.length);
+                    holder.subscribed.setText("Subscribe");
+                }
+                else
+                {
+                    for (String s : subscriptionArray){
+                        tempSub.add(s);
+                    }
+                    tempSub.add(channel.getUrl());
+                    {
+                        System.out.println("added " + channel.getUrl());
+                        System.out.println("otherwise known as " + channel.getTitle());
+                        System.out.println(tempSub.size()+"   "+subscriptionArray.length);
+                    }
+                    holder.subscribed.setText("Unsubscribe");
+                }
+                MainActivity.masterData.setFeedLinks(tempSub);
+            }
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -178,6 +238,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
                         FragmentManager manager = ((AppCompatActivity) mContext).getSupportFragmentManager();
                         FragmentTransaction transaction = manager.beginTransaction();
                         transaction.replace(R.id.fragment, fragment);
+                        transaction.addToBackStack(null);
                         transaction.commit();
 
                     }
@@ -191,5 +252,4 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
     public int getItemCount() {
         return channels.size();
     }
-
 }
