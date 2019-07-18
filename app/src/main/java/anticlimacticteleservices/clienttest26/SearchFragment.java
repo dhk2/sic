@@ -34,7 +34,7 @@ public class SearchFragment extends Fragment {
     private RecyclerView videoRecyclerView;
     private RecyclerView channelRecyclerView;
     private ChannelAdapter cAdapter;
-    List<Video> sfvideos = new ArrayList<>();
+    List<Video> sfvideo;
     TextView tv;
     public SearchFragment() {
         // Required empty public constructor
@@ -60,7 +60,8 @@ public class SearchFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);\
+        sfvideos = new ArrayList<>();
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -72,6 +73,13 @@ public class SearchFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View inflated = inflater.inflate(R.layout.fragment_search, container, false);
+ 
+        return inflated;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         Button searchButton =inflated.findViewById(R.id.search_button);
         final EditText sText = inflated.findViewById(R.id.search_text);
 
@@ -83,18 +91,27 @@ public class SearchFragment extends Fragment {
                 String searchText = sText.getText().toString();
                 target = new Search(searchText);
 
-                Fragment fragment = new VideoFragment();
-                ((VideoFragment) fragment).setvideos(target.getVideos());
+                Fragment subFragment = new VideoFragment();
+                //TODO the video setting needs to be done postexecute on the searches.
+                ((VideoFragment) subFragment).setvideos(sfVideo);
+                getChildFragmentManager().beginTransaction().replace(R.id.search_subfragment, subFragment).commit();
+     /*           
+       FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+       transaction.replace(R.id.child_fragment_container, childFragment).commit();
+                
+                
+                
+                
                 FragmentManager manager = getActivity().getSupportFragmentManager();;
                 FragmentTransaction transaction = manager.beginTransaction();
                 transaction.replace(R.id.search_subfragment, fragment);
                 transaction.commit();
-            }
+       */
+       }
 
         });
-        return inflated;
-    }
-
+        
+    }    
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
