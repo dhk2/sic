@@ -20,23 +20,15 @@
 
     <ImageView
         android:id="@+id/thumbNailView"
-        android:layout_width="405dp"
-        android:layout_height="213dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="386dp"
+        android:layout_height="142dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/channel_name"
         tools:srcCompat="@tools:sample/avatars" />
-
-    <WebView
-        android:id="@+id/videoDetails"
-        android:layout_width="413dp"
-        android:layout_height="440dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/closeButton"
-        app:layout_constraintTop_toBottomOf="@+id/thumbNailView"
-        tools:layout_editor_absoluteX="-1dp" />
 
     <Button
         android:id="@+id/subscribe_button"
@@ -47,4 +39,32 @@
         android:text="Subscribe"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/channel_description"
+        android:layout_width="408dp"
+        android:layout_height="454dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:autoLink="web|email"
+        android:text="TextView"
+        app:layout_constraintBottom_toTopOf="@+id/subscribe_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/thumbNailView" />
+
+    <TextView
+        android:id="@+id/channel_name"
+        android:layout_width="390dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="24dp"
+        android:text="TextView"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/thumbNailView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </android.support.constraint.ConstraintLayout>

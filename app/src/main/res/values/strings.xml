@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">Clienttest26</string>
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_Channels">Channels</string>
+    <string name="title_Discover">Discover</string>
+    <string name="title_Settings">Settings</string>
+    <string name="title_History">History</string>
     <string name="todo">TODO</string>
 
     <!-- TODO: Remove or change this placeholder text -->

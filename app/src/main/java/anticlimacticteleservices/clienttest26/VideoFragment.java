@@ -67,18 +67,18 @@ public class VideoFragment extends Fragment {
         System.out.println("created view for video fragment");
         return v;
     }
-    public void setvideos(List<Video> videos) {
+    public void setVideos(List<Video> videos) {
         vfVideos.clear();
         vfVideos.addAll((videos));
         vAdapter.notifyDataSetChanged();
     System.out.println("videos set");
     }
-    public void addvideos(List<Video> videos) {
+    public void addVideos(List<Video> videos) {
         vfVideos.addAll((videos));
         vAdapter.notifyDataSetChanged();
     System.out.println("videos added");
     }
-    public void clearvideos(List<Video> videos) {
+    public void clearVideos(List<Video> videos) {
         vfVideos.clear();
     System.out.println("videos cleared");
     }    

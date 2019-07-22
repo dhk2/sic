@@ -23,7 +23,7 @@ public class ChannelFragment extends Fragment {
     private String mParam2;
     public List<Channel> cfChannels = new ArrayList<>();
     private RecyclerView channelRecyclerView;
-    private ChannelAdapter cAdapter;
+    private ChannelAdapter cAdapter = new ChannelAdapter();
 
     public ChannelFragment() {
         // Required empty public constructor
@@ -64,7 +64,7 @@ public class ChannelFragment extends Fragment {
         channelRecyclerView =v.findViewById(R.id.crv);
 
         System.out.println("about to set cAdaptor");
-        cAdapter = new ChannelAdapter(cfChannels,v.getContext());
+        cAdapter = new ChannelAdapter(cfChannels);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         channelRecyclerView.setLayoutManager(mLayoutManager);
         channelRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -73,14 +73,18 @@ public class ChannelFragment extends Fragment {
         return v;
     }
     public void setChannels(List<Channel> channels) {
-        System.out.println("channels being assinged");
-
         cfChannels.clear();
-        cfChannels.addAll((channels));
-       // cAdapter.notifyDataSetChanged();
-
+        cfChannels.addAll(channels);
+        cAdapter.notifyDataSetChanged();
+        System.out.println("channels set "+cfChannels.size());
     }
-
-
-
+    public void addChannels(List<Channel> channels) {
+        cfChannels.addAll(channels);
+        cAdapter.notifyDataSetChanged();
+        System.out.println("Channels added "+cfChannels.size());
+    }
+    public void clearChannels() {
+        cfChannels.clear();
+        System.out.println("Channels cleared");
+    }
 }

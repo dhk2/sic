@@ -1,49 +1,47 @@
 package anticlimacticteleservices.clienttest26;
 
 import android.app.Dialog;
-import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.text.HtmlCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.Checkable;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
 
-import java.util.HashSet;
+import org.w3c.dom.Text;
+
 import java.util.List;
 import java.util.Set;
 
 
 public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomViewHolder> {
     private List<Channel> channels;
-    private Context mContext;
+
     Button dialogButton;
     Button subscribeButton;
     Set<String> subscriptionList;
     String subscriptionArray[];
-    Channel chan;
+ //   Channel chan;
     SharedPreferences prefs;
     SharedPreferences.Editor editor;
-
+    String status;
+    private FragmentActivity myContext;
     public class CustomViewHolder extends RecyclerView.ViewHolder {
-        public TextView name;
-        public ImageView image;
-        public Button subscribed;
+        private TextView name;
+        private ImageView image;
+        private Button subscribed;
+        private TextView description;
 //        final Context context = this;
 
         public CustomViewHolder(View view) {
@@ -51,15 +49,15 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
             name = view.findViewById(R.id.channelName);
             image = view.findViewById(R.id.channelthumbnail);
             subscribed = view.findViewById(R.id.button);
-
+            description= view.findViewById(R.id.channel_description);
          }
     }
     public ChannelAdapter(){}
 
-    public ChannelAdapter(List<Channel> channels, Context context) {
+    public ChannelAdapter(List<Channel> channels) {
         this.channels = channels;
-        this.mContext=context;
     }
+
 
     @Override
     public CustomViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -72,104 +70,72 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
     @Override
     public void onBindViewHolder(CustomViewHolder hold, final int position) {
         final Channel channel = channels.get(position);
-        final CustomViewHolder holder = hold;
+ //       final CustomViewHolder holder = hold;
 
         //holder.name.setText(channel.getTitle());
         if (!channel.getThumbnail().isEmpty()){
-            Picasso.get().load(channel.getThumbnail()).into(holder.image);
+            Picasso.get().load(channel.getThumbnail()).into(hold.image);
         }
-        holder.name.setText(channel.getTitle());
-        holder.subscribed.setOnClickListener(new View.OnClickListener() {
+
+        System.out.println(channel.toString());
+        hold.name.setText(channel.getTitle());
+        hold.description.setText(channel.getDescription());
+        status="Subscribe";
+        for (String g : MainActivity.masterData.getFeedLinks()){
+            if (g.equals(channel.getUrl())){
+                status="Unsubscribe";
+            }
+        }
+        hold.subscribed.setText(status);
+        final Button sub = hold.subscribed;
+        hold.subscribed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("need to code up the actual subscribe/unsubscribe activity still");
-                Set<String> tempSub = new HashSet<String>();
-                subscriptionList = MainActivity.masterData.getFeedLinks();
-                subscriptionArray = new String[subscriptionList.size()];
-                subscriptionArray = subscriptionList.toArray(subscriptionArray);
-
-                if(holder.subscribed.getText().equals("Unsubscribe")){
-                    for (String s : subscriptionArray){
-                        if (!s.equals(channel.getUrl())){
-                            tempSub.add(s);
-                        }
-                        else
-                        {
-                            System.out.println("removed "+channel.getUrl());
-                            System.out.println("otherwise known as "+channel.getTitle());
-
-                        }
-                    }
-                    System.out.println(tempSub.size()+"   "+subscriptionArray.length);
-                    holder.subscribed.setText("Subscribe");
+                if(status.equals("Unsubscribe")){
+                    MainActivity.masterData.removeFeedLink(channel.getUrl());
+                    status="Subscribe";
+                    sub.setText(status );
                 }
-                else
-                {
-                    for (String s : subscriptionArray){
-                        tempSub.add(s);
-                    }
-                    tempSub.add(channel.getUrl());
-                    {
-                        System.out.println("added " + channel.getUrl());
-                        System.out.println("otherwise known as " + channel.getTitle());
-                        System.out.println(tempSub.size()+"   "+subscriptionArray.length);
-                    }
-                    holder.subscribed.setText("Unsubscribe");
+                else {
+                    MainActivity.masterData.addFeedLink(channel.getUrl());
+                    status = "Unsubscribe";
+                    sub.setText(status);
                 }
-                MainActivity.masterData.setFeedLinks(tempSub);
             }
         });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+        hold.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onLongClick(View view) {
-                chan =channels.get(position);
-                System.out.println(chan.toString());
+            public void onClick(View view) {
+                Channel chan =channels.get(position);
+
                 final Dialog dialog = new Dialog(view.getContext());
                 dialog.setContentView(R.layout.channelprop);
                 dialog.setTitle(chan.getTitle());
 
                 // set the custom dialog components - text, image and button
-                WebView webView = (WebView) dialog.findViewById(R.id.videoDetails);
-
-                webView.loadData(chan.toString(), "text/html", "UTF-8");
+ /*               WebView webView = (WebView) dialog.findViewById(R.id.channelDetails);
+                webView.loadData(chan.getDescription(), "text/html", "UTF-8");
+ */
+                TextView description =(TextView)dialog.findViewById(R.id.channel_description);
+                Spanned spanned = HtmlCompat.fromHtml(chan.getDescription(), HtmlCompat.FROM_HTML_MODE_COMPACT);
+                description.setText(spanned);
                 ImageView image = (ImageView) dialog.findViewById(R.id.thumbNailView);
                 if (!chan.getThumbnail().isEmpty()){
                     Picasso.get().load(chan.getThumbnail()).into(image);
                 }
                 dialogButton = (Button) dialog.findViewById(R.id.closeButton);
                 subscribeButton =dialog.findViewById(R.id.subscribe_button);
-
-
-                prefs = view.getContext().getSharedPreferences( "com.mycompany.client", Context.MODE_PRIVATE);
-                editor = prefs.edit();
-                subscriptionList = prefs.getStringSet("channelUrls",null);
-                subscriptionArray = new String[subscriptionList.size()];
-                subscriptionArray = subscriptionList.toArray(subscriptionArray);
-                System.out.println(subscriptionArray);
-                String buttonText="Subscribe";
-                for (String d : subscriptionArray){
-                    if (d.equals(chan.getUrl())){
-                        buttonText="Unsubscribe";
+                TextView name = dialog.findViewById(R.id.channel_name);
+                name.setText(chan.getTitle());
+                status="Subscribe";
+                for (String g : MainActivity.masterData.getFeedLinks()){
+                    if (g.equals(chan.getUrl())){
+                        status="Unsubscribe";
                     }
                 }
-                subscribeButton.setText(buttonText);
-
-                // if button is clicked, close the custom dialog
+                subscribeButton.setText(status);
+ //               System.out.println(chan);
                 dialogButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -179,75 +145,45 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
                 subscribeButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        System.out.println("need to code up the actual subscribe/unsubscribe activity still");
-                        Set<String> tempSub = new HashSet<String>();
-                        if(subscribeButton.getText().equals("Unsubscribe")){
-                            for (String s : subscriptionArray){
-                                if (!s.equals(chan.getUrl())){
-                                    tempSub.add(s);
-                                }
-                                else
-                                {
-                                    System.out.println("removed "+chan.getUrl());
-                                    System.out.println("otherwise known as "+chan.getTitle());
-
-                                }
-                            }
-                            System.out.println(tempSub.size()+"   "+subscriptionArray.length);
-                            subscribeButton.setText("Subscribe");
+                        if(status.equals("Unsubscribe")){
+                            MainActivity.masterData.removeFeedLink(channel.getUrl());
+                            status = "Subscribe" ;
+                            sub.setText(status);
                         }
-                        else
-                        {
-                            for (String s : subscriptionArray){
-                                    tempSub.add(s);
-                                }
-                            tempSub.add(chan.getUrl());
-                            {
-                                System.out.println("added " + chan.getUrl());
-                                System.out.println("otherwise known as " + chan.getTitle());
-                                System.out.println(tempSub.size()+"   "+subscriptionArray.length);
-                            }
-                            subscribeButton.setText("Unsubscribe");
-                        }
-                        editor.putStringSet("channelUrls", tempSub);
-                        editor.commit();
+                        else {
+                            MainActivity.masterData.addFeedLink(channel.getUrl());
+                            status="Unsubscribe";
+                            sub.setText(status);
+                         }
                     }
                 });
                 dialog.show();
-                return false;
             }
-
         });
-
-
-
-
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        hold.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public void onClick(final View v) {
+            public boolean onLongClick(final View v) {
+                System.out.println("need to make a new view that works properly with context ");
+
                 Thread thread = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        int adapterPos = holder.getAdapterPosition();
-
                         Channel chan =channels.get(position);
-
-
-                        Fragment fragment = new VideoFragment();
-                        ((VideoFragment) fragment).setvideos(chan.getVideos());
-                        FragmentManager manager = ((AppCompatActivity) mContext).getSupportFragmentManager();
-                        FragmentTransaction transaction = manager.beginTransaction();
-                        transaction.replace(R.id.fragment, fragment);
-                        transaction.addToBackStack(null);
-                        transaction.commit();
-
+                        if (!chan.getVideos().isEmpty()) {
+                            Fragment fragment = new VideoFragment();
+                            ((VideoFragment) fragment).setVideos(chan.getVideos());
+                            FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
+                            transaction.replace(R.id.fragment, fragment);
+                            transaction.addToBackStack(null);
+                            transaction.commit();
+                        }
                     }
                 } );
                 thread.start();
+            return true;
             }
         });
     }
-
     @Override
     public int getItemCount() {
         return channels.size();

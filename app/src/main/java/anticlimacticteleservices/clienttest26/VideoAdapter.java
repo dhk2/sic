@@ -1,7 +1,6 @@
 package anticlimacticteleservices.clienttest26;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
@@ -18,38 +17,37 @@ import com.squareup.picasso.Picasso;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import static android.app.PendingIntent.getActivity;
-import static android.provider.AlarmClock.EXTRA_MESSAGE;
 //import static android.support.v4.content.ContextCompat.startActivity;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHolder> {
    private List<Video> videos = new ArrayList<>();
 
     public class CustomViewHolder extends RecyclerView.ViewHolder {
-        public TextView name;
-        public ImageView image;
-        public TextView author;
-//        final Context context = this;
+        private TextView name;
+        private ImageView image;
+        private TextView author;
+        private ImageView youtubeIcon;
+        private ImageView bitchuteIcon;
 
         public CustomViewHolder(View view) {
             super(view);
             name = view.findViewById(R.id.movieName);
             image = view.findViewById(R.id.thumbnail);
             author = view.findViewById(R.id.author);
+            youtubeIcon = view.findViewById(R.id.yahooIcon);
+            bitchuteIcon = view.findViewById(R.id.bitchuteIcon);
         }
     }
     public VideoAdapter(){
         //used to avoid null error
 
-        videos.add(new Video("https://www.youtube.com/watch?v=2ips2mM7Zqw"));
+        //videos.add(new Video("https://www.youtube.com/watch?v=2ips2mM7Zqw"));
 
     }
     public VideoAdapter(List<Video> videos) {
@@ -68,13 +66,15 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
     public void onBindViewHolder(CustomViewHolder hold, final int position) {
         Video video = videos.get(position);
         final CustomViewHolder holder = hold;
-
-
         holder.name.setText(video.getTitle());
         holder.author.setText(video.getAuthor());
-//        System.out.println(position+ " what the hell:"+video.getThumbnail());
-//       System.out.println(video);
-
+        if (video.getUrl().indexOf("bitchute.com") > 0) {
+            holder.bitchuteIcon.setVisibility(View.VISIBLE);
+            holder.youtubeIcon.setVisibility(View.INVISIBLE);
+        } else {
+            holder.youtubeIcon.setVisibility(View.VISIBLE);
+            holder.bitchuteIcon.setVisibility(View.INVISIBLE);
+        }
         Picasso.get().load(video.getThumbnail()).into(holder.image);
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -87,7 +87,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                 dialog.setTitle(vid.getTitle());
 
                 // set the custom dialog components - text, image and button
-                WebView webView = (WebView) dialog.findViewById(R.id.videoDetails);
+                WebView webView = (WebView) dialog.findViewById(R.id.channelDetails);
 
                 webView.loadData(vid.toString(), "text/html", "UTF-8");
                 ImageView image = (ImageView) dialog.findViewById(R.id.thumbNailView);
@@ -120,8 +120,6 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
 
                         Video vid = videos.get(position);
                         Uri uri = null;
-                        System.out.println("starting to do my shit");
-//                        System.out.println(vid);
                         int vlcRequestCode = 42;
                         if (vid.getUrl().indexOf("bitchute")>0) {
                             if (vid.getMp4().isEmpty()) {
@@ -145,7 +143,9 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                         }
 
                         Intent vlcIntent = new Intent(Intent.ACTION_VIEW);
-                        vlcIntent.setPackage("org.videolan.vlc");
+                        if (MainActivity.masterData.isUseVlc()) {
+                            vlcIntent.setPackage("org.videolan.vlc");
+                        }
                         vlcIntent.setDataAndTypeAndNormalize(uri, "video/*");
                         vlcIntent.putExtra("title", vid.getTitle());
                         v.getContext().startActivity(vlcIntent);

@@ -19,7 +19,8 @@ cardview:cardUseCompatPadding="true">
         android:layout_width="match_parent"
         android:layout_height="180dp"
         android:layout_alignParentTop="true"
-        android:scaleType="centerCrop"/>
+        android:elevation="0dp"
+        android:scaleType="centerCrop" />
 
     <TextView
         android:id="@+id/statusView"
@@ -38,20 +39,50 @@ cardview:cardUseCompatPadding="true">
         android:layout_below="@+id/thumbnail"
         android:layout_centerVertical="true"
         android:layout_marginLeft="12dp"
+        android:elevation="200dp"
         android:maxLines="3"
         android:padding="8dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         android:textColor="#444"
         android:textSize="18dp"
-        android:textStyle="bold"/>
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/author"
-        android:background="#80FFFFFF"
         android:layout_width="411dp"
         android:layout_height="wrap_content"
+        android:background="#80FFFFFF"
+        android:elevation="200dp"
         android:ems="10"
         android:text="" />
+
+    <ImageView
+        android:id="@+id/yahooIcon"
+        android:layout_width="54dp"
+        android:layout_height="45dp"
+        android:layout_above="@+id/movieName"
+        android:layout_alignStart="@+id/thumbnail"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="7dp"
+        android:layout_marginTop="112dp"
+        android:layout_marginEnd="343dp"
+        android:layout_marginBottom="24dp"
+        android:elevation="200dp"
+        android:visibility="invisible"
+        cardview:srcCompat="@mipmap/playbutton" />
+
+    <ImageView
+        android:id="@+id/bitchuteIcon"
+        android:layout_width="37dp"
+        android:layout_height="28dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="128dp"
+        android:elevation="200dp"
+        android:visibility="invisible"
+        cardview:srcCompat="@mipmap/bitchute_round" />
 
 </RelativeLayout>
 

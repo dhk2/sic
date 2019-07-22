@@ -50,7 +50,7 @@ public class Video implements Comparable<Video>
         this.title = "";
         this.author = "";
         this.url = location;
-        System.out.println("new video created with" + this.url);
+        //System.out.println("new video created with" + this.url);
         if (location.indexOf("youtube") > 0)
         {
             ID = location.substring(location.lastIndexOf("?v=") + 3);
@@ -58,8 +58,9 @@ public class Video implements Comparable<Video>
         else
         {
             String[] segments = location.split("/");
-            ID = segments[segments.length - 2];
+            ID = segments[segments.length - 1];
         }
+       // System.out.println("got id "+ID+" from "+location);
         this.watched = false;
         this.date = new Date();
         this.thumbnailurl = "";
@@ -106,6 +107,9 @@ public class Video implements Comparable<Video>
                 case "author":
                     author = value;
                     break;
+                case "description":
+                    description = value;
+                    break;
                 default :
                     System.out.println("Can;t find match for |" + label + "|");
                     break;
@@ -131,6 +135,7 @@ public class Video implements Comparable<Video>
     public String getUrl()
     {
         return this.url;
+
     }
     public Date getDate()
     {
@@ -179,6 +184,14 @@ public class Video implements Comparable<Video>
     public void setUrl(String value)
     {
         this.url = value;
+        if (this.ID.isEmpty()) {
+            if (value.indexOf("youtube") > 0) {
+                ID = value.substring(value.lastIndexOf("?v=") + 3);
+            } else {
+                String[] segments = value.split("/");
+                ID = segments[segments.length - 1];
+            }
+        }
     }
     public void setTitle(String value)
     {
@@ -224,11 +237,11 @@ public class Video implements Comparable<Video>
     {
         this.viewCount = value;
     }
-    public void commentCount(String value)
+    public void setCommentCount(String value)
     {
         this.rating = value;
     }
-    public void category(String value)
+    public void setCategory(String value)
     {
         this.category = value;
     }
@@ -259,8 +272,8 @@ public class Video implements Comparable<Video>
                 "Down votes:" + downCount + "\n" +
                 "ID:" + ID + "\n" +
                 "Comments:" + commentCount + "\n" +
-                "Hash tags:" + hashtags + "\n" +
-                "Category:" + category);
+                "Hash tags:" + hashtags  + "\n" +
+                "Category:" + category+ "\n");
     }
 
     public HashSet<String> getStringEncodedSet()
@@ -272,6 +285,8 @@ public class Video implements Comparable<Video>
         encoded.add("mp4:" + mp4);
         encoded.add("title:" + title);
         encoded.add("author:" + author);
+        encoded.add("description:"+ description);
+
         return encoded;
     }
 

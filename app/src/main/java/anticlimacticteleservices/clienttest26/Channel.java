@@ -24,7 +24,6 @@ public class Channel {
     private String thumbnailurl;
     private String description;
     private String profileImage;
-    private String sourceID;
     private String subscribers;
     private String ID;
     
@@ -33,6 +32,15 @@ public class Channel {
     final SimpleDateFormat bdf = new SimpleDateFormat("MMM dd, yyyy");
     final SimpleDateFormat ydf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
     final SimpleDateFormat bdf2 = new SimpleDateFormat( "                   hh:mm zzz    MMMM dd    yyyy");
+
+    public String getID() {
+        return ID;
+    }
+
+    public void setSourceID(String sourceID) {
+        this.ID = sourceID;
+    }
+
     public Channel(){
         this.title="";
         this.author="";
@@ -40,8 +48,9 @@ public class Channel {
         this.thumbnailurl="";
         this.description="";
         this.profileImage="";
-        this.sourceID="";
+        this.ID="";
         this.videos=new ArrayList<Video>();
+
     }
     public Channel(String url) {
         final String location = url;
@@ -50,6 +59,15 @@ public class Channel {
         this.thumbnailurl="";
         this.profileImage="";
         int counter = 0;
+        if (url.indexOf("youtube") > 0)
+        {
+            this.ID = location.substring(location.lastIndexOf("?v=") + 3);
+        }
+        else
+        {
+            String[] segments = location.split("/");
+            this.ID = segments[segments.length - 1];
+        }
 
         videos=new ArrayList<Video>();
         System.out.println("starting scrape of channel:"+url);
@@ -78,11 +96,21 @@ public class Channel {
     public String getThumbnail(){
         return this.thumbnailurl;
     }
+
     public ArrayList<Video> getVideos(){
         return this.videos;
     }
     public void setUrl(String value){
         this.url=value;
+        if (this.ID.isEmpty()){
+            if (value.indexOf("youtube") > 0) {
+                this.ID = value.substring(value.lastIndexOf("id=") + 3);
+            }
+        }
+        else {
+            String[] segments = value.split("/");
+            this.ID = segments[segments.length - 1];
+        }
     }
     public void setTitle(String value){
         this.title=value;
@@ -98,6 +126,10 @@ public class Channel {
     }
     public void addVideo(Video vid){
         videos.add(vid);
+        if (author.isEmpty()){
+            this.author = vid.getAuthor();
+        }
+
     }
 
 
