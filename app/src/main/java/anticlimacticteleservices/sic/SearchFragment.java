@@ -1,4 +1,4 @@
-package anticlimacticteleservices.clienttest26;
+package anticlimacticteleservices.sic;
 
 //import android.app.Fragment;
 import android.content.Context;

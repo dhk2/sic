@@ -1,4 +1,4 @@
-package anticlimacticteleservices.clienttest26;
+package anticlimacticteleservices.sic;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

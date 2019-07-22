@@ -1,4 +1,4 @@
-package anticlimacticteleservices.clienttest26;
+package anticlimacticteleservices.sic;
 
 import java.util.Date;
 import java.util.HashSet;

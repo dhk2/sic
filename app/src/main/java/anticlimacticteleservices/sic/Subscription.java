@@ -1,4 +1,4 @@
-package anticlimacticteleservices.clienttest26;
+package anticlimacticteleservices.sic;
 
 //import com.squareup.picasso.Picasso;
 import java.util.ArrayList;

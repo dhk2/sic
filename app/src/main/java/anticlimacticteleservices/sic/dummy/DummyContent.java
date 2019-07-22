@@ -1,4 +1,4 @@
-package anticlimacticteleservices.clienttest26.dummy;
+package anticlimacticteleservices.sic.dummy;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package anticlimacticteleservices.clienttest26;
+package anticlimacticteleservices.sic;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("anticlimacticteleservices.clienttest26", appContext.getPackageName());
+        assertEquals("anticlimacticteleservices.sic", appContext.getPackageName());
     }
 }

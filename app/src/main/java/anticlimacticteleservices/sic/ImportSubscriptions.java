@@ -1,4 +1,4 @@
-package anticlimacticteleservices.clienttest26;
+package anticlimacticteleservices.sic;
 
 
 import android.Manifest;
@@ -18,7 +18,7 @@ import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
 
-import static anticlimacticteleservices.clienttest26.MainActivity.masterData;
+import static anticlimacticteleservices.sic.MainActivity.masterData;
 
 public class ImportSubscriptions extends AsyncTask {
     Document doc;

@@ -1,4 +1,4 @@
-package anticlimacticteleservices.clienttest26;
+package anticlimacticteleservices.sic;
 
 import android.app.Activity;
 import android.content.Context;
@@ -19,7 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static anticlimacticteleservices.clienttest26.MainActivity.masterData;
+import static anticlimacticteleservices.sic.MainActivity.masterData;
 
 public class UserData {
     public List<Channel> channels = new ArrayList<>();

@@ -1,4 +1,4 @@
-package anticlimacticteleservices.clienttest26;
+package anticlimacticteleservices.sic;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
