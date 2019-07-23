@@ -10,3 +10,9 @@ Fediverse and other network integration as well as some sort of local networking
 
 So far it's a couple weekends worth of work. Hope to have something usable in a month. The code will be going through a lot of changes before then so not looking for help there yet, but the XML isn't something that I'm good at and it could use a lot of work, so help there is always welcome.
 
+Thanks so far
+https://square.github.io/picasso/ for the image libary
+https://jsoup.org/ for their gret html parsing library
+https://www.videolan.org/vlc/index.html for their player which provedes 110% of the solution I was looking for
+
+Still looking for a good webtorrent selection, may have to end up anding webrtc to a current bit torrent service or modifying an existing webtorrent tool.
