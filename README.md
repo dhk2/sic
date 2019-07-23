@@ -16,3 +16,12 @@ https://jsoup.org/ for their gret html parsing library
 https://www.videolan.org/vlc/index.html for their player which provedes 110% of the solution I was looking for
 
 Still looking for a good webtorrent selection, may have to end up anding webrtc to a current bit torrent service or modifying an existing webtorrent tool.
+
+Built in Android Studio.
+
+Known issues:
+soooo many
+
+VLC won't work after installed until it's opened seperately and the brief tutorial clicked through.
+Sometimes VLC gets confused, Closing it seperately and then trying to play the video again usually works.
+
