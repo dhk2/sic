@@ -17,7 +17,7 @@ import android.app.*;
 import android.os.*;
 import android.util.Log;
 
-public class Channel {
+public class Channel implements Serializable{
     private String title;
     private String author;
     private String url;

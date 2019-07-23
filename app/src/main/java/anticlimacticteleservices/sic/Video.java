@@ -1,9 +1,10 @@
 package anticlimacticteleservices.sic;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 
-public class Video implements Comparable<Video>
+public class Video implements Serializable,Comparable<Video>
 {
     private String title;
     private String author;

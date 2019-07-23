@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,10 +39,14 @@ public class SearchFragment extends Fragment {
     private RadioButton channelSearch;
     private RadioButton videoSearch;
     private View inflated;
-
+ //   private OnFragmentInteractionListener mListener;
     public SearchFragment() {
         // Required empty public constructor
     }
+
+
+
+
     public static SearchFragment newInstance(String param1, String param2) {
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
@@ -76,6 +81,29 @@ public class SearchFragment extends Fragment {
         channelSearch = inflated.findViewById(R.id.radio_channel);
         videoSearch= inflated.findViewById(R.id.radio_video);
         bitchuteSearch.setChecked(true);
+        sText.requestFocus();
+        sText.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                // If the event is a key-down event on the "enter" button
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    ((MainActivity) getActivity())
+                            .setMainTitle("Searching...");
+                    Search target;
+                    String searchText = sText.getText().toString();
+                    target = new Search(searchText, videoSearch.isChecked(),youtubeSearch.isChecked(),bitchuteSearch.isChecked());
+                    Fragment subFragment = new VideoFragment();
+                    ((VideoFragment) subFragment).setVideos(sfVideos);
+                    FragmentManager supervisor =getChildFragmentManager();
+                    MainActivity.masterData.fragmentManager=supervisor;
+                    supervisor.beginTransaction().replace(R.id.search_subfragment, subFragment).commit();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+
 
 
         searchButton.setOnClickListener(new View.OnClickListener() {

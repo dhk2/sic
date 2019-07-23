@@ -64,6 +64,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
 
     @Override
     public void onBindViewHolder(CustomViewHolder hold, final int position) {
+
         Video video = videos.get(position);
         final CustomViewHolder holder = hold;
         holder.name.setText(video.getTitle());

@@ -15,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -72,6 +74,57 @@ public class SettingsFragment extends Fragment {
             }
 
         });
+        RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.radioGroup);
+        RadioButton useVlc =view.findViewById(R.id.use_vlc);
+        RadioButton useDefault =view.findViewById(R.id.use_default);
+        RadioButton useWebview =view.findViewById(R.id.use_webview);
+        System.out.println("player choice:"+MainActivity.masterData.getPlayerChoice());
+        switch(MainActivity.masterData.getPlayerChoice()){
+            case 1:
+                useVlc.setChecked(true);
+                break;
+            case 2:
+                useDefault.setChecked(true);
+                break;
+            case 4:
+                useWebview.setChecked(true);
+        }
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+        {
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                // checkedId is the RadioButton selected
+
+                switch(checkedId) {
+                    case R.id.use_vlc:
+                        MainActivity.masterData.setPlayerChoice(1);
+                        break;
+                    case R.id.use_default:
+                        MainActivity.masterData.setPlayerChoice(2);
+                        break;
+                    case R.id.use_webview:
+                        MainActivity.masterData.setPlayerChoice(4);
+                }
+            }
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     }
     @Override

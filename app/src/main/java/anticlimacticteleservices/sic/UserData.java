@@ -13,7 +13,12 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -22,23 +27,49 @@ import java.util.Set;
 import static anticlimacticteleservices.sic.MainActivity.masterData;
 
 public class UserData {
-    public List<Channel> channels = new ArrayList<>();
+    public List<Channel> getChannels() {
+        return channels;
+    }
+
+    public void addChannel(Channel channel) {
+        this.channels = channels;
+    }
+
+    public List<Video> getVideos() {
+        return videos;
+    }
+
+    public void setVideos(List<Video> videos) {
+        this.videos = videos;
+    }
+
+    public List<Channel> channels = new ArrayList<Channel>();
+    public List<Video>videos = new ArrayList<Video>();
     Set<String> feedLinks =new HashSet<String>();
     Boolean useYoutube=true;
     public Context context;
     public SharedPreferences.Editor editor;
 
     public boolean isUseVlc() {
-        return useVlc;
+        if (playerChoice ==1)
+            return true;
+        else
+            return false;
+    }
+    public void setUseVlc(boolean useVlc){
+        this.playerChoice = 1;
     }
 
-    public void setUseVlc(boolean useVlc) {
-        this.useVlc = useVlc;
+    public int getPlayerChoice() {
+        return playerChoice;
     }
 
-    public boolean useVlc;
-    public boolean useWebview;
-    public boolean useDefault;
+    public void setPlayerChoice(int playerChoice) {
+        this.playerChoice = playerChoice;
+    }
+
+    // 1=vlc, 2=system default, 4=webview
+    public int playerChoice;
     public FragmentManager getFragmentManager() {
         return fragmentManager;
     }
@@ -46,7 +77,6 @@ public class UserData {
     public void setFragmentManager(FragmentManager fragmentManager) {
         this.fragmentManager = fragmentManager;
     }
-
     FragmentManager fragmentManager;
 
     public Fragment getFragment() {
@@ -73,12 +103,59 @@ public class UserData {
 
 
 
-    public UserData(Context con){
-        this.context=con;
-        this.activity=(Activity)con;
-        forceRefresh=true;
-    }
+    public UserData(Context con) {
+        editor = MainActivity.preferences.edit();
+        playerChoice = MainActivity.preferences.getInt("playerChoice", 1);
+        this.context = con;
+        this.activity = (Activity) con;
+        //forceRefresh=true;
+        try {
+            FileInputStream fileIn = new FileInputStream(this.context.getFilesDir() + "channels.ser");
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            channels = (ArrayList<Channel>) in.readObject();
+            System.out.println("dir.exists()");
+            in.close();
+            fileIn.close();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("read in " + channels.size());
+        for (Channel c : channels) {
+            for (Video v : c.getVideos()) {
+                videos.add(v);
+            }
 
+        }
+    }
+    public boolean saveUserData(List<Channel>channels){
+        editor = MainActivity.preferences.edit();
+        editor.putInt("playerChoice", playerChoice);
+        editor.commit();
+
+        try {
+            FileOutputStream fileOut = new FileOutputStream(this.context.getFilesDir()+"channels.ser");
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            out.writeObject(channels);
+            out.close();
+            fileOut.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+
+
+
+
+
+        return true;
+    }
     public void setForceRefresh(boolean forceRefresh) {
         this.forceRefresh = forceRefresh;
     }

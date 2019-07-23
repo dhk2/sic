@@ -67,17 +67,18 @@ public class MainActivity extends AppCompatActivity {
   //              FragmentManager fragrentManager;
                 switch (item.getItemId()) {
                     case R.id.navigation_home:
-                        setTitle("Video Feed");
+                        //setTitle("Video Feed");
+                        getSupportActionBar().hide();
                         if (masterData.getForceRefresh()){
                             System.out.println("forced refresh");
                             //videos.clear();
-                            channels.clear();
-                            masterData.setForceRefresh(false);
+                            //channels.clear();
+
                         }
                         if (videos.isEmpty()){
-                            channels.clear();
                             System.out.println("no videos loaded, attempting to load from feed");
-                            setTitle("refreshing video feed");
+                            setMainTitle("refreshing video feed");
+                            masterData.setForceRefresh(false);
                             Set<String> bob = masterData.getFeedLinks();
                             String doug[] = new String[bob.size()];
                             doug = bob.toArray(doug);
@@ -93,14 +94,11 @@ public class MainActivity extends AppCompatActivity {
                         }
                         return true;
                     case R.id.navigation_history:
+                        getSupportActionBar().show();
                         setTitle("Not implemented yet");
-
-                        System.out.println("done transacting");
                         return true;
                     case R.id.navigation_channels:
-
-                        setTitle("Channels");
-
+                        getSupportActionBar().hide();
                         System.out.println("setting  channels with  "+channels.size());
                         fragment = new ChannelFragment();
                         ((ChannelFragment) fragment).setChannels(channels);
@@ -115,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                     case R.id.navigation_discover:
+                        getSupportActionBar().hide();
                         setTitle("under construction");
 
                         fragment = new SearchFragment();
@@ -128,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
                         return true;
 
                     case R.id.navigation_settings:
+                        getSupportActionBar().show();
                         setTitle("settings");
                         fragment = new SettingsFragment();
                         manager = getSupportFragmentManager();
@@ -153,26 +153,42 @@ public class MainActivity extends AppCompatActivity {
         navView = findViewById(R.id.nav_view);
 
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        getSupportActionBar().show();
         setTitle("Loading video feed");
         preferences = getSharedPreferences( getPackageName() + "_preferences", MODE_PRIVATE);
         masterData = new UserData(dirtyHack);
+        videos=masterData.getVideos();
+        channels=masterData.getChannels();
+        if (videos.isEmpty()){
+            System.out.println("no videos loaded, attempting to load from feed");
+            setMainTitle("refreshing video feed");
+        }
+        else {
+            fragment = new VideoFragment();
+            ((VideoFragment) fragment).setVideos(videos);
+            manager = getSupportFragmentManager();
+            transaction = manager.beginTransaction();
+            transaction.replace(R.id.fragment, fragment);
+            transaction.commit();
+        }
+        Set<String> bob = masterData.getFeedLinks();
+        String doug[] = new String[bob.size()];
+        doug = bob.toArray(doug);
+        new StartUp().execute(doug);
 
-        Set<String> feedLinkSet = masterData.getFeedLinks();
-        String feedLinkArray[] = new String[feedLinkSet.size()];
-        feedLinkArray = feedLinkSet.toArray(feedLinkArray);
-        new StartUp().execute(feedLinkArray);
     }
     private class StartUp extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... params) {
-            System.out.println("starting video Feed filler"+params.length);
-            channels.clear();
             Channel chan;
             for (String url : params) {
                 chan=new Channel();
                 if (url.indexOf("youtube.com") > 0) {
                     try {
+                        //url=" https://www.youtube.com/feeds/videos.xml?channel_id="+chan.id;
                         Document doc = Jsoup.connect(url).get();
+                        System.out.println(url);
+                        System.out.println(doc.id());
                         chan.setTitle(doc.title());
                         chan.setAuthor(doc.getElementsByTag("name").first().text());
                         chan.setUrl(url);
@@ -180,6 +196,7 @@ public class MainActivity extends AppCompatActivity {
                         Elements entries = doc.getElementsByTag("entry");
                         for (Element entry : entries) {
                             Video nv = new Video(entry.getElementsByTag("link").first().attr("href"));
+
                             nv.setAuthor(chan.getAuthor());
                             nv.setTitle(entry.getElementsByTag("title").first().html());
                             nv.setThumbnail(entry.getElementsByTag("media:thumbnail").first().attr("url"));
@@ -206,7 +223,15 @@ public class MainActivity extends AppCompatActivity {
                             if (unique) {
                                 videoFeed.add(nv);
                             }
-                            chan.addVideo(nv);
+                            unique = true;
+                            for (Video match : chan.getVideos()) {
+                                if (match.getID().equals(nv.getID())) {
+                                    unique = false;
+                                }
+                            }
+                            if (unique) {
+                                chan.addVideo(nv);
+                            }
                        }
                     } catch (MalformedURLException e) {
                         System.out.println("Malformed URL while parsing feed " + e.getMessage());
@@ -214,6 +239,9 @@ public class MainActivity extends AppCompatActivity {
                     } catch (IOException e) {
                         System.out.println("I/O Error while parsing feed " + e.getMessage());
                         System.out.println((url));
+                    } catch (NullPointerException e) {
+                        System.out.println("null pointer issue" + e.getMessage());
+
                     }
                 }
                 if (url.indexOf("bitchute.com") > 0) {
@@ -254,14 +282,28 @@ public class MainActivity extends AppCompatActivity {
                             if (unique) {
                                 videoFeed.add(nv);
                             }
-                            chan.addVideo(nv);
+                            unique = true;
+                            for (Video match : chan.getVideos()) {
+                                if (match.getID().equals(nv.getID())) {
+                                    unique = false;
+                                }
+                            }
+                            if (unique) {
+                                chan.addVideo(nv);
+                            }
                         }
                         System.out.println("finished scraping " + videos.size() + " videos");
                     } catch (MalformedURLException e) {
                         System.out.println("Malformed URL: " + e.getMessage());
                     } catch (IOException e) {
                         System.out.println("I/O Error: " + e.getMessage());
+                    } catch (NullPointerException e) {
+                        System.out.println("null pointer issue" + e);
+
                     }
+
+
+
                 }
                 if (chan.getDescription().isEmpty()) {
                     //need to load more channel info since it wasn't cached
@@ -277,10 +319,23 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 }
-                 channels.add(chan);
+                boolean unique = true;
+                for (Channel match : channels) {
+                    if (match.getID().equals(chan.getID())) {
+                        unique = false;
+                    }
+                }
+                if (unique) {
+                    channels.add(chan);
+                    System.out.println("adding channel "+chan.getTitle());
+                }
+                else {
+                    System.out.println("dupicate channel rejected "+chan.getTitle());
+                }
+
             }
             System.out.println("channel size"+channels.size());
-            System.out.println("video size "+videos.size());
+            System.out.println("video size "+videoFeed.size());
             Collections.sort(videoFeed);
             System.out.println("done sorting video feed");
             return "done";
@@ -290,20 +345,16 @@ public class MainActivity extends AppCompatActivity {
 
 
             videos = videoFeed;
-            VideoFragment frag = new VideoFragment();
-            frag.setVideos(videoFeed);
+            hideMainTitle();
+            //This forces the app to go to main video feed when initial refresh is finished
+            //disabled as annoying during testing.
+      //      findViewById(R.id.navigation_home).callOnClick();
 
-            findViewById(R.id.navigation_home).callOnClick();
-/*
-            FragmentManager manager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = manager.beginTransaction();
-            fragmentTransaction.replace(R.id.fragment,frag);
-            fragmentTransaction.commit();
-            setTitle("video feed");
- */
        }
         @Override
         protected void onPreExecute() {
+            System.out.println("pre-executing the feedlist walk and results parse");
+            setMainTitle("refreshing videos");
         }
 
         @Override
@@ -328,20 +379,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        System.out.println("saving "+videos.size());
-
-        SharedPreferences.Editor editor  = preferences.edit();
-        editor.putInt("videoCount", ( videos.size()));
-        editor.commit();
-        for (Video v : videos){
-
-        }
-        editor  = preferences.edit();
-        editor.putInt("videoCount", videos.size());
-        editor.commit();
-        masterData.setForceRefresh(true);
-
-
-
+        System.out.println("saving "+channels.size());
+        masterData.saveUserData(channels);
+    }
+    public void setMainTitle(String t){
+        getSupportActionBar().show();
+        setTitle(t);
+    }
+    public void hideMainTitle(){
+        getSupportActionBar().hide();
     }
 }
