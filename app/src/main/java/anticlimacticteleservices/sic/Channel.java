@@ -59,10 +59,11 @@ public class Channel implements Serializable{
         this.thumbnailurl="";
         this.profileImage="";
         int counter = 0;
-        if (url.indexOf("youtube") > 0)
+        if (url.indexOf("youtube.com/feeds") > 0)
         {
             this.ID = location.substring(location.lastIndexOf("?v=") + 3);
         }
+        //if(url.indexOf("bitchute.com")>0)
         else
         {
             String[] segments = location.split("/");
@@ -75,6 +76,7 @@ public class Channel implements Serializable{
     }
     public String toString(){
         return("title:"+this.title+"\n"+
+                "ID:"+this.ID+"\n"+
                 "url:"+this.url+"\n"+
                 "thumbnail:"+this.thumbnailurl+"\n"+
                 "author:"+this.author+"\n"+
@@ -102,8 +104,8 @@ public class Channel implements Serializable{
     }
     public void setUrl(String value){
         this.url=value;
-        if (this.ID.isEmpty()){
-            if (value.indexOf("youtube") > 0) {
+       /* if (this.ID.isEmpty()){
+            if (value.indexOf("youtube.com/feeds") > 0) {
                 this.ID = value.substring(value.lastIndexOf("id=") + 3);
             }
         }
@@ -111,6 +113,7 @@ public class Channel implements Serializable{
             String[] segments = value.split("/");
             this.ID = segments[segments.length - 1];
         }
+    */
     }
     public void setTitle(String value){
         this.title=value;
@@ -124,6 +127,7 @@ public class Channel implements Serializable{
     public void setDescription(String value) {
         this.description = value;
     }
+    public void setID(String value){this.ID = value;}
     public void addVideo(Video vid){
         videos.add(vid);
         if (author.isEmpty()){

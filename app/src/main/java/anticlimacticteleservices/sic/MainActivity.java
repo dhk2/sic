@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView navView;
     //hack needed to work with androids hack of a joke of a permission system
     private static final int PERMISSION_REQUEST_CODE = 1;
+    int feedLinkCount=0;
 
     public List<Video> videoFeed = new ArrayList<>();
     final SimpleDateFormat bdf = new SimpleDateFormat("MMM dd, yyyy");
@@ -80,18 +81,29 @@ public class MainActivity extends AppCompatActivity {
                             setMainTitle("refreshing video feed");
                             masterData.setForceRefresh(false);
                             Set<String> bob = masterData.getFeedLinks();
-                            String doug[] = new String[bob.size()];
+                            feedLinkCount=bob.size();
+                            String doug[] = new String[feedLinkCount];
+
                             doug = bob.toArray(doug);
                             new StartUp().execute(doug);
                         }
                         else {
-                            fragment = new VideoFragment();
-                            ((VideoFragment) fragment).setVideos(videos);
-                            manager = getSupportFragmentManager();
-                            transaction = manager.beginTransaction();
-                            transaction.replace(R.id.fragment, fragment);
-                            transaction.commit();
+                            Set<String> bob = masterData.getFeedLinks();
+                            if (bob.size()!=masterData.getFeedLinks().size()){
+                                System.out.println("mismatched feelinks, updating");
+                                feedLinkCount=bob.size();
+                                String doug[] = new String[feedLinkCount];
+                                doug = bob.toArray(doug);
+                                new StartUp().execute(doug);
+                            }
                         }
+                        fragment = new VideoFragment();
+                        ((VideoFragment) fragment).setVideos(videos);
+                        manager = getSupportFragmentManager();
+                        transaction = manager.beginTransaction();
+                        transaction.replace(R.id.fragment, fragment);
+                        transaction.commit();
+
                         return true;
                     case R.id.navigation_history:
                         getSupportActionBar().show();

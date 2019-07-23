@@ -77,7 +77,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
             Picasso.get().load(channel.getThumbnail()).into(hold.image);
         }
 
-        System.out.println(channel.toString());
+   //   System.out.println(channel.toString());
         hold.name.setText(channel.getTitle());
         hold.description.setText(channel.getDescription());
         status="Subscribe";
@@ -98,6 +98,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
                 }
                 else {
                     MainActivity.masterData.addFeedLink(channel.getUrl());
+
                     status = "Unsubscribe";
                     sub.setText(status);
                 }

@@ -27,24 +27,44 @@ import java.util.Set;
 import static anticlimacticteleservices.sic.MainActivity.masterData;
 
 public class UserData {
+    public List<Channel> sChannels = new ArrayList<Channel>();
+    public List<Channel> getsChannels() {
+        return sChannels;
+    }
+    public void setsChannels(ArrayList<Channel> channels) {
+        this.sChannels = channels;
+    }
+    public void addsChannel(Channel channel){
+        sChannels.add(channel);
+    }
+    public List<Channel> channels = new ArrayList<Channel>();
     public List<Channel> getChannels() {
         return channels;
     }
-
-    public void addChannel(Channel channel) {
+    public void setChannels(Channel channel) {
         this.channels = channels;
     }
-
+    public List<Video>videos = new ArrayList<Video>();
     public List<Video> getVideos() {
         return videos;
     }
-
     public void setVideos(List<Video> videos) {
         this.videos = videos;
     }
 
-    public List<Channel> channels = new ArrayList<Channel>();
-    public List<Video>videos = new ArrayList<Video>();
+    public List<Video>sVideos = new ArrayList<Video>();
+    public List<Video> getsVideos() {
+        return sVideos;
+    }
+    public void setsVideos(List<Video> videos) {
+        this.sVideos = videos;
+    }
+    public void addsVideos(Video video){
+        this.sVideos.add(video);
+    }
+
+    public VideoAdapter searchVideoAdapter= new VideoAdapter(sVideos);
+
     Set<String> feedLinks =new HashSet<String>();
     Boolean useYoutube=true;
     public Context context;

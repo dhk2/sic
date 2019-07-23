@@ -93,8 +93,9 @@ public class SearchFragment extends Fragment {
                     String searchText = sText.getText().toString();
                     target = new Search(searchText, videoSearch.isChecked(),youtubeSearch.isChecked(),bitchuteSearch.isChecked());
                     Fragment subFragment = new VideoFragment();
-                    ((VideoFragment) subFragment).setVideos(sfVideos);
+                    ((VideoFragment) subFragment).setVideos(MainActivity.masterData.getsVideos());
                     FragmentManager supervisor =getChildFragmentManager();
+
                     MainActivity.masterData.fragmentManager=supervisor;
                     supervisor.beginTransaction().replace(R.id.search_subfragment, subFragment).commit();
                     return true;
@@ -102,10 +103,6 @@ public class SearchFragment extends Fragment {
                 return false;
             }
         });
-
-
-
-
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,13 +110,30 @@ public class SearchFragment extends Fragment {
                 String searchText = sText.getText().toString();
                 target = new Search(searchText, videoSearch.isChecked(),youtubeSearch.isChecked(),bitchuteSearch.isChecked());
                 Fragment subFragment = new VideoFragment();
-                ((VideoFragment) subFragment).setVideos(sfVideos);
+                ((VideoFragment) subFragment).setVideos(MainActivity.masterData.getsVideos());
                 FragmentManager supervisor =getChildFragmentManager();
                 MainActivity.masterData.fragmentManager=supervisor;
                 supervisor.beginTransaction().replace(R.id.search_subfragment, subFragment).commit();
 
            }
         });
+    //if search results still exist from previous search display them.
+        if (MainActivity.masterData.getsChannels().size()>0){
+            ChannelFragment fragment = new ChannelFragment();
+            ((ChannelFragment) fragment).setChannels(MainActivity.masterData.getsChannels());
+            FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
+            transaction.replace(R.id.search_subfragment, fragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+        }
+        else if (MainActivity.masterData.getsChannels().size()>0) {
+            VideoFragment fragment = new VideoFragment();
+            ((VideoFragment) fragment).setVideos(MainActivity.masterData.getsVideos());
+            FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
+            transaction.replace(R.id.search_subfragment, fragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+        }
     }
     @Override
     public void onAttach(Context context) {
