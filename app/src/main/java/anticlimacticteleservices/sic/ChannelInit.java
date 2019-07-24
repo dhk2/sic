@@ -11,6 +11,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 
 public class ChannelInit extends AsyncTask <String,String,Integer>{
@@ -28,6 +29,7 @@ public class ChannelInit extends AsyncTask <String,String,Integer>{
                 Document doc = Jsoup.connect(g).get();
                 chan.setTitle(doc.title());
                 chan.setUrl(g);
+                System.out.println("g is:"+g +"   id is "+chan.getID()+ "    url is "+chan.getUrl());
                 if (g.indexOf("youtube.com") > 0) {
                     chan.setTitle(doc.title());
                     chan.setAuthor(doc.getElementsByTag("name").first().text());
@@ -40,7 +42,7 @@ public class ChannelInit extends AsyncTask <String,String,Integer>{
                         nv.setAuthor(chan.getAuthor());
                         nv.setTitle(entry.getElementsByTag("title").first().html());
                         nv.setThumbnail(entry.getElementsByTag("media:thumbnail").first().attr("url"));
-                        try { Document doc2 = Jsoup.connect("https://www.youtube.com/channel/" + chan.getID()).get();
+  /*                      try { Document doc2 = Jsoup.connect("https://www.youtube.com/channel/" + chan.getID()).get();
                             chan.setDescription(doc2.getElementsByAttributeValue("name", "description").attr("content").toString());
                             chan.setThumbnail(doc2.getElementsByAttributeValue("itemprop", "thumbnailUrl").attr("href").toString());
 
@@ -48,7 +50,7 @@ public class ChannelInit extends AsyncTask <String,String,Integer>{
                             e.printStackTrace();
                             System.out.println("Failed to load youtube channel page for " + chan.getTitle() + " at " + g +" id:" +chan.getID());
                         }
-                        nv.setDescription(entry.getElementsByTag("media:description").first().text());
+*/                      nv.setDescription(entry.getElementsByTag("media:description").first().text());
                         nv.setRating(entry.getElementsByTag("media:starRating").first().attr("average"));
                         nv.setViewCount(entry.getElementsByTag("media:statistics").first().attr("views"));
                         try {
@@ -74,6 +76,7 @@ public class ChannelInit extends AsyncTask <String,String,Integer>{
                             }
                         }
                         if (unique) {
+                            System.out.println("g is:"+g +"   id is "+chan.getID()+ "    url is "+chan.getUrl());
                             chan.addVideo(nv);
                         }
                     }
@@ -129,7 +132,7 @@ public class ChannelInit extends AsyncTask <String,String,Integer>{
                         System.out.println("null pointer issue" + e);
                     }
                 }
-                if (chan.getDescription().isEmpty()) {
+ /*               if (chan.getDescription().isEmpty()) {
                         //need to load more channel info since it wasn't cached
                     if (chan.getUrl().indexOf("youtube") > 1) {
                         try {
@@ -140,9 +143,11 @@ public class ChannelInit extends AsyncTask <String,String,Integer>{
                             e.printStackTrace();
                             System.out.println("Failed to load youtube channel page for " + chan.getTitle()+" at "+"https://www.youtube.com/channel/"+chan.getID());
                         }
+
                     }
+
                 }
-                boolean unique = true;
+ */             boolean unique = true;
                 for (Channel match : MainActivity.masterData.getChannels()) {
                     if (match.getID().equals(chan.getID())) {
                         unique = false;
@@ -160,9 +165,14 @@ public class ChannelInit extends AsyncTask <String,String,Integer>{
             }
             System.out.println("finished initting channel"+chan.getVideos().size());
             System.out.println(chan);
+            MainActivity.masterData.sortVideos();
         }
-        return null;
+        return 69;
     }
-
+    //@Override
+    protected void onPostExecute(String result){
+        MainActivity.masterData.sortVideos();
+        System.out.println("sorting"+MainActivity.masterData.getVideos().size());
+}
 
 }

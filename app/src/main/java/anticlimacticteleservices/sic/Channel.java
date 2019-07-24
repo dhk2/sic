@@ -90,7 +90,7 @@ public class Channel implements Serializable{
         int counter = 0;
         if (url.indexOf("youtube.com/feeds") > 0)
         {
-            this.ID = location.substring(location.lastIndexOf("?v=") + 3);
+            this.ID = location.substring(location.lastIndexOf("id=") + 3);
         }
         //if(url.indexOf("bitchute.com")>0)
         else

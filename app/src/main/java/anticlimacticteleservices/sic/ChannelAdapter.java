@@ -81,8 +81,8 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
         hold.name.setText(channel.getTitle());
         hold.description.setText(channel.getDescription());
         status="Subscribe";
-        for (String g : MainActivity.masterData.getFeedLinks()){
-            if (g.equals(channel.getUrl())){
+        for (Channel c : MainActivity.masterData.getChannels()){
+            if (c.getUrl().equals(channel.getUrl())){
                 status="Unsubscribe";
             }
         }
@@ -92,14 +92,15 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
             @Override
             public void onClick(View v) {
                 if(status.equals("Unsubscribe")){
-                    MainActivity.masterData.removeFeedLink(channel.getUrl());
+                   //MainActivity.masterData.removeFeedLink(channel.getUrl());
                     status="Subscribe";
+                    MainActivity.masterData.removeChannel(channel.getID());
                     sub.setText(status );
                 }
                 else {
-                    MainActivity.masterData.addFeedLink(channel.getUrl());
-
-                    status = "Unsubscribe";
+                    System.out.println("trying to add channel"+channel.getUrl());
+                    new ChannelInit().execute(channel.getUrl());
+                    status="Unsubscribe";
                     sub.setText(status);
                 }
             }
@@ -130,8 +131,8 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
                 TextView name = dialog.findViewById(R.id.channel_name);
                 name.setText(chan.getTitle());
                 status="Subscribe";
-                for (String g : MainActivity.masterData.getFeedLinks()){
-                    if (g.equals(chan.getUrl())){
+                for (Channel c : MainActivity.masterData.getChannels()){
+                    if (c.getUrl().equals(channel.getUrl())){
                         status="Unsubscribe";
                     }
                 }
@@ -147,12 +148,12 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
                     @Override
                     public void onClick(View v) {
                         if(status.equals("Unsubscribe")){
-                            MainActivity.masterData.removeFeedLink(channel.getUrl());
+                            MainActivity.masterData.removeChannel(channel.getID());
                             status = "Subscribe" ;
                             sub.setText(status);
                         }
                         else {
-                            MainActivity.masterData.addFeedLink(channel.getUrl());
+                          //  MainActivity.masterData.addFeedLink(channel.getUrl());
                             System.out.println("trying to add channel"+channel.getUrl());
                             new ChannelInit().execute(channel.getUrl());
                             status="Unsubscribe";

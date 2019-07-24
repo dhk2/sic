@@ -17,7 +17,7 @@ import android.support.v4.app.FragmentTransaction;
 public class Search {
     private int searchCount = 0;
 //    private ArrayList<Video> sVideos;
-//    private ArrayList<Channel> sChannels;
+    private ArrayList<Channel> sChannels;
     private Document doc;
     private boolean searching;
 

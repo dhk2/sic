@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,21 +32,21 @@ public class UserData {
     public List<Channel> getsChannels() {
         return sChannels;
     }
-    public void setsChannels(ArrayList<Channel> channels) {
-        this.sChannels = channels;
+    public void setsChannels(ArrayList<Channel> value) {
+        this.sChannels = value;
     }
-    public void addsChannel(Channel channel){
-        sChannels.add(channel);
+    public void addsChannel(Channel value){
+        sChannels.add(value);
     }
     public List<Channel> channels = new ArrayList<Channel>();
     public List<Channel> getChannels() {
         return channels;
     }
-    public void setChannels(Channel channel) {
-        this.channels = channels;
+    public void setChannels(ArrayList<Channel> value) {
+        this.channels = value;
     }
-    public void addChannel(Channel channel){
-        this.channels.add(channel);
+    public void addChannel(Channel value){
+        this.channels.add(value);
     }
     public void removeChannel(String ID){
         for (int i=0;i<channels.size();i++){
@@ -59,21 +60,25 @@ public class UserData {
     public List<Video> getVideos() {
         return videos;
     }
-    public void setVideos(List<Video> videos) {
-        this.videos = videos;
+    public void setVideos(List<Video> value) {
+        this.videos = value;
     }
-    public void addVideo(Video video) {
-        videos.add(video);
+    public void sortVideos(){
+        Collections.sort(videos);
+        System.out.println("sorted videos");
+    }
+    public void addVideo(Video value) {
+        videos.add(value);
     }
     public List<Video>sVideos = new ArrayList<Video>();
     public List<Video> getsVideos() {
         return sVideos;
     }
-    public void setsVideos(List<Video> videos) {
-        this.sVideos = videos;
+    public void setsVideos(List<Video> value) {
+        this.sVideos = value;
     }
-    public void addsVideos(Video video){
-        this.sVideos.add(video);
+    public void addsVideos(Video value){
+        this.sVideos.add(value);
     }
 
     public VideoAdapter searchVideoAdapter= new VideoAdapter(sVideos);

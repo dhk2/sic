@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                             String doug[] = new String[feedLinkCount];
 
                             doug = bob.toArray(doug);
-                            new StartUp().execute(doug);
+                          //  new StartUp().execute(doug);
                         }
                         else {
                             Set<String> bob = masterData.getFeedLinks();
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                                 feedLinkCount=bob.size();
                                 String doug[] = new String[feedLinkCount];
                                 doug = bob.toArray(doug);
-                                new StartUp().execute(doug);
+                              //  new StartUp().execute(doug);
                             }
                         }
                         fragment = new VideoFragment();
@@ -112,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
                         return true;
                     case R.id.navigation_channels:
                         getSupportActionBar().hide();
+                        channels=masterData.getChannels();
                         System.out.println("setting  channels with  "+channels.size());
                         fragment = new ChannelFragment();
                         ((ChannelFragment) fragment).setChannels(channels);
@@ -187,10 +188,10 @@ public class MainActivity extends AppCompatActivity {
         Set<String> bob = masterData.getFeedLinks();
         String doug[] = new String[bob.size()];
         doug = bob.toArray(doug);
-        new StartUp().execute(doug);
+//        new StartUp().execute(doug);
 
     }
-    private class StartUp extends AsyncTask<String, String, String> {
+    private class StartmeUp extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... params) {
             Channel chan;
