@@ -153,6 +153,8 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
                         }
                         else {
                             MainActivity.masterData.addFeedLink(channel.getUrl());
+                            System.out.println("trying to add channel"+channel.getUrl());
+                            new ChannelInit().execute(channel.getUrl());
                             status="Unsubscribe";
                             sub.setText(status);
                          }

@@ -44,6 +44,17 @@ public class UserData {
     public void setChannels(Channel channel) {
         this.channels = channels;
     }
+    public void addChannel(Channel channel){
+        this.channels.add(channel);
+    }
+    public void removeChannel(String ID){
+        for (int i=0;i<channels.size();i++){
+            if (channels.get(i).getID().equals(ID)){
+                channels.remove(i);
+                break;
+            }
+        }
+    }
     public List<Video>videos = new ArrayList<Video>();
     public List<Video> getVideos() {
         return videos;
@@ -51,7 +62,9 @@ public class UserData {
     public void setVideos(List<Video> videos) {
         this.videos = videos;
     }
-
+    public void addVideo(Video video) {
+        videos.add(video);
+    }
     public List<Video>sVideos = new ArrayList<Video>();
     public List<Video> getsVideos() {
         return sVideos;

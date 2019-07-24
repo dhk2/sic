@@ -1,12 +1,8 @@
 package anticlimacticteleservices.sic;
 
 
-import android.Manifest;
-import android.app.Activity;
 import android.os.AsyncTask;
-import android.support.v4.app.ActivityCompat;
 
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,7 +10,6 @@ import org.jsoup.select.Elements;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
 

@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 
@@ -195,6 +196,14 @@ public class MainActivity extends AppCompatActivity {
             Channel chan;
             for (String url : params) {
                 chan=new Channel();
+                for (Channel c : channels){
+                    if (c.getUrl().equals(url)) {
+                        //String lastSync = new SimpleDateFormat(ydf, Locale.getDefault()).format(c.getLastsync());
+                        long difference = ((new Date().getTime())-c.getLastsync().getTime())/60000;
+                        System.out.println("trying to refresh "+c.getTitle()+" last refreshed "+ difference +" minutes ago");
+                        continue;
+                    }
+                }
                 if (url.indexOf("youtube.com") > 0) {
                     try {
                         //url=" https://www.youtube.com/feeds/videos.xml?channel_id="+chan.id;
@@ -324,6 +333,7 @@ public class MainActivity extends AppCompatActivity {
                             Document doc = Jsoup.connect("https://www.youtube.com/channel/"+chan.getID()).get();
                             chan.setDescription(doc.getElementsByAttributeValue("name","description").attr("content").toString());
                             chan.setThumbnail(doc.getElementsByAttributeValue("itemprop","thumbnailUrl").attr("href").toString());
+
                         } catch (IOException e) {
                             e.printStackTrace();
                             System.out.println("Failed to load youtube channel page for " + chan.getTitle()+" at "+"https://www.youtube.com/channel/"+chan.getID());

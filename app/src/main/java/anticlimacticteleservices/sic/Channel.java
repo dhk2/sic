@@ -26,6 +26,35 @@ public class Channel implements Serializable{
     private String profileImage;
     private String subscribers;
     private String ID;
+
+    public String getSubscribers() {
+        return subscribers;
+    }
+
+    public void setSubscribers(String subscribers) {
+        this.subscribers = subscribers;
+    }
+
+    public Date getJoined() {
+        return joined;
+    }
+
+    public void setJoined(Date joined) {
+        this.joined = joined;
+    }
+
+    private Date joined;
+
+    public Date getLastsync() {
+        return lastsync;
+    }
+
+    public void setLastsync(Date lastsync) {
+        this.lastsync = lastsync;
+    }
+
+    private Date lastsync;
+
     
 
     private ArrayList<Video> videos;
@@ -50,7 +79,7 @@ public class Channel implements Serializable{
         this.profileImage="";
         this.ID="";
         this.videos=new ArrayList<Video>();
-
+        this.lastsync=new Date();
     }
     public Channel(String url) {
         final String location = url;
@@ -69,7 +98,7 @@ public class Channel implements Serializable{
             String[] segments = location.split("/");
             this.ID = segments[segments.length - 1];
         }
-
+        this.lastsync = new Date();
         videos=new ArrayList<Video>();
         System.out.println("starting scrape of channel:"+url);
 
