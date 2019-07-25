@@ -26,50 +26,14 @@ public class Channel implements Serializable{
     private String profileImage;
     private String subscribers;
     private String ID;
-
-    public String getSubscribers() {
-        return subscribers;
-    }
-
-    public void setSubscribers(String subscribers) {
-        this.subscribers = subscribers;
-    }
-
-    public Date getJoined() {
-        return joined;
-    }
-
-    public void setJoined(Date joined) {
-        this.joined = joined;
-    }
-
-    private Date joined;
-
-    public Date getLastsync() {
-        return lastsync;
-    }
-
-    public void setLastsync(Date lastsync) {
-        this.lastsync = lastsync;
-    }
-
+    private Date joined;   
     private Date lastsync;
-
-    
-
     private ArrayList<Video> videos;
     final SimpleDateFormat bdf = new SimpleDateFormat("MMM dd, yyyy");
     final SimpleDateFormat ydf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
     final SimpleDateFormat bdf2 = new SimpleDateFormat( "                   hh:mm zzz    MMMM dd    yyyy");
-
-    public String getID() {
-        return ID;
-    }
-
-    public void setSourceID(String sourceID) {
-        this.ID = sourceID;
-    }
-
+    
+ //         Constructors   
     public Channel(){
         this.title="";
         this.author="";
@@ -101,16 +65,20 @@ public class Channel implements Serializable{
         this.lastsync = new Date();
         videos=new ArrayList<Video>();
         System.out.println("starting scrape of channel:"+url);
-
     }
-    public String toString(){
-        return("title:"+this.title+"\n"+
-                "ID:"+this.ID+"\n"+
-                "url:"+this.url+"\n"+
-                "thumbnail:"+this.thumbnailurl+"\n"+
-                "author:"+this.author+"\n"+
-                "profile image"+this.profileImage+"\n"+
-                "description:"+this.description+"\n");
+    
+//          Getters 
+    public String getID() {
+        return ID; 
+    }
+    public Date getJoined() {
+        return joined;
+    }    
+    public Date getLastsync() {
+        return lastsync;
+    }    
+    public String getSubscribers() {
+        return subscribers;
     }
     public String getUrl(){
         return this.url;
@@ -127,9 +95,19 @@ public class Channel implements Serializable{
     public String getThumbnail(){
         return this.thumbnailurl;
     }
-
     public ArrayList<Video> getVideos(){
         return this.videos;
+    }
+    public void setSubscribers(String subscribers) {
+        this.subscribers = subscribers;
+    }
+   
+   //           setters 
+    public void setJoined(Date joined) {
+        this.joined = joined;
+    }
+    public void setLastsync(Date lastsync) {
+        this.lastsync = lastsync;
     }
     public void setUrl(String value){
         this.url=value;
@@ -156,15 +134,26 @@ public class Channel implements Serializable{
     public void setDescription(String value) {
         this.description = value;
     }
-    public void setID(String value){this.ID = value;}
+    public void setID(String value){
+        this.ID = value;
+    }
+    
+    //          OTher bits
     public void addVideo(Video vid){
         videos.add(vid);
         if (author.isEmpty()){
             this.author = vid.getAuthor();
         }
-
     }
-
+    public String toString(){
+        return("title:"+this.title+"\n"+
+                "ID:"+this.ID+"\n"+
+                "url:"+this.url+"\n"+
+                "thumbnail:"+this.thumbnailurl+"\n"+
+                "author:"+this.author+"\n"+
+                "profile image"+this.profileImage+"\n"+
+                "description:"+this.description+"\n");
+    }
 
 
 }
