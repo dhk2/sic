@@ -11,19 +11,14 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.squareup.picasso.Picasso;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
-
 import static android.app.PendingIntent.getActivity;
-//import static android.support.v4.content.ContextCompat.startActivity;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHolder> {
    private List<Video> videos = new ArrayList<>();
@@ -45,26 +40,18 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         }
     }
     public VideoAdapter(){
-        //used to avoid null error
-
-        //videos.add(new Video("https://www.youtube.com/watch?v=2ips2mM7Zqw"));
-
     }
     public VideoAdapter(List<Video> videos) {
         this.videos = videos;
     }
-
     @Override
     public CustomViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.videolist, null, false);
-
         return new CustomViewHolder(itemView);
     }
-
     @Override
     public void onBindViewHolder(CustomViewHolder hold, final int position) {
-
         Video video = videos.get(position);
         final CustomViewHolder holder = hold;
         holder.name.setText(video.getTitle());
@@ -86,10 +73,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                 final Dialog dialog = new Dialog(view.getContext());
                 dialog.setContentView(R.layout.videoprop);
                 dialog.setTitle(vid.getTitle());
-
-                // set the custom dialog components - text, image and button
                 WebView webView = (WebView) dialog.findViewById(R.id.channelDetails);
-
                 webView.loadData(vid.toString(), "text/html", "UTF-8");
                 ImageView image = (ImageView) dialog.findViewById(R.id.thumbNailView);
                 Picasso.get().load(vid.getThumbnail()).into(image);
@@ -101,16 +85,10 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                         dialog.dismiss();
                     }
                 });
-
                 dialog.show();
                 return false;
             }
-
         });
-
-
-
-
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -118,7 +96,6 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                     @Override
                     public void run() {
                         int adapterPos = holder.getAdapterPosition();
-
                         Video vid = videos.get(position);
                         Uri uri = null;
                         int vlcRequestCode = 42;
@@ -150,18 +127,14 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                         vlcIntent.setDataAndTypeAndNormalize(uri, "video/*");
                         vlcIntent.putExtra("title", vid.getTitle());
                         v.getContext().startActivity(vlcIntent);
-                        //System.out.println(vlcIntent.toString());
-
                     }
                 } );
                 thread.start();
             }
         });
     }
-
     @Override
     public int getItemCount() {
         return videos.size();
     }
-
 }
