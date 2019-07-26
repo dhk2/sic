@@ -13,13 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VideoFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-    private String mParam1;
-    private String mParam2;
-    public List<Video> vfVideos = new ArrayList<>();
+//    public List<Video> vfVideos = new ArrayList<>();
     private VideoAdapter vAdapter = new VideoAdapter();
     private RecyclerView videoRecyclerView;
     public VideoFragment() {
@@ -28,15 +22,6 @@ public class VideoFragment extends Fragment {
     public interface VideoFragmentListener {
         void videoFragmentListener();
     }
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment VideoFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static VideoFragment newInstance(String param1, String param2) {
         VideoFragment fragment = new VideoFragment();
         Bundle args = new Bundle();
@@ -59,7 +44,7 @@ public class VideoFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_video, container, false);
         videoRecyclerView =v.findViewById(R.id.vrv);
-        vAdapter = new VideoAdapter(vfVideos);
+        vAdapter = new VideoAdapter(MainActivity.masterData.getVideos());
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         videoRecyclerView.setLayoutManager(mLayoutManager);
         videoRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -67,6 +52,7 @@ public class VideoFragment extends Fragment {
         System.out.println("created view for video fragment");
         return v;
     }
+    /*
     public void setVideos(List<Video> videos) {
         vfVideos.clear();
         vfVideos.addAll((videos));
@@ -81,5 +67,6 @@ public class VideoFragment extends Fragment {
     public void clearVideos(List<Video> videos) {
         vfVideos.clear();
     System.out.println("videos cleared");
-    }    
+    } 
+    */
 }
