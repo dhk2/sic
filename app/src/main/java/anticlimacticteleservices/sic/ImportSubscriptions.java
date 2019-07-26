@@ -27,9 +27,8 @@ public class ImportSubscriptions extends AsyncTask {
     protected Object doInBackground(Object[] objects) {
         links=new HashSet<>();
         System.out.print("starting to get imports "+masterData.getUseYoutube());
+        Channel chan;
         if (masterData.getUseYoutube()) {
-
-            //File input = new File("/tmp/input.html");
             try {
                 File input = new File("/storage/emulated/0/Download/subscription_manager.odm");
                 doc = Jsoup.parse(input, "UTF-8", "http://example.com/");
@@ -41,22 +40,12 @@ public class ImportSubscriptions extends AsyncTask {
            // System.out.println(doc);
             Elements listing = doc.getElementsByAttribute("xmlUrl");
             for (Element e : listing){
-                links.add(e.attr("xmlUrl"));
-                System.out.println("adding feedlink"+e.toString());
+                MainActivity.masterData.addChannel(e.attr("xmlUrl"));
+                System.out.println("adding Channel"+e.toString());
             }
         }
         System.out.println("done  importing links from file");
         System.out.println(links.size());
-        if (masterData.feedLinks.size() == 2){
-            //don't want to keep styx and pewds if thier importing from scratch
-            masterData.setFeedLinks(links);
-            masterData.setForceRefresh(true);
-        }
-        else {
-            masterData.addFeedLinks(links);
-            masterData.setForceRefresh(true);
-        }
         return null;
     }
-
 }
