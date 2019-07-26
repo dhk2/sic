@@ -144,16 +144,19 @@ public class UserData {
     public UserData(Context con) {
         editor = MainActivity.preferences.edit();
         playerChoice = MainActivity.preferences.getInt("playerChoice", 1);
-        this.context = con;
-        this.activity = (Activity) con;
-        //forceRefresh=true;
+        Context context = getActivityContext();
         try {
-            FileInputStream fileIn = new FileInputStream(this.context.getFilesDir() + "channels.ser");
-            ObjectInputStream in = new ObjectInputStream(fileIn);
-            channels = (ArrayList<Channel>) in.readObject();
-            System.out.println("dir.exists()");
-            in.close();
-            fileIn.close();
+            String[] files = fileList();
+		    for (String file : files) {
+                if (file.equals("channels.ser")) {
+                   `FileInputStream fileIn = new FileInputStream(this.context.getFilesDir() + "channels.ser");
+                    ObjectInputStream in = new ObjectInputStream(fileIn);
+                    channels = (ArrayList<Channel>) in.readObject();
+                    System.out.println("Saved channels read");
+                    in.close();
+                    fileIn.close();
+                }
+		    }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
@@ -170,12 +173,13 @@ public class UserData {
         }
     }
     public boolean saveUserData(List<Channel>channels){
+        Context context = getActivityContext();
         editor = MainActivity.preferences.edit();
         editor.putInt("playerChoice", playerChoice);
         editor.commit();
 
         try {
-            FileOutputStream fileOut = new FileOutputStream(this.context.getFilesDir()+"channels.ser");
+            FileOutputStream fileOut = new FileOutputStream(context.getFilesDir()+"channels.ser");
             ObjectOutputStream out = new ObjectOutputStream(fileOut);
             out.writeObject(channels);
             out.close();
@@ -187,10 +191,6 @@ public class UserData {
             e.printStackTrace();
 
         }
-
-
-
-
 
         return true;
     }
