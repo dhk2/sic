@@ -19,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -39,6 +40,9 @@ public class UserData {
         sChannels.add(value);
     }
     public List<Channel> channels = new ArrayList<Channel>();
+    public Context context;
+    final SimpleDateFormat bdf = new SimpleDateFormat("EEE','  dd MMM yyyy HH:mm:SSZZZZ");
+    final SimpleDateFormat ydf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
     public List<Channel> getChannels() {
         return channels;
     }
@@ -85,7 +89,6 @@ public class UserData {
 
     Set<String> feedLinks =new HashSet<String>();
     Boolean useYoutube=true;
-    public Context context;
     public SharedPreferences.Editor editor;
 
     public boolean isUseVlc() {
@@ -144,19 +147,26 @@ public class UserData {
     public UserData(Context con) {
         editor = MainActivity.preferences.edit();
         playerChoice = MainActivity.preferences.getInt("playerChoice", 1);
-        Context context = getActivityContext();
+        context = con;
+        System.out.println("<><?><><><><><><>about to open file ()()()()()()()()()()()");
         try {
-            String[] files = fileList();
-		    for (String file : files) {
-                if (file.equals("channels.ser")) {
-                   `FileInputStream fileIn = new FileInputStream(this.context.getFilesDir() + "channels.ser");
+            System.out.println("starting try block");
+//            String[] files = context.fileList();
+//            System.out.println("starting parse file list "+files.length);
+//		    for (String file : files) {
+//		        System.out.println();
+  //              if (file.equals("channels.ser")) {
+                   FileInputStream fileIn = new FileInputStream(this.context.getFilesDir() + "channels.ser");
                     ObjectInputStream in = new ObjectInputStream(fileIn);
                     channels = (ArrayList<Channel>) in.readObject();
-                    System.out.println("Saved channels read");
+                    System.out.println("Saved channels read "+channels.size());
                     in.close();
                     fileIn.close();
-                }
-		    }
+ //               }
+    //            else {
+ //                   System.out.println("unable to find the channel file");
+ //               }
+//		    }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
@@ -172,12 +182,12 @@ public class UserData {
 
         }
     }
-    public boolean saveUserData(List<Channel>channels){
-        Context context = getActivityContext();
+    public boolean saveUserData(){
+        Context context = MainActivity.masterData.context;
         editor = MainActivity.preferences.edit();
         editor.putInt("playerChoice", playerChoice);
         editor.commit();
-
+        System.out.println("saved user preferences, saving "+channels.size());
         try {
             FileOutputStream fileOut = new FileOutputStream(context.getFilesDir()+"channels.ser");
             ObjectOutputStream out = new ObjectOutputStream(fileOut);

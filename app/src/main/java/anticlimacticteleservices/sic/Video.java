@@ -212,6 +212,8 @@ public class Video implements Serializable,Comparable<Video>
     }
     public void setDate(Date date)
     {
+        System.out.println(date);
+
         this.date = date;
     }
     public void setMp4(String value)

@@ -51,6 +51,7 @@ public class Channel implements Serializable{
         this.description="";
         this.thumbnailurl="";
         this.profileImage="";
+        this.author="";
         int counter = 0;
         if (url.indexOf("youtube.com/feeds") > 0)
         {
@@ -95,13 +96,41 @@ public class Channel implements Serializable{
     public String getThumbnail(){
         return this.thumbnailurl;
     }
+
     public ArrayList<Video> getVideos(){
         return this.videos;
     }
-    public void setSubscribers(String subscribers) {
-        this.subscribers = subscribers;
+    public String getBitchuteRssFeedUrl(){
+        if (url.indexOf("bitchute")>0) {
+            return "https://www.bitchute.com/feeds/rss/channel/" + ID;
+        }
+        else{
+            return "";
+        }
     }
-   
+    public String getBitchuteUrl() {
+        if (url.indexOf("bitchute") > 0) {
+            return "https://www.bitchute.com/channel/" + ID;
+        }
+        else{
+            return "";
+        }
+    }
+    public String getYoutubeRssFeedUrl() {
+        if (url.indexOf("youtube") > 0) {
+            return "https://www.youtube.com/feeds/videos.xml?channel_id=" + ID;
+        } else {
+            return "";
+        }
+    }
+    public String getYoutubeUrl(){
+        if (url.indexOf("youtube") > 0) {
+            return "https://www.youtube.com/channel/"+ID;
+        } else {
+            return "";
+        }
+    }
+
    //           setters 
     public void setJoined(Date joined) {
         this.joined = joined;

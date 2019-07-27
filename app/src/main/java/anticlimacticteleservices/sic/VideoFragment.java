@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VideoFragment extends Fragment {
-//    public List<Video> vfVideos = new ArrayList<>();
+    public List<Video> vfVideos = new ArrayList<>();
     private VideoAdapter vAdapter = new VideoAdapter();
     private RecyclerView videoRecyclerView;
     public VideoFragment() {
@@ -24,10 +24,6 @@ public class VideoFragment extends Fragment {
     }
     public static VideoFragment newInstance(String param1, String param2) {
         VideoFragment fragment = new VideoFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -44,7 +40,7 @@ public class VideoFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_video, container, false);
         videoRecyclerView =v.findViewById(R.id.vrv);
-        vAdapter = new VideoAdapter(MainActivity.masterData.getVideos());
+        vAdapter = new VideoAdapter(vfVideos);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         videoRecyclerView.setLayoutManager(mLayoutManager);
         videoRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -52,13 +48,14 @@ public class VideoFragment extends Fragment {
         System.out.println("created view for video fragment");
         return v;
     }
-    /*
+
     public void setVideos(List<Video> videos) {
         vfVideos.clear();
         vfVideos.addAll((videos));
         vAdapter.notifyDataSetChanged();
     System.out.println("videos set");
     }
+    /*
     public void addVideos(List<Video> videos) {
         vfVideos.addAll((videos));
         vAdapter.notifyDataSetChanged();

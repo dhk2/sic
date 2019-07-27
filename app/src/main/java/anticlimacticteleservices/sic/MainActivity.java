@@ -38,16 +38,14 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity {
     public Context dirtyHack = this;
     private TextView mTextMessage;
-    List<Video> videos = new ArrayList<>();
-    List<Channel> channels = new ArrayList<>();
+    //List<Video> videos = new ArrayList<>();
+    //List<Channel> channels = new ArrayList<>();
     FragmentManager manager;
     Fragment fragment;
     FragmentTransaction transaction;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener;
     public static UserData masterData;
-    public Channel hah;
-    public Search huh;
-    public Subscription heh;
+
     private BottomNavigationView navView;
     //hack needed to work with androids hack of a joke of a permission system
     private static final int PERMISSION_REQUEST_CODE = 1;
@@ -77,16 +75,11 @@ public class MainActivity extends AppCompatActivity {
                             //channels.clear();
 
                         }
-                        if (videos.isEmpty()){
-                            System.out.println("no videos loaded, attempting to load from feed");
+                        if (masterData.getVideos().isEmpty()){
+                            System.out.println("no videos loaded, attempt to reload saved data");
                             setMainTitle("refreshing video feed");
+                            masterData = new UserData(dirtyHack);
                             masterData.setForceRefresh(false);
-                            Set<String> bob = masterData.getFeedLinks();
-                            feedLinkCount=bob.size();
-                            String doug[] = new String[feedLinkCount];
-
-                            doug = bob.toArray(doug);
-                          //  new StartUp().execute(doug);
                         }
                         else {
                             Set<String> bob = masterData.getFeedLinks();
@@ -99,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                         fragment = new VideoFragment();
-                        ((VideoFragment) fragment).setVideos(videos);
+                        ((VideoFragment) fragment).setVideos(masterData.getVideos());
                         manager = getSupportFragmentManager();
                         transaction = manager.beginTransaction();
                         transaction.replace(R.id.fragment, fragment);
@@ -112,17 +105,17 @@ public class MainActivity extends AppCompatActivity {
                         return true;
                     case R.id.navigation_channels:
                         getSupportActionBar().hide();
-                        channels=masterData.getChannels();
-                        System.out.println("setting  channels with  "+channels.size());
+                        masterData.getChannels();
+                        System.out.println(masterData.getChannels().size()+"  "+ masterData.getChannels().size());
                         fragment = new ChannelFragment();
-                        ((ChannelFragment) fragment).setChannels(channels);
+                        ((ChannelFragment) fragment).setChannels(masterData.getChannels());
                         manager = getSupportFragmentManager();
                         masterData.setFragmentManager(manager);
                         transaction = manager.beginTransaction();
                         transaction.replace(R.id.fragment, fragment);
                         transaction.commit();
-                        System.out.println("Channel fragment configured with "+channels.size()+"channels");
-                        ((ChannelFragment) fragment).setChannels(channels);
+
+                        ((ChannelFragment) fragment).setChannels(masterData.getChannels());
                         return true;
 
 
@@ -170,16 +163,14 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().show();
         setTitle("Loading video feed");
         preferences = getSharedPreferences( getPackageName() + "_preferences", MODE_PRIVATE);
-        masterData = new UserData(dirtyHack);
-        videos=masterData.getVideos();
-        channels=masterData.getChannels();
-        if (videos.isEmpty()){
+        masterData = new UserData(getApplicationContext());
+        if (masterData.getVideos().isEmpty()){
             System.out.println("no videos loaded, attempting to load from feed");
             setMainTitle("refreshing video feed");
         }
         else {
             fragment = new VideoFragment();
-            ((VideoFragment) fragment).setVideos(videos);
+            ((VideoFragment) fragment).setVideos(masterData.getVideos());
             manager = getSupportFragmentManager();
             transaction = manager.beginTransaction();
             transaction.replace(R.id.fragment, fragment);
@@ -197,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
             Channel chan;
             for (String url : params) {
                 chan=new Channel();
-                for (Channel c : channels){
+                for (Channel c : masterData.getChannels()){
                     if (c.getUrl().equals(url)) {
                         //String lastSync = new SimpleDateFormat(ydf, Locale.getDefault()).format(c.getLastsync());
                         long difference = ((new Date().getTime())-c.getLastsync().getTime())/60000;
@@ -314,7 +305,7 @@ public class MainActivity extends AppCompatActivity {
                                 chan.addVideo(nv);
                             }
                         }
-                        System.out.println("finished scraping " + videos.size() + " videos");
+                        System.out.println("finished scraping " + masterData.getVideos().size() + " videos");
                     } catch (MalformedURLException e) {
                         System.out.println("Malformed URL: " + e.getMessage());
                     } catch (IOException e) {
@@ -343,13 +334,13 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 boolean unique = true;
-                for (Channel match : channels) {
+                for (Channel match : masterData.getChannels()) {
                     if (match.getID().equals(chan.getID())) {
                         unique = false;
                     }
                 }
                 if (unique) {
-                    channels.add(chan);
+                    masterData.addChannel(chan);
                     System.out.println("adding channel "+chan.getTitle());
                 }
                 else {
@@ -357,7 +348,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             }
-            System.out.println("channel size"+channels.size());
+            System.out.println("channel size"+masterData.getChannels().size());
             System.out.println("video size "+videoFeed.size());
             Collections.sort(videoFeed);
             System.out.println("done sorting video feed");
@@ -367,7 +358,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
 
 
-            videos = videoFeed;
+            masterData.setVideos(videoFeed);
             hideMainTitle();
             //This forces the app to go to main video feed when initial refresh is finished
             //disabled as annoying during testing.
@@ -402,8 +393,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        System.out.println("saving "+channels.size());
-        masterData.saveUserData(channels);
+        masterData.saveUserData();
     }
     public void setMainTitle(String t){
         getSupportActionBar().show();

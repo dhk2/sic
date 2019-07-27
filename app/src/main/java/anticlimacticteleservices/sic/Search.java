@@ -17,7 +17,7 @@ import android.support.v4.app.FragmentTransaction;
 public class Search {
     private int searchCount = 0;
 //    private ArrayList<Video> sVideos;
-    private ArrayList<Channel> sChannels;
+//    private ArrayList<Channel> sChannels;
     private Document doc;
     private boolean searching;
 
@@ -50,6 +50,13 @@ public class Search {
             MainActivity.masterData.setsChannels(new ArrayList <Channel>());
             final String location = "https://www.youtube.com/results?search_query=" + fixedTerm + "&sp=EgIQAg%253D%253D";
             final String location2 = "https://search.bitchute.com/renderer?query=" + fixedTerm + "&use=bitchute-json&name=Search&login=bcadmin&key=7ea2d72b62aa4f762cc5a348ef6642b8&fqa.kind=channel";
+            if (youtube){
+                searchCount++;
+            }
+            if (bitchute){
+                searchCount++;
+            }
+
             if (youtube) {
                 YoutubeChannelSearcher youtubecScraper = new YoutubeChannelSearcher();
                 youtubecScraper.execute(location);
@@ -328,6 +335,8 @@ public class Search {
                 System.out.println("Malformed URL: " + e.getMessage());
             } catch (IOException e) {
                 System.out.println("I/O Error: " + e.getMessage());
+            } catch(NullPointerException e){
+            System.out.println("Null pointer exception"+e.getMessage());
             }
             return "done";
         }
