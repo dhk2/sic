@@ -124,7 +124,7 @@ public class SearchFragment extends Fragment {
             FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
             transaction.replace(R.id.search_subfragment, fragment);
             transaction.addToBackStack(null);
-            transaction.commit();
+            transaction.commitAllowingStateLoss();
         }
         else if (MainActivity.masterData.getsChannels().size()>0) {
             VideoFragment fragment = new VideoFragment();

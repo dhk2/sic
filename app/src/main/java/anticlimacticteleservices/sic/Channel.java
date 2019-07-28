@@ -44,6 +44,8 @@ public class Channel implements Serializable{
         this.ID="";
         this.videos=new ArrayList<Video>();
         this.lastsync=new Date();
+        this.joined=lastsync;
+        this.subscribers="";
     }
     public Channel(String url) {
         final String location = url;
@@ -52,6 +54,7 @@ public class Channel implements Serializable{
         this.thumbnailurl="";
         this.profileImage="";
         this.author="";
+        this.subscribers="";
         int counter = 0;
         if (url.indexOf("youtube.com/feeds") > 0)
         {
@@ -64,6 +67,7 @@ public class Channel implements Serializable{
             this.ID = segments[segments.length - 1];
         }
         this.lastsync = new Date();
+        this.joined = lastsync;
         videos=new ArrayList<Video>();
         System.out.println("starting scrape of channel:"+url);
     }
@@ -135,6 +139,9 @@ public class Channel implements Serializable{
     public void setJoined(Date joined) {
         this.joined = joined;
     }
+    public void setSubscribers(String value){
+        this.subscribers=value;
+    }
     public void setLastsync(Date lastsync) {
         this.lastsync = lastsync;
     }
@@ -181,8 +188,28 @@ public class Channel implements Serializable{
                 "thumbnail:"+this.thumbnailurl+"\n"+
                 "author:"+this.author+"\n"+
                 "profile image"+this.profileImage+"\n"+
+                "Subscribers:"+this.subscribers+"\n"+
+                "date joined"+this.joined+"\n"+
+                "Last Sync"+this.lastsync+"\n"+
                 "description:"+this.description+"\n");
+
+    }
+    public boolean isBitchute(){
+        if (this.url.indexOf("bitchute.com")>0){
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
+    public boolean isYoutube(){
+        if (this.url.indexOf("youtube.com")>0){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 
 }

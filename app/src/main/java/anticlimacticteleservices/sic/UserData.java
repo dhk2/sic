@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.Loader;
+import android.webkit.WebView;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -41,6 +42,7 @@ public class UserData {
     }
     public List<Channel> channels = new ArrayList<Channel>();
     public Context context;
+    public WebView webPlayer;
     final SimpleDateFormat bdf = new SimpleDateFormat("EEE','  dd MMM yyyy HH:mm:SSZZZZ");
     final SimpleDateFormat ydf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
     public List<Channel> getChannels() {
@@ -91,6 +93,12 @@ public class UserData {
     Boolean useYoutube=true;
     public SharedPreferences.Editor editor;
 
+    public boolean isUseWebView() {
+        if (playerChoice ==4)
+            return true;
+        else
+            return false;
+    }
     public boolean isUseVlc() {
         if (playerChoice ==1)
             return true;
@@ -181,6 +189,7 @@ public class UserData {
             }
 
         }
+        Collections.sort(videos);
     }
     public boolean saveUserData(){
         Context context = MainActivity.masterData.context;

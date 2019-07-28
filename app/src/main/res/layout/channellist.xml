@@ -28,13 +28,13 @@ cardview:cardUseCompatPadding="true">
 
         <TextView
             android:id="@+id/channelName"
-            android:layout_width="260dp"
-            android:layout_height="42dp"
-            android:layout_alignStart="@+id/channel_description"
+            android:layout_width="215dp"
+            android:layout_height="wrap_content"
             android:layout_alignTop="@+id/channel_description"
-            android:layout_marginStart="-130dp"
+            android:layout_marginStart="7dp"
             android:layout_marginLeft="12dp"
-            android:layout_marginTop="88dp"
+            android:layout_marginTop="90dp"
+            android:layout_toEndOf="@+id/bitchuteIcon"
             android:maxLines="3"
             android:padding="8dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
@@ -64,6 +64,35 @@ cardview:cardUseCompatPadding="true">
             android:layout_marginTop="0dp"
             android:autoLink="web|email"
             android:textAlignment="gravity" />
+
+
+        <ImageView
+            android:id="@+id/yahooIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_alignBottom="@+id/bitchuteIcon"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="97dp"
+            android:layout_marginEnd="385dp"
+            android:layout_marginBottom="0dp"
+            android:elevation="200dp"
+            android:visibility="invisible"
+            cardview:srcCompat="@mipmap/playbutton" />
+
+        <ImageView
+            android:id="@+id/bitchuteIcon"
+            android:layout_width="37dp"
+            android:layout_height="28dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="-1dp"
+            android:layout_marginTop="102dp"
+            android:elevation="200dp"
+            android:visibility="invisible"
+            cardview:srcCompat="@mipmap/bitchute_round" />
+
+
 
     </RelativeLayout>
 

@@ -395,19 +395,11 @@ public class Search {
                                 String[] segments = channelUrl.split("/");
                                 nc.setID(segments[segments.length - 1]);
                                 nc.setUrl(" https://www.youtube.com/feeds/videos.xml?channel_id=" + nc.getID());
-                                System.out.println("this is the url it's being set iwth" + nc.getUrl());
                                 nc.setTitle(anchor.attr("title"));
                                 nc.setDescription(anchor.attr("aria-label"));
-                                //System.out.println(anchor);
                             }
                         }
                     }
-     /*               Elements thumbs = l.getElementsByClass("yt-thumb-simple");
-                    for (Element t : thumbs) {
-                        for (Element tImg : t.getElementsByTag("img")) {
-                            thumbnail = tImg.attr("data-thumb");
-                        }
-                    }*/
                     if (nc.getUrl().indexOf("channel")>0) {
    /*                     try {
                             Document doc = Jsoup.connect(nc.getUrl()).get();
@@ -421,7 +413,7 @@ public class Search {
 
 //                        nc.setUrl(" https://www.youtube.com/feeds/videos.xml?channel_id="+nc.getID());
                         MainActivity.masterData.addsChannel(nc);
-                        System.out.println("adding channel to search results:"+nc);
+ //                       System.out.println("adding channel to search results:"+nc);
                     }
                     nc=new Channel();
                     thumbnail = "";

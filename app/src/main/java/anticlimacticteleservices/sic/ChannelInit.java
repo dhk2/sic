@@ -15,50 +15,56 @@ import java.util.Collections;
 import java.util.Date;
 
 public class ChannelInit extends AsyncTask <String,String,Integer>{
-    final SimpleDateFormat bdf = new SimpleDateFormat("EEE','  dd MMM yyyy HH:mm:SSZZZZ");
+    final SimpleDateFormat bdf = new SimpleDateFormat("EEE', 'dd MMM yyyy HH:mm:SS' 'ZZZZ");
     final SimpleDateFormat ydf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 
     @Override
     protected Integer doInBackground(String[] params) {
         System.out.println("channel count"+MainActivity.masterData.getChannels().size());
-        System.out.println("Starting to init channel"+params[0]);
+//        System.out.println("Starting to init channel"+params[0]);
         Channel chan;
-        for (String g : params) {
+
+
+        Document channelPage;
+        Document channelRss;
+        channels:for (String g : params) {
+            chan=new Channel(g);
+            for (Channel c : MainActivity.masterData.getChannels())
+                if (chan.getID().equals(c.getID())){
+                    System.out.println("channel already exists");
+                    continue channels;
+            }
             try {
                 //chan.setUrl(g);
-                Document doc = Jsoup.connect(g).get();
+                channelRss = Jsoup.connect(g).get();
                 //bitchute rss feeds don't work with the channel UID but only with the text name, need to get text name before parsing rss
                 if (g.indexOf("bitchute")>0) {
-                    chan = new Channel("https://www.bitchute.com" + doc.getElementsByClass("name").first().getElementsByTag("a").first().attr("href").toString());
-                    doc = Jsoup.connect(chan.getBitchuteRssFeedUrl()).get();
+                    channelPage=channelRss;
+                    chan = new Channel("https://www.bitchute.com" + channelPage.getElementsByClass("name").first().getElementsByTag("a").first().attr("href").toString());
+                    channelRss= Jsoup.connect(chan.getBitchuteRssFeedUrl()).get();
                 }
                 else {
                     chan = new Channel(g);
+                    channelPage=Jsoup.connect(chan.getYoutubeUrl()).get();
                 }
 
-                chan.setTitle(doc.title());
+                chan.setTitle(channelRss.title());
 
-                System.out.println("g is:"+g +"\n   id is "+chan.getID()+ "\n    url is "+chan.getUrl()+"\n   youtube rss:"+chan.getYoutubeRssFeedUrl()+"\n  bitchute rss feed"+chan.getBitchuteRssFeedUrl());
-                if (!chan.getYoutubeRssFeedUrl().isEmpty()) {
-                    chan.setTitle(doc.title());
-                    chan.setAuthor(doc.getElementsByTag("name").first().text());
+ //               System.out.println("g is:"+g +"\n   id is "+chan.getID()+ "\n    url is "+chan.getUrl()+"\n   youtube rss:"+chan.getYoutubeRssFeedUrl()+"\n  bitchute rss feed"+chan.getBitchuteRssFeedUrl());
+                if (chan.isYoutube()) {
+                    chan.setTitle(channelRss.title());
+                    chan.setAuthor(channelRss.getElementsByTag("name").first().text());
                     chan.setUrl(g);
-
-                    Elements entries = doc.getElementsByTag("entry");
+                    chan.setDescription(channelPage.getElementsByAttributeValue("name", "description").attr("content").toString());
+                    chan.setThumbnail(channelPage.getElementsByAttributeValue("itemprop", "thumbnailUrl").attr("href").toString());
+                    Elements entries = channelRss.getElementsByTag("entry");
                     for (Element entry : entries) {
                         Video nv = new Video(entry.getElementsByTag("link").first().attr("href"));
 
                         nv.setAuthor(chan.getAuthor());
                         nv.setTitle(entry.getElementsByTag("title").first().html());
                         nv.setThumbnail(entry.getElementsByTag("media:thumbnail").first().attr("url"));
-                        try { Document doc2 = Jsoup.connect("https://www.youtube.com/channel/" + chan.getID()).get();
-                            chan.setDescription(doc2.getElementsByAttributeValue("name", "description").attr("content").toString());
-                            chan.setThumbnail(doc2.getElementsByAttributeValue("itemprop", "thumbnailUrl").attr("href").toString());
 
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            System.out.println("Failed to load youtube channel page for " + chan.getTitle() + " at " + g +" id:" +chan.getID());
-                        }
                         nv.setDescription(entry.getElementsByTag("media:description").first().text());
                         nv.setRating(entry.getElementsByTag("media:starRating").first().attr("average"));
                         nv.setViewCount(entry.getElementsByTag("media:statistics").first().attr("views"));
@@ -94,9 +100,10 @@ public class ChannelInit extends AsyncTask <String,String,Integer>{
                 if (!chan.getBitchuteRssFeedUrl().isEmpty()) {
                     try {
 
-                        chan.setDescription(doc.getElementsByTag("description").first().text());
+                        chan.setDescription(channelRss.getElementsByTag("description").first().text());
                        // System.out.println(doc);
-                        Elements videos = doc.getElementsByTag("item");
+                        chan.setThumbnail(channelPage.getElementsByAttribute("data-src").last().attr("data-src"));
+                        Elements videos = channelRss.getElementsByTag("item");
                         System.out.println(videos.size());
                         for (Element video : videos) {
                             Video nv=new Video();
@@ -113,7 +120,7 @@ public class ChannelInit extends AsyncTask <String,String,Integer>{
                             }
                             // Document hackDoc = Jsoup.connect(nv.getUrl()).get();
                             //  nv.setMp4(hackDoc.getElementsByTag("Source").first().attr("src"));
-                            nv.setAuthor(doc.title());
+                            nv.setAuthor(channelRss.title());
                             System.out.println(nv);
                             boolean unique=true;
                             for (Video match : MainActivity.masterData.getVideos()) {
@@ -134,7 +141,7 @@ public class ChannelInit extends AsyncTask <String,String,Integer>{
                                 chan.addVideo(nv);
                             }
                         }
-                        System.out.println("finished scraping videos");
+                       // System.out.println("finished scraping videos");
 
                     } catch (NullPointerException e) {
                         System.out.println("null pointer issue" + e);

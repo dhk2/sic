@@ -1,6 +1,7 @@
 package anticlimacticteleservices.sic;
 
 //import android.app.Fragment;
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,11 +14,20 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +75,52 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        final Button importBitchute = view.findViewById(R.id.load_bitchute);
+        importBitchute.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Dialog dialog = new Dialog(v.getContext());
+                dialog.setContentView(R.layout.importdialog);
+                final WebView webView = (WebView) dialog.findViewById(R.id.idplayer_window);
+                webView.setWebViewClient(new WebViewClient() {
+                    @Override
+                    public void onPageFinished(WebView view, String url) {
+                        webView.loadUrl("javascript:window.HtmlHandler.handleHtml" +
+                                "('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>');");
+                    }
+                });
+                webView.addJavascriptInterface(new MyJavaScriptInterface(), "HtmlHandler");
+                WebSettings webSettings = webView.getSettings();
+                webSettings.setJavaScriptEnabled(true);
+
+
+                webView.getSettings().setUseWideViewPort(true);
+                webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+                webView.setScrollbarFadingEnabled(false);
+
+
+
+                webView.loadUrl("https://www.bitchute.com/subscriptions/");
+                Button closeButton = (Button) dialog.findViewById(R.id.idclosebutton);
+                closeButton.setText("close");
+                closeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        webView.destroy();
+                        dialog.dismiss();
+                    }
+                });
+                Button importButton = (Button) dialog.findViewById(R.id.idimportbutton);
+                importButton.setText("Import");
+                importButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        System.out.println(webView.getTitle());
+                    }
+                });
+                dialog.show();
+            }
+        });
         Button importButton = view.findViewById(R.id.load_youtube);
         importButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,25 +163,6 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
     @Override
     public void onAttach(Context context) {
@@ -136,6 +173,26 @@ public class SettingsFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
     }
-
+    private class MyJavaScriptInterface {
+        @JavascriptInterface
+        public void handleHtml(String html) {
+            // Use jsoup on this String here to search for your content.
+            Document doc = Jsoup.parse(html);
+            System.out.println("["+doc.title()+"]");
+            if (doc.title().equals("Subscriptions - BitChute")) {
+                //System.out.println(doc);
+                System.out.println("made into if bock");
+                Elements subscriptions = doc.getElementsByClass("subscription-container");
+                System.out.println(subscriptions.size()+" chanels listed");
+                for (Element s : subscriptions) {
+  //                  Channel chan = new Channel("https://www.bitchute.com"+s.getElementsByTag("a").first().attr("href"));
+   //                 chan.setThumbnail(s.getElementsByTag("img").first().attr("data-src"));
+    //                chan.setTitle(s.getElementsByClass("subscription-name").first().text());
+   //                 chan.setDescription(s.getElementsByClass("subscription-description-text").first().text());
+                   new ChannelInit().execute("https://www.bitchute.com"+s.getElementsByTag("a").first().attr("href"));
+                }
+            }
+        }
+    }
 }
 

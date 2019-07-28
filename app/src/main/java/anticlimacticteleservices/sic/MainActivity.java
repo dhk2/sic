@@ -320,7 +320,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (chan.getDescription().isEmpty()) {
                     //need to load more channel info since it wasn't cached
-                    if (chan.getUrl().indexOf("youtube") > 1) {
+                    if (chan.isYoutube()) {
                         try {
                             Document doc = Jsoup.connect("https://www.youtube.com/channel/"+chan.getID()).get();
                             chan.setDescription(doc.getElementsByAttributeValue("name","description").attr("content").toString());

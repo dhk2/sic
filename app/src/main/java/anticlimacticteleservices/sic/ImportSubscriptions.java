@@ -40,7 +40,8 @@ public class ImportSubscriptions extends AsyncTask {
            // System.out.println(doc);
             Elements listing = doc.getElementsByAttribute("xmlUrl");
             for (Element e : listing){
-//                MainActivity.masterData.addChannel(new Channel(e.attr("xmlUrl")));
+                new ChannelInit().execute(e.attr("xmlUrl"));
+               // MainActivity.masterData.addChannel(new Channel(e.attr("xmlUrl")));
                 System.out.println("adding Channel"+e.toString());
             }
         }

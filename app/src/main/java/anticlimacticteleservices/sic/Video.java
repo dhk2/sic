@@ -77,60 +77,6 @@ public class Video implements Serializable,Comparable<Video>
         this.category = "";
     }
 
-
-    public Video(final HashSet<String> encoded, boolean pointless)
-    {
-        String label="";
-        String value="";
-
-        for (String g : encoded)
-        {
-            System.out.println(label + ":-:" + value);
-            label = g.substring(0, g.indexOf(":"));
-            value = g.substring(g.indexOf(":") + 1);
-            switch (label)
-            {
-                case "ID" :
-                    ID = value;
-                    break;
-                case "url" :
-                    url = value;
-                    break;
-                case "thumbnailurl":
-                    thumbnailurl = value;
-                    break;
-                case "mp4":
-                    mp4 = value;
-                    break;
-                case "title":
-                    title = value;
-                    break;
-                case "author":
-                    author = value;
-                    break;
-                case "description":
-                    description = value;
-                    break;
-                default :
-                    System.out.println("Can;t find match for |" + label + "|");
-                    break;
-            }
-        }
-        System.out.println("new video created from encoded set with" + this.url);
-        this.watched = false;
-        this.date = new Date();
-        this.magnet = "";
-        this.description = "";
-        this.rating = "0";
-        this.viewCount = "0";
-        this.upCount = "0";
-        this.downCount = "0";
-        this.commentCount = "0";
-        this.hashtags = "";
-        this.category = "";
-        System.out.println("new video created from encoded set with" + this.url);
-    }
-
 //  	     Getters
 
     public String getUrl()
@@ -177,6 +123,13 @@ public class Video implements Serializable,Comparable<Video>
     public String getID()
     {
         return this.ID;
+    }
+    public String getEmbeddedUrl(){
+        if (url.indexOf("youtube") > 0) {
+            return "https://www.youtube.com/embed/"+this.ID+"?autoplay=1&modestbranding=1";
+        } else {
+            return "https://www.bitchute.com/embed/"+this.ID;
+        }
     }
 
 
@@ -279,19 +232,7 @@ public class Video implements Serializable,Comparable<Video>
                 "Category:" + category+ "\n");
     }
 
-    public HashSet<String> getStringEncodedSet()
-    {
-        HashSet<String> encoded=new HashSet();
-        encoded.add("ID:" + ID);
-        encoded.add("url:" + url);
-        encoded.add("thumbnailurl:" + thumbnailurl);
-        encoded.add("mp4:" + mp4);
-        encoded.add("title:" + title);
-        encoded.add("author:" + author);
-        encoded.add("description:"+ description);
 
-        return encoded;
-    }
 
     @Override
     public int compareTo(Video candidate)
@@ -300,4 +241,21 @@ public class Video implements Serializable,Comparable<Video>
                 this.getDate().equals(candidate.getDate()) ? 0 : 1);
     }
 
+    public boolean isBitchute(){
+        if (this.url.indexOf("bitchute.com")>0){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    public boolean isYoutube(){
+        if (this.url.indexOf("youtube.com")>0){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 }
