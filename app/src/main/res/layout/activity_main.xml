@@ -22,8 +22,8 @@
 
     <LinearLayout
         android:id="@+id/fragment"
-        android:layout_width="395dp"
-        android:layout_height="659dp"
+        android:layout_width="390dp"
+        android:layout_height="652dp"
         android:orientation="vertical"
         tools:layout_editor_absoluteX="8dp"
         tools:layout_editor_absoluteY="8dp"></LinearLayout>

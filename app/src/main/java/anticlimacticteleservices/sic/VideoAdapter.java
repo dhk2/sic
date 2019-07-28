@@ -150,6 +150,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                     webView.setWebViewClient(new WebViewClient());
                     WebSettings webSettings = webView.getSettings();
                     webSettings.setJavaScriptEnabled(true);
+
                     webView.loadData(vid.toString(), "text/html", "UTF-8");
                     webView.loadUrl(vid.getEmbeddedUrl());
                     MainActivity.masterData.webPlayer=webView;

@@ -49,7 +49,7 @@
             android:layout_marginBottom="8dp"
             android:autoLink="web"
             android:text="Which video player to use. VLC is open source and ad free, and supports youtube backwards compatibility. it can be installed from the app store at
- https://play.google.com/store/apps/details?id=org.videolan.vlc Other players that support network playback should work.
+ https://play.google.com/store/apps/details?id=org.videolan.vlc Other players that support network playback should work as straight Bitchute clients.
 webview is mildly functional." />
 
         <Button
@@ -79,7 +79,7 @@ webview is mildly functional." />
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:autoLink="web"
-            android:text="To import your Bitchute or Youtube channels click the appropriate button and logon. It should open a page showing a list of your subscriptions and start adding the channels and videos. You can close the window and start using [sic]" />
+            android:text="To import your Bitchute or Youtube channels click the appropriate button and logon. It should open a page showing a list of your subscriptions. It will start synching them up in the background. You can close the window and start using [sic]." />
 
     </LinearLayout>
 
