@@ -36,15 +36,17 @@ public class ChannelInit extends AsyncTask <String,String,Integer>{
             }
             try {
                 //chan.setUrl(g);
-                channelRss = Jsoup.connect(g).get();
+                chan = new Channel(g);
+                if (chan.isBitchute()){
+                    channelPage = Jsoup.connect(chan.getBitchuteUrl()).get();
                 //bitchute rss feeds don't work with the channel UID but only with the text name, need to get text name before parsing rss
-                if (g.indexOf("bitchute")>0) {
-                    channelPage=channelRss;
                     chan = new Channel("https://www.bitchute.com" + channelPage.getElementsByClass("name").first().getElementsByTag("a").first().attr("href").toString());
                     channelRss= Jsoup.connect(chan.getBitchuteRssFeedUrl()).get();
                 }
                 else {
-                    chan = new Channel(g);
+                 //   System.out.println(chan);
+                 //   System.out.println("<"+chan.getBitchuteRssFeedUrl()+"><"+chan.getYoutubeRssFeedUrl())
+                    channelRss = Jsoup.connect(chan.getYoutubeRssFeedUrl()).get();
                     channelPage=Jsoup.connect(chan.getYoutubeUrl()).get();
                 }
 

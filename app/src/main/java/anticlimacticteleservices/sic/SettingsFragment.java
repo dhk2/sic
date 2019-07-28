@@ -110,7 +110,7 @@ public class SettingsFragment extends Fragment {
                         dialog.dismiss();
                     }
                 });
-                Button importButton = (Button) dialog.findViewById(R.id.idimportbutton);
+  /*              Button importButton = (Button) dialog.findViewById(R.id.idimportbutton);
                 importButton.setText("Import");
                 importButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -118,10 +118,10 @@ public class SettingsFragment extends Fragment {
                         System.out.println(webView.getTitle());
                     }
                 });
-                dialog.show();
+   */             dialog.show();
             }
         });
-        Button importButton = view.findViewById(R.id.load_youtube);
+/*        Button importButton = view.findViewById(R.id.load_youtube);
         importButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -130,6 +130,58 @@ public class SettingsFragment extends Fragment {
             }
 
         });
+  */
+        final Button importYoutube = view.findViewById(R.id.load_youtube);
+        importYoutube.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Dialog dialog = new Dialog(v.getContext());
+                dialog.setContentView(R.layout.importdialog);
+                final WebView webView = (WebView) dialog.findViewById(R.id.idplayer_window);
+                webView.setWebViewClient(new WebViewClient() {
+                    @Override
+                    public void onPageFinished(WebView view, String url) {
+                        webView.loadUrl("javascript:window.HtmlHandler.handleHtml" +
+                                "('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>');");
+                    }
+                });
+                webView.addJavascriptInterface(new MyJavaScriptInterface(), "HtmlHandler");
+                WebSettings webSettings = webView.getSettings();
+                webSettings.setJavaScriptEnabled(true);
+
+
+                webView.getSettings().setUseWideViewPort(true);
+                webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+                webView.setScrollbarFadingEnabled(false);
+
+
+
+                webView.loadUrl("https://www.youtube.com/subscription_manager");
+                Button closeButton = (Button) dialog.findViewById(R.id.idclosebutton);
+                closeButton.setText("close");
+                closeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        webView.destroy();
+                        dialog.dismiss();
+                    }
+                });
+  /*              Button importButton = (Button) dialog.findViewById(R.id.idimportbutton);
+                importButton.setText("Import");
+                importButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        System.out.println(webView.getTitle());
+                    }
+                });
+   */             dialog.show();
+            }
+        });
+
+
+
+
+
         RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.radioGroup);
         RadioButton useVlc =view.findViewById(R.id.use_vlc);
         RadioButton useDefault =view.findViewById(R.id.use_default);
@@ -176,20 +228,25 @@ public class SettingsFragment extends Fragment {
     private class MyJavaScriptInterface {
         @JavascriptInterface
         public void handleHtml(String html) {
-            // Use jsoup on this String here to search for your content.
             Document doc = Jsoup.parse(html);
             System.out.println("["+doc.title()+"]");
             if (doc.title().equals("Subscriptions - BitChute")) {
-                //System.out.println(doc);
                 System.out.println("made into if bock");
                 Elements subscriptions = doc.getElementsByClass("subscription-container");
                 System.out.println(subscriptions.size()+" chanels listed");
                 for (Element s : subscriptions) {
-  //                  Channel chan = new Channel("https://www.bitchute.com"+s.getElementsByTag("a").first().attr("href"));
-   //                 chan.setThumbnail(s.getElementsByTag("img").first().attr("data-src"));
-    //                chan.setTitle(s.getElementsByClass("subscription-name").first().text());
-   //                 chan.setDescription(s.getElementsByClass("subscription-description-text").first().text());
                    new ChannelInit().execute("https://www.bitchute.com"+s.getElementsByTag("a").first().attr("href"));
+                }
+            }
+            if (doc.title().equals("Subscription manager - YouTube")) {
+                Elements channels = doc.getElementsByClass("guide-item yt-uix-sessionlink yt-valign spf-link    ");
+                System.out.println(channels.size()+channels.first().toString());
+                String url;
+                for (Element c : channels){
+                  url = "https://www.youtube.com"+c.attr("href");
+                    if (url.indexOf("channel/")>0) {
+                        new ChannelInit().execute(url);
+                    }
                 }
             }
         }

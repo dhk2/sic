@@ -156,25 +156,13 @@ public class UserData {
         editor = MainActivity.preferences.edit();
         playerChoice = MainActivity.preferences.getInt("playerChoice", 1);
         context = con;
-        System.out.println("<><?><><><><><><>about to open file ()()()()()()()()()()()");
         try {
-            System.out.println("starting try block");
-//            String[] files = context.fileList();
-//            System.out.println("starting parse file list "+files.length);
-//		    for (String file : files) {
-//		        System.out.println();
-  //              if (file.equals("channels.ser")) {
-                   FileInputStream fileIn = new FileInputStream(this.context.getFilesDir() + "channels.ser");
-                    ObjectInputStream in = new ObjectInputStream(fileIn);
-                    channels = (ArrayList<Channel>) in.readObject();
-                    System.out.println("Saved channels read "+channels.size());
-                    in.close();
-                    fileIn.close();
- //               }
-    //            else {
- //                   System.out.println("unable to find the channel file");
- //               }
-//		    }
+            FileInputStream fileIn = new FileInputStream(this.context.getFilesDir() + "channels.ser");
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            channels = (ArrayList<Channel>) in.readObject();
+            System.out.println("Saved channels read "+channels.size());
+            in.close();
+            fileIn.close();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {

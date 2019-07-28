@@ -1,6 +1,7 @@
 package anticlimacticteleservices.sic;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -12,11 +13,19 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.text.HtmlCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.annotation.NonNull;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.webkit.WebView;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -165,8 +174,27 @@ public class MainActivity extends AppCompatActivity {
         preferences = getSharedPreferences( getPackageName() + "_preferences", MODE_PRIVATE);
         masterData = new UserData(getApplicationContext());
         if (masterData.getVideos().isEmpty()){
-            System.out.println("no videos loaded, attempting to load from feed");
-            setMainTitle("refreshing video feed");
+            System.out.println("no videos");
+
+            final Dialog dialog = new Dialog(this);
+            dialog.setContentView(R.layout.videoprop);
+            dialog.setTitle("new user");
+
+            WebView message =(WebView)dialog.findViewById(R.id.channelDetails);
+            message.getSettings().setUseWideViewPort(true);
+            message.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+            message.setScrollbarFadingEnabled(false);
+            message.loadData("Looks like this is the first time using <b>[sic]<./b>.<br> You can either use the search feature to find channels to add to your feed, or import channels from the settings page","text","utf-8");
+            ImageView image = (ImageView) dialog.findViewById(R.id.thumbNailView);
+            image.setImageResource(R.mipmap.ic_launcher_foreground);
+            Button dialogButton = (Button) dialog.findViewById(R.id.closeButton);
+            dialogButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+            dialog.show();
         }
         else {
             fragment = new VideoFragment();
