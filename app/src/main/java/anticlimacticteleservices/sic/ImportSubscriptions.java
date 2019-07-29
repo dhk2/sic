@@ -1,5 +1,5 @@
 package anticlimacticteleservices.sic;
-
+// method deprecated with current direct import from web in settings class, this work around no longer needed
 
 import android.os.AsyncTask;
 
@@ -25,6 +25,7 @@ public class ImportSubscriptions extends AsyncTask {
     }
     @Override
     protected Object doInBackground(Object[] objects) {
+        int newcount=0;
         links=new HashSet<>();
         System.out.print("starting to get imports "+masterData.getUseYoutube());
         Channel chan;
@@ -43,6 +44,7 @@ public class ImportSubscriptions extends AsyncTask {
                 new ChannelInit().execute(e.attr("xmlUrl"));
                // MainActivity.masterData.addChannel(new Channel(e.attr("xmlUrl")));
                 System.out.println("adding Channel"+e.toString());
+
             }
         }
         System.out.println("done  importing links from file");

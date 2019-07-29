@@ -71,11 +71,23 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         int minutes = (int) ((diff / (1000*60)) % 60);
         int hours   = (int) ((diff / (1000*60*60)) % 24);
         int days = (int) ((diff / (1000*60*60*24)));
-        String timehack=Integer.toString(minutes) + " minutes ago";
-        if (hours>0){
+        String timehack="";
+        if (minutes ==1) {
+             timehack= "1 minute ago";
+        }
+        if (minutes>1){
+             timehack = Integer.toString(minutes) + " minutes ago";
+        }
+        if (hours==1){
+            timehack="1 hour,"+timehack;
+        }
+        if (hours>1){
             timehack=Integer.toString(hours)+" hours,"+timehack;
         }
-        if (days>0){
+        if (days==1){
+            timehack="1 day,"+timehack;
+        }
+        if (days>1){
             timehack=Integer.toString(days)+" days,"+timehack;
         }
         holder.author.setText(video.getAuthor()+ "  "+timehack );
@@ -115,6 +127,10 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                 dialog.setTitle(vid.getTitle());
                 WebView webView = (WebView) dialog.findViewById(R.id.channelDetails);
                 webView.loadData(vid.toString(), "text/html", "UTF-8");
+                webView.loadUrl(("https://dissenter.com/discussion/begin?url="+vid.getYoutubeUrl()));
+                webView.getSettings().setUseWideViewPort(true);
+                webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+                webView.setScrollbarFadingEnabled(false);
                 ImageView image = (ImageView) dialog.findViewById(R.id.thumbNailView);
                 Picasso.get().load(vid.getThumbnail()).into(image);
                 Button dialogButton = (Button) dialog.findViewById(R.id.closeButton);

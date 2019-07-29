@@ -54,7 +54,9 @@ cardview:cardUseCompatPadding="true">
         android:background="#80FFFFFF"
         android:elevation="200dp"
         android:ems="10"
-        android:text="" />
+        android:text=""
+        android:textColor="#FFEB3B"
+        android:textStyle="bold" />
 
     <ImageView
         android:id="@+id/yahooIcon"

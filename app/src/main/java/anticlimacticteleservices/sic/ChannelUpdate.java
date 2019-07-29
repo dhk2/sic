@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.MediaController;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import org.jsoup.Jsoup;
@@ -24,6 +25,15 @@ public class ChannelUpdate extends AsyncTask<String, String, Boolean> {
     Document doc;
     int dupecount=0;
     int newcount=0;
+
+    @Override
+    protected void onPostExecute(Boolean aBoolean) {
+        super.onPostExecute(aBoolean);
+        if (newcount>0)
+            Toast.makeText(MainActivity.masterData.context,newcount+" new videos added",Toast.LENGTH_SHORT).show();
+
+    }
+
     @Override
     protected Boolean doInBackground(String... params) {
 
@@ -110,4 +120,5 @@ public class ChannelUpdate extends AsyncTask<String, String, Boolean> {
         }
         return true;
     }
+
 }

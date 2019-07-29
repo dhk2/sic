@@ -2,6 +2,7 @@ package anticlimacticteleservices.sic;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -17,12 +18,13 @@ import java.util.Date;
 public class ChannelInit extends AsyncTask <String,String,Integer>{
     final SimpleDateFormat bdf = new SimpleDateFormat("EEE', 'dd MMM yyyy HH:mm:SS' 'ZZZZ");
     final SimpleDateFormat ydf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-
+    Channel chan;
+    int newVideoCount=0;
+    int newChannelCount=0;
     @Override
     protected Integer doInBackground(String[] params) {
         System.out.println("channel count"+MainActivity.masterData.getChannels().size());
 //        System.out.println("Starting to init channel"+params[0]);
-        Channel chan;
 
 
         Document channelPage;
@@ -85,6 +87,7 @@ public class ChannelInit extends AsyncTask <String,String,Integer>{
                         }
                         if (unique) {
                             MainActivity.masterData.addVideo(nv);
+                            newVideoCount++;
                         }
                         unique = true;
                         for (Video match : chan.getVideos()) {
@@ -132,6 +135,7 @@ public class ChannelInit extends AsyncTask <String,String,Integer>{
                             }
                             if (unique) {
                                 MainActivity.masterData.addVideo(nv);
+                                newVideoCount++;
                             }
                             unique = true;
                             for (Video match : chan.getVideos()) {
@@ -141,7 +145,7 @@ public class ChannelInit extends AsyncTask <String,String,Integer>{
                             }
                             if (unique) {
                                 chan.addVideo(nv);
-                            }
+                             }
                         }
                        // System.out.println("finished scraping videos");
 
@@ -159,6 +163,7 @@ public class ChannelInit extends AsyncTask <String,String,Integer>{
                 if (unique) {
                     MainActivity.masterData.addChannel(chan);
                     System.out.println("adding channel "+chan.getTitle());
+                    newChannelCount++;
                 }
                 else {
                     System.out.println("dupicate channel rejected "+chan.getTitle());
@@ -173,10 +178,17 @@ public class ChannelInit extends AsyncTask <String,String,Integer>{
         }
         return 69;
     }
-    //@Override
-    protected void onPostExecute(String result){
+
+    @Override
+    protected void onPostExecute(Integer integer) {
+        super.onPostExecute(integer);
         MainActivity.masterData.sortVideos();
         System.out.println("sorting"+MainActivity.masterData.getVideos().size());
-}
-
+        if (newChannelCount ==1){
+            Toast.makeText(MainActivity.masterData.context,"added "+chan.getTitle()+ " with "+newVideoCount+" videos",Toast.LENGTH_SHORT).show();
+        }
+        if (newChannelCount>1){
+            Toast.makeText(MainActivity.masterData.context,"added "+newChannelCount+ " channels wiht "+newVideoCount+" videos",Toast.LENGTH_SHORT).show();
+        }
+    }
 }

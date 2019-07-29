@@ -258,4 +258,7 @@ public class Video implements Serializable,Comparable<Video>
             return false;
         }
     }
+    public String getYoutubeUrl(){
+        return "https://www.youtube.com/watch?v="+this.ID;
+    }
 }
