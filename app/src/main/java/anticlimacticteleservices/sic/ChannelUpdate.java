@@ -1,6 +1,11 @@
 package anticlimacticteleservices.sic;
+import android.app.Dialog;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.MediaController;
+import android.widget.VideoView;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -21,6 +26,7 @@ public class ChannelUpdate extends AsyncTask<String, String, Boolean> {
     int newcount=0;
     @Override
     protected Boolean doInBackground(String... params) {
+
         int channelCount = MainActivity.masterData.getChannels().size();
         for (Channel chan : MainActivity.masterData.getChannels()){
             Long diff = new Date().getTime()- chan.getLastsync().getTime();

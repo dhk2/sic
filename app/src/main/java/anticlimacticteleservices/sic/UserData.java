@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AppCompatActivity;
 import android.webkit.WebView;
 
 import org.jsoup.Connection;
@@ -296,6 +297,5 @@ public class UserData {
        ImportSubscriptions is = new ImportSubscriptions();
        is.execute();
     }
-
 }
    

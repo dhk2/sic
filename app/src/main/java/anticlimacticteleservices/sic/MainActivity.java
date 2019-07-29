@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
@@ -23,7 +24,9 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import com.squareup.picasso.Picasso;
 
@@ -90,9 +93,10 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.navigation_history:
                         //getSupportActionBar().show();
                         //setTitle("Not implemented yet");
-                        new ChannelUpdate().execute();
+                       new ChannelUpdate().execute();
 
-                        return true;
+
+                        return false;
                     case R.id.navigation_channels:
                         getSupportActionBar().hide();
                         masterData.getChannels();
@@ -211,6 +215,7 @@ public class MainActivity extends AppCompatActivity {
     }
     @Override
     public void onPause() {
+        //need to add a dirty data switch to skip saving if unneeded
         super.onPause();
         masterData.saveUserData();
     }
