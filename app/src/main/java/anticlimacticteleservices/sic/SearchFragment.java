@@ -120,7 +120,7 @@ public class SearchFragment extends Fragment {
     //if search results still exist from previous search display them.
         if (MainActivity.masterData.getsChannels().size()>0){
             ChannelFragment fragment = new ChannelFragment();
-            ((ChannelFragment) fragment).setChannels(MainActivity.masterData.getsChannels());
+            fragment.setChannels(MainActivity.masterData.getsChannels());
             FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
             transaction.replace(R.id.search_subfragment, fragment);
             transaction.addToBackStack(null);
@@ -128,7 +128,7 @@ public class SearchFragment extends Fragment {
         }
         else if (MainActivity.masterData.getsChannels().size()>0) {
             VideoFragment fragment = new VideoFragment();
-            ((VideoFragment) fragment).setVideos(MainActivity.masterData.getsVideos());
+            fragment.setVideos(MainActivity.masterData.getsVideos());
             FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
             transaction.replace(R.id.search_subfragment, fragment);
             transaction.addToBackStack(null);

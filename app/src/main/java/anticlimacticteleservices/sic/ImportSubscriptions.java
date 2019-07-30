@@ -15,9 +15,9 @@ import java.util.Set;
 
 import static anticlimacticteleservices.sic.MainActivity.masterData;
 
-public class ImportSubscriptions extends AsyncTask {
-    Document doc;
-    Set<String> links;
+class ImportSubscriptions extends AsyncTask {
+    private Document doc;
+    private Set<String> links;
     public void ImportSubscriptions(){}
     protected void onPostExecute(String[] result) {
 

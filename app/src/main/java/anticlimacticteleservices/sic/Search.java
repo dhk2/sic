@@ -14,7 +14,7 @@ import android.app.*;
 import android.os.*;
 import android.support.v4.app.FragmentTransaction;
 
-public class Search {
+class Search {
     private int searchCount = 0;
 //    private ArrayList<Video> sVideos;
 //    private ArrayList<Channel> sChannels;
@@ -155,7 +155,7 @@ public class Search {
             if (searchCount < 1) {
                 searching = false;
                 VideoFragment fragment = new VideoFragment();
-                ((VideoFragment) fragment).setVideos(MainActivity.masterData.getsVideos());
+                fragment.setVideos(MainActivity.masterData.getsVideos());
 
                 FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
                 transaction.replace(R.id.search_subfragment, fragment);
@@ -261,7 +261,7 @@ public class Search {
             if (searchCount < 1) {
                 searching = false;
                 VideoFragment fragment = new VideoFragment();
-                ((VideoFragment) fragment).setVideos(MainActivity.masterData.getsVideos());
+                fragment.setVideos(MainActivity.masterData.getsVideos());
 
                 FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
                 transaction.replace(R.id.search_subfragment, fragment);
@@ -350,7 +350,7 @@ public class Search {
             if (searchCount < 1) {
                 searching = false;
                 ChannelFragment fragment = new ChannelFragment();
-                ((ChannelFragment) fragment).setChannels(MainActivity.masterData.getsChannels());
+                fragment.setChannels(MainActivity.masterData.getsChannels());
 
                 FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
                 transaction.replace(R.id.search_subfragment, fragment);
@@ -439,7 +439,7 @@ public class Search {
                 System.out.println("done searching for channels," );
                 searching = false;
                 ChannelFragment fragment = new ChannelFragment();
-                ((ChannelFragment) fragment).setChannels(MainActivity.masterData.getsChannels());
+                fragment.setChannels(MainActivity.masterData.getsChannels());
 
                 FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
                 transaction.replace(R.id.search_subfragment, fragment);

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 
-public class Video implements Serializable,Comparable<Video>
+class Video implements Serializable,Comparable<Video>
 {
     private String title;
     private String author;
@@ -242,21 +242,11 @@ public class Video implements Serializable,Comparable<Video>
     }
 
     public boolean isBitchute(){
-        if (this.url.indexOf("bitchute.com")>0){
-            return true;
-        }
-        else {
-            return false;
-        }
+        return this.url.indexOf("bitchute.com") > 0;
     }
 
     public boolean isYoutube(){
-        if (this.url.indexOf("youtube.com")>0){
-            return true;
-        }
-        else {
-            return false;
-        }
+        return this.url.indexOf("youtube.com") > 0;
     }
     public String getYoutubeUrl(){
         return "https://www.youtube.com/watch?v="+this.ID;

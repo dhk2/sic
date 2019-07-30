@@ -34,14 +34,14 @@ import java.util.Set;
 public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomViewHolder> {
     private List<Channel> channels;
 
-    Button dialogButton;
-    Button subscribeButton;
+    private Button dialogButton;
+    private Button subscribeButton;
     Set<String> subscriptionList;
-    String subscriptionArray[];
+    String[] subscriptionArray;
  //   Channel chan;
     SharedPreferences prefs;
     SharedPreferences.Editor editor;
-    String status;
+    private String status;
     private FragmentActivity myContext;
     public class CustomViewHolder extends RecyclerView.ViewHolder {
         private TextView name;
@@ -52,7 +52,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
         private ImageView bitchuteIcon;
 //        final Context context = this;
 
-        public CustomViewHolder(View view) {
+        CustomViewHolder(View view) {
             super(view);
             name = view.findViewById(R.id.channelName);
             image = view.findViewById(R.id.channelthumbnail);
@@ -140,14 +140,14 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
  /*               WebView webView = (WebView) dialog.findViewById(R.id.channelDetails);
                 webView.loadData(chan.getDescription(), "text/html", "UTF-8");
  */
-                TextView description =(TextView)dialog.findViewById(R.id.channel_description);
+                TextView description = dialog.findViewById(R.id.channel_description);
                 Spanned spanned = HtmlCompat.fromHtml(chan.getDescription(), HtmlCompat.FROM_HTML_MODE_COMPACT);
                 description.setText(spanned);
-                ImageView image = (ImageView) dialog.findViewById(R.id.thumbNailView);
+                ImageView image = dialog.findViewById(R.id.thumbNailView);
                 if (!chan.getThumbnail().isEmpty()){
                     Picasso.get().load(chan.getThumbnail()).into(image);
                 }
-                dialogButton = (Button) dialog.findViewById(R.id.closeButton);
+                dialogButton = dialog.findViewById(R.id.closeButton);
                 subscribeButton =dialog.findViewById(R.id.subscribe_button);
                 TextView name = dialog.findViewById(R.id.channel_name);
                 name.setText(chan.getTitle());

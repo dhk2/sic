@@ -17,7 +17,7 @@ import android.app.*;
 import android.os.*;
 import android.util.Log;
 
-public class Channel implements Serializable{
+class Channel implements Serializable{
     private String title;
     private String author;
     private String url;
@@ -48,7 +48,6 @@ public class Channel implements Serializable{
         this.subscribers="";
     }
     public Channel(String url) {
-        final String location = url;
         this.url = url;
         this.description="";
         this.thumbnailurl="";
@@ -58,12 +57,12 @@ public class Channel implements Serializable{
         int counter = 0;
         if (url.indexOf("youtube.com/feeds") > 0)
         {
-            this.ID = location.substring(location.lastIndexOf("id=") + 3);
+            this.ID = url.substring(url.lastIndexOf("id=") + 3);
         }
         //if(url.indexOf("bitchute.com")>0)
         else
         {
-            String[] segments = location.split("/");
+            String[] segments = url.split("/");
             this.ID = segments[segments.length - 1];
         }
         this.lastsync = new Date();
@@ -195,21 +194,11 @@ public class Channel implements Serializable{
 
     }
     public boolean isBitchute(){
-        if (this.url.indexOf("bitchute.com")>0){
-            return true;
-        }
-        else {
-            return false;
-        }
+        return this.url.indexOf("bitchute.com") > 0;
     }
 
     public boolean isYoutube(){
-        if (this.url.indexOf("youtube.com")>0){
-            return true;
-        }
-        else {
-            return false;
-        }
+        return this.url.indexOf("youtube.com") > 0;
     }
 
 }

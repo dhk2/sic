@@ -81,7 +81,7 @@ public class SettingsFragment extends Fragment {
             public void onClick(View v) {
                 final Dialog dialog = new Dialog(v.getContext());
                 dialog.setContentView(R.layout.importdialog);
-                final WebView webView = (WebView) dialog.findViewById(R.id.idplayer_window);
+                final WebView webView = dialog.findViewById(R.id.idplayer_window);
                 webView.setWebViewClient(new WebViewClient() {
                     @Override
                     public void onPageFinished(WebView view, String url) {
@@ -101,7 +101,7 @@ public class SettingsFragment extends Fragment {
 
 
                 webView.loadUrl("https://www.bitchute.com/subscriptions/");
-                Button closeButton = (Button) dialog.findViewById(R.id.idclosebutton);
+                Button closeButton = dialog.findViewById(R.id.idclosebutton);
                 closeButton.setText("close");
                 closeButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -137,7 +137,7 @@ public class SettingsFragment extends Fragment {
             public void onClick(View v) {
                 final Dialog dialog = new Dialog(v.getContext());
                 dialog.setContentView(R.layout.importdialog);
-                final WebView webView = (WebView) dialog.findViewById(R.id.idplayer_window);
+                final WebView webView = dialog.findViewById(R.id.idplayer_window);
                 webView.setWebViewClient(new WebViewClient() {
                     @Override
                     public void onPageFinished(WebView view, String url) {
@@ -157,7 +157,7 @@ public class SettingsFragment extends Fragment {
 
 
                 webView.loadUrl("https://www.youtube.com/subscription_manager");
-                Button closeButton = (Button) dialog.findViewById(R.id.idclosebutton);
+                Button closeButton = dialog.findViewById(R.id.idclosebutton);
                 closeButton.setText("close");
                 closeButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -182,7 +182,7 @@ public class SettingsFragment extends Fragment {
 
 
 
-        RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.radioGroup);
+        RadioGroup radioGroup = view.findViewById(R.id.radioGroup);
         RadioButton useVlc =view.findViewById(R.id.use_vlc);
         RadioButton useDefault =view.findViewById(R.id.use_default);
         RadioButton useWebview =view.findViewById(R.id.use_webview);
@@ -233,7 +233,7 @@ public class SettingsFragment extends Fragment {
             if (doc.title().equals("Subscriptions - BitChute")) {
                 System.out.println("made into if bock");
                 Elements subscriptions = doc.getElementsByClass("subscription-container");
-                System.out.println(subscriptions.size()+" chanels listed");
+                System.out.println(subscriptions.size()+" channels listed");
                 for (Element s : subscriptions) {
                    new ChannelInit().execute("https://www.bitchute.com"+s.getElementsByTag("a").first().attr("href"));
                 }

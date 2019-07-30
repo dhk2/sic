@@ -31,7 +31,7 @@ import java.util.Set;
 import static anticlimacticteleservices.sic.MainActivity.masterData;
 
 public class UserData {
-    public List<Channel> sChannels = new ArrayList<Channel>();
+    private List<Channel> sChannels = new ArrayList<Channel>();
     public List<Channel> getsChannels() {
         return sChannels;
     }
@@ -41,7 +41,7 @@ public class UserData {
     public void addsChannel(Channel value){
         sChannels.add(value);
     }
-    public List<Channel> channels = new ArrayList<Channel>();
+    private List<Channel> channels = new ArrayList<Channel>();
     public Context context;
     public WebView webPlayer;
     final SimpleDateFormat bdf = new SimpleDateFormat("EEE','  dd MMM yyyy HH:mm:SSZZZZ");
@@ -63,7 +63,7 @@ public class UserData {
             }
         }
     }
-    public List<Video>videos = new ArrayList<Video>();
+    private List<Video>videos = new ArrayList<Video>();
     public List<Video> getVideos() {
         return videos;
     }
@@ -77,7 +77,7 @@ public class UserData {
     public void addVideo(Video value) {
         videos.add(value);
     }
-    public List<Video>sVideos = new ArrayList<Video>();
+    private List<Video>sVideos = new ArrayList<Video>();
     public List<Video> getsVideos() {
         return sVideos;
     }
@@ -90,21 +90,15 @@ public class UserData {
 
     public VideoAdapter searchVideoAdapter= new VideoAdapter(sVideos);
 
-    Set<String> feedLinks =new HashSet<String>();
-    Boolean useYoutube=true;
-    public SharedPreferences.Editor editor;
+    private Set<String> feedLinks =new HashSet<String>();
+    private Boolean useYoutube=true;
+    private SharedPreferences.Editor editor;
 
     public boolean isUseWebView() {
-        if (playerChoice ==4)
-            return true;
-        else
-            return false;
+        return playerChoice == 4;
     }
     public boolean isUseVlc() {
-        if (playerChoice ==1)
-            return true;
-        else
-            return false;
+        return playerChoice == 1;
     }
     public void setUseVlc(boolean useVlc){
         this.playerChoice = 1;
@@ -119,7 +113,7 @@ public class UserData {
     }
 
     // 1=vlc, 2=system default, 4=webview
-    public int playerChoice;
+    private int playerChoice;
     public FragmentManager getFragmentManager() {
         return fragmentManager;
     }
@@ -147,9 +141,9 @@ public class UserData {
         this.transaction = transaction;
     }
 
-    FragmentTransaction transaction;
+    private FragmentTransaction transaction;
     public Activity activity;
-    public boolean forceRefresh;
+    private boolean forceRefresh;
 
 
 
@@ -227,7 +221,7 @@ public class UserData {
         return feedLinks;
     }
     public void removeFeedLink(String deadLink){
-        Set<String> tempSub = new HashSet();
+        HashSet tempSub = new HashSet();
 
         for (String s : feedLinks){
             if (!s.equals(deadLink)){
@@ -239,7 +233,7 @@ public class UserData {
         }
         feedLinks = tempSub;
         editor = MainActivity.preferences.edit();
-        editor.putStringSet("channelUrls", (Set<String>) feedLinks);
+        editor.putStringSet("channelUrls", feedLinks);
         editor.commit();
         forceRefresh=true;
     }
@@ -257,7 +251,7 @@ public class UserData {
             }
             System.out.println("count of feeds:"+ feedLinks.size());
             editor = MainActivity.preferences.edit();
-            editor.putStringSet("channelUrls", (Set<String>) feedLinks);
+            editor.putStringSet("channelUrls", feedLinks);
             editor.commit();
             forceRefresh=true;
         }
@@ -273,7 +267,7 @@ public class UserData {
             feedLinks.add(newLink);
         }
         editor = MainActivity.preferences.edit();
-        editor.putStringSet("channelUrls", (Set<String>) feedLinks);
+        editor.putStringSet("channelUrls", feedLinks);
         editor.commit();
         forceRefresh=true;
     }
@@ -282,7 +276,7 @@ public class UserData {
         feedLinks.addAll(links);
 
         editor = MainActivity.preferences.edit();
-        editor.putStringSet("channelUrls", (Set<String>) feedLinks);
+        editor.putStringSet("channelUrls", feedLinks);
         editor.commit();
         forceRefresh=true;
     }

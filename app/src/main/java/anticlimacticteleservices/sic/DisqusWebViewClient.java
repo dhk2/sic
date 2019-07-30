@@ -13,9 +13,9 @@ import java.util.Set;
 /**
  * Created by cooper on 4/29/15.
  */
-public class DisqusWebViewClient extends WebViewClient {
+class DisqusWebViewClient extends WebViewClient {
 
-    public static final String APP_COMMENT_URL = "your-app-url";
+    private static final String APP_COMMENT_URL = "your-app-url";
     private final Set<String> allowedUrls;
     private String commentsUrl;
     private Context context;

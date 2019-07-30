@@ -19,12 +19,12 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 
-public class ChannelUpdate extends AsyncTask<String, String, Boolean> {
-    final SimpleDateFormat bdf = new SimpleDateFormat("EEE', 'dd MMM yyyy HH:mm:SS' 'ZZZZ");
-    final SimpleDateFormat ydf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-    Document doc;
-    int dupecount=0;
-    int newcount=0;
+class ChannelUpdate extends AsyncTask<String, String, Boolean> {
+    private final SimpleDateFormat bdf = new SimpleDateFormat("EEE', 'dd MMM yyyy HH:mm:SS' 'ZZZZ");
+    private final SimpleDateFormat ydf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+    private Document doc;
+    private int dupecount=0;
+    private int newcount=0;
 
     @Override
     protected void onPostExecute(Boolean aBoolean) {
@@ -97,7 +97,7 @@ public class ChannelUpdate extends AsyncTask<String, String, Boolean> {
                         nv.setTitle(video.getElementsByTag("title").first().text());
                         nv.setDescription(video.getElementsByTag("description").first().text());
                         nv.setUrl(video.getElementsByTag("link").first().text());
-                        nv.setThumbnail(video.getElementsByTag("enclosure").first().attr("url").toString());
+                        nv.setThumbnail(video.getElementsByTag("enclosure").first().attr("url"));
                         try {
                             Date pd = bdf.parse(video.getElementsByTag("pubDate").first().text());
                             nv.setDate(pd);

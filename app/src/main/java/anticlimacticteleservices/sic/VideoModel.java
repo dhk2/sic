@@ -4,7 +4,7 @@ import android.arch.lifecycle.ViewModel;
 
 import java.util.ArrayList;
 
-public class VideoModel extends ViewModel {
+class VideoModel extends ViewModel {
     private ArrayList<Video> videos;
 
     public ArrayList<Video> getVideos(){

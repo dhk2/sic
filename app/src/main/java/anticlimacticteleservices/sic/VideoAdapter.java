@@ -33,7 +33,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         private ImageView youtubeIcon;
         private ImageView bitchuteIcon;
 
-        public CustomViewHolder(View view) {
+        CustomViewHolder(View view) {
             super(view);
             name = view.findViewById(R.id.movieName);
             image = view.findViewById(R.id.thumbnail);
@@ -76,31 +76,31 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
              timehack= "1 minute ago";
         }
         if (minutes>1){
-             timehack = Integer.toString(minutes) + " minutes ago";
+             timehack = minutes + " minutes ago";
         }
         if (hours==1){
             timehack="1 hour,"+timehack;
         }
         if (hours>1){
-            timehack=Integer.toString(hours)+" hours,"+timehack;
+            timehack= hours +" hours,"+timehack;
         }
         if (days==1){
             timehack="1 day,"+timehack;
         }
         if (days>1){
-            timehack=Integer.toString(days)+" days,"+timehack;
+            timehack= days +" days,"+timehack;
         }
         holder.author.setText(video.getAuthor()+ "  "+timehack );
 
 // load Mp4 if it's blank
         if (video.getMp4().isEmpty() && (video.isBitchute())){
-  //          System.out.println("missing mp4 in bituchute, running runnable");
+  //          System.out.println("missing mp4 in bitchute, running runnable");
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
                         Video vid = videos.get(position);
-//                        System.out.println("no mp4 so seting in onbind" + vid);
+//                        System.out.println("no mp4 so setting in onbind" + vid);
                         Document hackDoc = Jsoup.connect(vid.getUrl()).get();
                         vid.setMp4(hackDoc.getElementsByTag("Source").first().attr("src"));
 
@@ -125,15 +125,15 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                 final Dialog dialog = new Dialog(view.getContext());
                 dialog.setContentView(R.layout.videoprop);
                 dialog.setTitle(vid.getTitle());
-                WebView webView = (WebView) dialog.findViewById(R.id.channelDetails);
+                WebView webView = dialog.findViewById(R.id.channelDetails);
                 webView.loadData(vid.toString(), "text/html", "UTF-8");
                 webView.loadUrl(("https://dissenter.com/discussion/begin?url="+vid.getYoutubeUrl()));
                 webView.getSettings().setUseWideViewPort(true);
                 webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
                 webView.setScrollbarFadingEnabled(false);
-                ImageView image = (ImageView) dialog.findViewById(R.id.thumbNailView);
+                ImageView image = dialog.findViewById(R.id.thumbNailView);
                 Picasso.get().load(vid.getThumbnail()).into(image);
-                Button dialogButton = (Button) dialog.findViewById(R.id.closeButton);
+                Button dialogButton = dialog.findViewById(R.id.closeButton);
                 // if button is clicked, close the custom dialog
                 dialogButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -162,7 +162,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                     final Dialog dialog = new Dialog(v.getContext());
                     dialog.setContentView(R.layout.video_player);
                     dialog.setTitle(vid.getTitle());
-                    final WebView webView = (WebView) dialog.findViewById(R.id.player_window);
+                    final WebView webView = dialog.findViewById(R.id.player_window);
                     webView.setWebViewClient(new WebViewClient());
                     WebSettings webSettings = webView.getSettings();
                     webSettings.setJavaScriptEnabled(true);
@@ -170,7 +170,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                     webView.loadData(vid.toString(), "text/html", "UTF-8");
                     webView.loadUrl(vid.getEmbeddedUrl());
                     MainActivity.masterData.webPlayer=webView;
-                    Button dialogButton = (Button) dialog.findViewById(R.id.closebutton);
+                    Button dialogButton = dialog.findViewById(R.id.closebutton);
                     dialogButton.setText("close");
                     dialogButton.setOnClickListener(new View.OnClickListener() {
                         @Override

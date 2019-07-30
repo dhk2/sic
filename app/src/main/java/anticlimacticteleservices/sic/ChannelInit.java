@@ -15,12 +15,12 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 
-public class ChannelInit extends AsyncTask <String,String,Integer>{
-    final SimpleDateFormat bdf = new SimpleDateFormat("EEE', 'dd MMM yyyy HH:mm:SS' 'ZZZZ");
-    final SimpleDateFormat ydf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-    Channel chan;
-    int newVideoCount=0;
-    int newChannelCount=0;
+class ChannelInit extends AsyncTask <String,String,Integer>{
+    private final SimpleDateFormat bdf = new SimpleDateFormat("EEE', 'dd MMM yyyy HH:mm:SS' 'ZZZZ");
+    private final SimpleDateFormat ydf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+    private Channel chan;
+    private int newVideoCount=0;
+    private int newChannelCount=0;
     @Override
     protected Integer doInBackground(String[] params) {
         System.out.println("channel count"+MainActivity.masterData.getChannels().size());
@@ -42,7 +42,7 @@ public class ChannelInit extends AsyncTask <String,String,Integer>{
                 if (chan.isBitchute()){
                     channelPage = Jsoup.connect(chan.getBitchuteUrl()).get();
                 //bitchute rss feeds don't work with the channel UID but only with the text name, need to get text name before parsing rss
-                    chan = new Channel("https://www.bitchute.com" + channelPage.getElementsByClass("name").first().getElementsByTag("a").first().attr("href").toString());
+                    chan = new Channel("https://www.bitchute.com" + channelPage.getElementsByClass("name").first().getElementsByTag("a").first().attr("href"));
                     channelRss= Jsoup.connect(chan.getBitchuteRssFeedUrl()).get();
                 }
                 else {
@@ -59,8 +59,8 @@ public class ChannelInit extends AsyncTask <String,String,Integer>{
                     chan.setTitle(channelRss.title());
                     chan.setAuthor(channelRss.getElementsByTag("name").first().text());
                     chan.setUrl(g);
-                    chan.setDescription(channelPage.getElementsByAttributeValue("name", "description").attr("content").toString());
-                    chan.setThumbnail(channelPage.getElementsByAttributeValue("itemprop", "thumbnailUrl").attr("href").toString());
+                    chan.setDescription(channelPage.getElementsByAttributeValue("name", "description").attr("content"));
+                    chan.setThumbnail(channelPage.getElementsByAttributeValue("itemprop", "thumbnailUrl").attr("href"));
                     Elements entries = channelRss.getElementsByTag("entry");
                     for (Element entry : entries) {
                         Video nv = new Video(entry.getElementsByTag("link").first().attr("href"));
@@ -116,7 +116,7 @@ public class ChannelInit extends AsyncTask <String,String,Integer>{
                             nv.setDescription(video.getElementsByTag("description").first().text());
                             nv.setUrl(video.getElementsByTag("link").first().text());
                             System.out.println(nv);
-                            nv.setThumbnail(video.getElementsByTag("enclosure").first().attr("url").toString());
+                            nv.setThumbnail(video.getElementsByTag("enclosure").first().attr("url"));
                             try {
                                 Date pd = bdf.parse(video.getElementsByTag("pubDate").first().text());
                                 nv.setDate(pd);
@@ -166,7 +166,7 @@ public class ChannelInit extends AsyncTask <String,String,Integer>{
                     newChannelCount++;
                 }
                 else {
-                    System.out.println("dupicate channel rejected "+chan.getTitle());
+                    System.out.println("duplicate channel rejected "+chan.getTitle());
                 }
                } catch (IOException e) {
                 e.printStackTrace();
@@ -188,7 +188,7 @@ public class ChannelInit extends AsyncTask <String,String,Integer>{
             Toast.makeText(MainActivity.masterData.context,"added "+chan.getTitle()+ " with "+newVideoCount+" videos",Toast.LENGTH_SHORT).show();
         }
         if (newChannelCount>1){
-            Toast.makeText(MainActivity.masterData.context,"added "+newChannelCount+ " channels wiht "+newVideoCount+" videos",Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.masterData.context,"added "+newChannelCount+ " channels with "+newVideoCount+" videos",Toast.LENGTH_SHORT).show();
         }
     }
 }

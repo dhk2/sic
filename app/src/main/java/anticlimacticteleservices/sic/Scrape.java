@@ -5,8 +5,8 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
-public class Scrape extends AsyncTask<String[], Void, String[]> {
-  ProgressDialog dialog;
+class Scrape extends AsyncTask<String[], Void, String[]> {
+  private ProgressDialog dialog;
 
   @Override
   protected void onPreExecute() {
@@ -36,7 +36,7 @@ https://www.youtube.com/results?sp=EgIQAQ%253D%253D&search_query=dino
 protected void onPostExecute(String[] result) {
     dialog.dismiss();
   //  Collections.sort(videoFeed);
- // need to pass the list of videos back to the video fragment that orignally sent the request
+ // need to pass the list of videos back to the video fragment that originally sent the request
  // a listener implementation most likely
  //https://github.com/codepath/android_guides/wiki/Creating-and-Using-Fragments
  

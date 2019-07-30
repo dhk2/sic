@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VideoFragment extends Fragment {
-    public List<Video> vfVideos = new ArrayList<>();
+    private List<Video> vfVideos = new ArrayList<>();
     private VideoAdapter vAdapter = new VideoAdapter();
     private RecyclerView videoRecyclerView;
     public VideoFragment() {
@@ -23,8 +23,7 @@ public class VideoFragment extends Fragment {
         void videoFragmentListener();
     }
     public static VideoFragment newInstance(String param1, String param2) {
-        VideoFragment fragment = new VideoFragment();
-        return fragment;
+        return new VideoFragment();
     }
 
     @Override
