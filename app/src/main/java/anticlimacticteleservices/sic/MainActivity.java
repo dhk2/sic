@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
             message.loadDataWithBaseURL(null,"<center>Looks like this is your first time</center> <br> You can use the search feature to find channels,<p> or import channels from the settings page" , "text/html", "UTF-8", null);
           //  message.loadData(,"html","utf-8");
             ImageView image = dialog.findViewById(R.id.thumbNailView);
-            image.setImageResource(R.mipmap.ic_launcher_foreground);
+            image.setImageResource(R.mipmap.siclogoforeground);
             Button dialogButton = dialog.findViewById(R.id.closeButton);
             dialogButton.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -107,12 +107,12 @@ public class UserData {
     }
     public boolean youtubeUseDefault() {return youtubePlayerChoice ==2; }
     public boolean bitchuteUseWebView() {
-        return youtubePlayerChoice == 4;
+        return bitchutePlayerChoice == 4;
     }
     public boolean bitchuteUseVlc() {
-        return youtubePlayerChoice == 1;
+        return bitchutePlayerChoice == 1;
     }
-    public boolean bitchuteUseDefault() {return youtubePlayerChoice ==2; }
+    public boolean bitchuteUseDefault() {return getBitchutePlayerChoice() ==2; }
 
     public int getYoutubePlayerChoice() {
         return youtubePlayerChoice;
@@ -166,7 +166,7 @@ public class UserData {
         editor = MainActivity.preferences.edit();
         youtubePlayerChoice = MainActivity.preferences.getInt("youtubePlayerChoice", 1);
         bitchutePlayerChoice = MainActivity.preferences.getInt("bitchutePlayerChoice", 1);
-
+        context=con;
         //shouldn't be needed
         if (youtubePlayerChoice==0)
             youtubePlayerChoice=1;

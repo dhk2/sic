@@ -224,75 +224,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                 }
             }
         });
- /*
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        int adapterPos = holder.getAdapterPosition();
-                        Video vid = videos.get(position);
-                        Uri uri = null;
-                        int vlcRequestCode = 42;
-                        if (vid.getUrl().indexOf("bitchute")>0) {
-                            if (vid.getMp4().isEmpty()) {
-                                try {
-                                    Document hackDoc = Jsoup.connect(vid.getUrl()).get();
-                                    vid.setMp4(hackDoc.getElementsByTag("Source").first().attr("src"));
-                                    //System.out.println("no mp4 "+vid);
-                                    uri = Uri.parse(vid.getMp4());
-                                } catch (MalformedURLException e) {
-                                    System.out.println("Malformed URL: " + e.getMessage());
-                                } catch (IOException e) {
-                                    System.out.println("I/O Error: " + e.getMessage());
-                                }
-                            }
-                            else {
-                                uri = Uri.parse(vid.getMp4());
-                            }
-                        }
-                        else
-                        {
-                            uri = Uri.parse(vid.getUrl());
-                        }
 
-                        Intent vlcIntent = new Intent(Intent.ACTION_VIEW);
-
-                        if (MainActivity.masterData.isUseWebView()){
-                            final Dialog dialog = new Dialog(v.getContext());
-                            dialog.setContentView(R.layout.videoprop);
-                            dialog.setTitle(vid.getTitle());
-                            WebView webView = (WebView) dialog.findViewById(R.id.channelDetails);
-                            webView.loadData(vid.toString(), "text/html", "UTF-8");
-                            webView.loadUrl(vid.getUrl());
-                            ImageView image = (ImageView) dialog.findViewById(R.id.thumbNailView);
-                            Picasso.get().load(vid.getThumbnail()).into(image);
-                            Button dialogButton = (Button) dialog.findViewById(R.id.closeButton);
-                            // if button is clicked, close the custom dialog
-                            dialogButton.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    dialog.dismiss();
-                                }
-                            });
-                            dialog.show();
-                        }
-                        else {
-                            if (MainActivity.masterData.isUseVlc()) {
-                                vlcIntent.setPackage("org.videolan.vlc");
-                            }
-                            vlcIntent.setDataAndTypeAndNormalize(uri, "video/*");
-                            vlcIntent.putExtra("title", vid.getTitle());
-                            v.getContext().startActivity(vlcIntent);
-                        }
-                    }
-
-                } );
-                thread.start();
-            }
-        });
-   */
     }
     @Override
     public int getItemCount() {

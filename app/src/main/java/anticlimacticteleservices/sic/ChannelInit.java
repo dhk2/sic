@@ -55,8 +55,9 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
 
                 chan.setTitle(channelRss.title());
 
- //               System.out.println("g is:"+g +"\n   id is "+chan.getID()+ "\n    url is "+chan.getUrl()+"\n   youtube rss:"+chan.getYoutubeRssFeedUrl()+"\n  bitchute rss feed"+chan.getBitchuteRssFeedUrl());
-                if (chan.isYoutube()) {
+               System.out.println("g is:"+g +"\n   id is "+chan.getID()+ "\n    url is "+chan.getBitchuteUrl()+"\n   youtube rss: "+chan.getYoutubeRssFeedUrl()+"\n  bitchute rss feed "+chan.getBitchuteRssFeedUrl());
+
+               if (chan.isYoutube()) {
                     chan.setTitle(channelRss.title());
                     chan.setAuthor(channelRss.getElementsByTag("name").first().text());
                     chan.setUrl(g);
@@ -103,7 +104,7 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                     }
                 }
 
-                if (!chan.getBitchuteRssFeedUrl().isEmpty()) {
+                if (chan.isBitchute()) {
                     try {
 
                         chan.setDescription(channelRss.getElementsByTag("description").first().text());
@@ -112,10 +113,10 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                         Elements videos = channelRss.getElementsByTag("item");
                         System.out.println(videos.size());
                         for (Element video : videos) {
-                            Video nv=new Video();
+                            Video nv=new Video(video.getElementsByTag("link").first().text());
                             nv.setTitle(video.getElementsByTag("title").first().text());
                             nv.setDescription(video.getElementsByTag("description").first().text());
-                            nv.setUrl(video.getElementsByTag("link").first().text());
+
                            // System.out.println(nv);
                             nv.setThumbnail(video.getElementsByTag("enclosure").first().attr("url"));
                             try {
