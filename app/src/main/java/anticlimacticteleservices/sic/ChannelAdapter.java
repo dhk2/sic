@@ -2,8 +2,6 @@ package anticlimacticteleservices.sic;
 
 import android.app.Dialog;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -13,7 +11,6 @@ import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,12 +18,6 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.w3c.dom.Text;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Set;
 
@@ -48,8 +39,8 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
         private ImageView image;
         private Button subscribed;
         private TextView description;
-        private ImageView youtubeIcon;
-        private ImageView bitchuteIcon;
+        private ImageView serviceIcon;
+
 //        final Context context = this;
 
         CustomViewHolder(View view) {
@@ -58,8 +49,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
             image = view.findViewById(R.id.channelthumbnail);
             subscribed = view.findViewById(R.id.button);
             description= view.findViewById(R.id.channel_description);
-            youtubeIcon = view.findViewById(R.id.yahooIcon);
-            bitchuteIcon = view.findViewById(R.id.bitchuteIcon);
+            serviceIcon= view.findViewById(R.id.channelserviceicon);
          }
     }
     public ChannelAdapter(){}
@@ -91,11 +81,9 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
         }
 
         if (channel.isBitchute()) {
-            hold.bitchuteIcon.setVisibility(View.VISIBLE);
-            hold.youtubeIcon.setVisibility(View.INVISIBLE);
+            hold.serviceIcon.setImageResource(R.drawable.bitchuteicon2);
         } else {
-            hold.youtubeIcon.setVisibility(View.VISIBLE);
-            hold.bitchuteIcon.setVisibility(View.INVISIBLE);
+            hold.serviceIcon.setImageResource(R.drawable.youtubeicon);
         }
 
 
@@ -104,7 +92,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
         System.out.println(channel);
         status="Subscribe";
         for (Channel c : MainActivity.masterData.getChannels()){
-            if (c.getID().equals(channel.getID())){
+            if (c.matches(channel.getID())){
                 status="Unsubscribe";
             }
         }

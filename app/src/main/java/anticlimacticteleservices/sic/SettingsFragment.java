@@ -177,44 +177,70 @@ public class SettingsFragment extends Fragment {
    */             dialog.show();
             }
         });
+        RadioGroup youtubeRadioGroup = view.findViewById(R.id.youtubeplayerradioGroup);
+        RadioButton youtubeUseVlc =view.findViewById(R.id.youtubeuse_vlc);
+        RadioButton youtubeUseDefault =view.findViewById(R.id.youtubeuse_default);
+        RadioButton youtubeUseWebview =view.findViewById(R.id.youtubeuse_webview);
 
-
-
-
-
-        RadioGroup radioGroup = view.findViewById(R.id.radioGroup);
-        RadioButton useVlc =view.findViewById(R.id.use_vlc);
-        RadioButton useDefault =view.findViewById(R.id.use_default);
-        RadioButton useWebview =view.findViewById(R.id.use_webview);
-        System.out.println("player choice:"+MainActivity.masterData.getPlayerChoice());
-        switch(MainActivity.masterData.getPlayerChoice()){
+        RadioGroup bitchuteRadioGroup = view.findViewById(R.id.bitchuteplayerradioGroup);
+        RadioButton bitchuteUseVlc =view.findViewById(R.id.bitchuteuse_vlc);
+        RadioButton bitchuteUseDefault =view.findViewById(R.id.bitchuteuse_default);
+        RadioButton bitchuteUseWebview =view.findViewById(R.id.bitchuteuse_webview);
+        System.out.println("player choice:"+MainActivity.masterData.getYoutubePlayerChoice()+"  "+MainActivity.masterData.getBitchutePlayerChoice());
+        switch(MainActivity.masterData.getYoutubePlayerChoice()){
             case 1:
-                useVlc.setChecked(true);
+                youtubeUseVlc.setChecked(true);
                 break;
             case 2:
-                useDefault.setChecked(true);
+                youtubeUseDefault.setChecked(true);
                 break;
             case 4:
-                useWebview.setChecked(true);
+                youtubeUseWebview.setChecked(true);
         }
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+        youtubeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 // checkedId is the RadioButton selected
 
                 switch(checkedId) {
-                    case R.id.use_vlc:
-                        MainActivity.masterData.setPlayerChoice(1);
+                    case R.id.youtubeuse_vlc:
+                        MainActivity.masterData.setYoutubePlayerChoice(1);
                         break;
-                    case R.id.use_default:
-                        MainActivity.masterData.setPlayerChoice(2);
+                    case R.id.youtubeuse_default:
+                        MainActivity.masterData.setYoutubePlayerChoice(2);
                         break;
-                    case R.id.use_webview:
-                        MainActivity.masterData.setPlayerChoice(4);
+                    case R.id.youtubeuse_webview:
+                        MainActivity.masterData.setYoutubePlayerChoice(4);
                 }
             }
         });
+        switch(MainActivity.masterData.getBitchutePlayerChoice()){
+            case 1:
+                bitchuteUseVlc.setChecked(true);
+                break;
+            case 2:
+                bitchuteUseDefault.setChecked(true);
+                break;
+            case 4:
+                bitchuteUseWebview.setChecked(true);
+        }
+        bitchuteRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+        {
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                // checkedId is the RadioButton selected
 
+                switch(checkedId) {
+                    case R.id.bitchuteuse_vlc:
+                        MainActivity.masterData.setBitchutePlayerChoice(1);
+                        break;
+                    case R.id.bitchuteuse_default:
+                        MainActivity.masterData.setBitchutePlayerChoice(2);
+                        break;
+                    case R.id.bitchuteuse_webview:
+                        MainActivity.masterData.setBitchutePlayerChoice(4);
+                }
+            }
+        });
     }
     @Override
     public void onAttach(Context context) {

@@ -12,7 +12,6 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
 
 class ChannelInit extends AsyncTask <String,String,Integer>{
@@ -30,13 +29,15 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
         Document channelPage;
         Document channelRss;
         channels:for (String g : params) {
-            chan=new Channel(g);
-            for (Channel c : MainActivity.masterData.getChannels())
-                if (chan.getID().equals(c.getID())){
+            chan = new Channel(g);
+
+ /*           for (Channel c : MainActivity.masterData.getChannels()){
+                if (chan.matches(c.getID())) {
                     System.out.println("channel already exists");
                     continue channels;
+                }
             }
-            try {
+*/            try {
                 //chan.setUrl(g);
                 chan = new Channel(g);
                 if (chan.isBitchute()){
@@ -115,7 +116,7 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                             nv.setTitle(video.getElementsByTag("title").first().text());
                             nv.setDescription(video.getElementsByTag("description").first().text());
                             nv.setUrl(video.getElementsByTag("link").first().text());
-                            System.out.println(nv);
+                           // System.out.println(nv);
                             nv.setThumbnail(video.getElementsByTag("enclosure").first().attr("url"));
                             try {
                                 Date pd = bdf.parse(video.getElementsByTag("pubDate").first().text());
@@ -126,7 +127,7 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                             // Document hackDoc = Jsoup.connect(nv.getUrl()).get();
                             //  nv.setMp4(hackDoc.getElementsByTag("Source").first().attr("src"));
                             nv.setAuthor(channelRss.title());
-                            System.out.println(nv);
+                            //System.out.println(nv);
                             boolean unique=true;
                             for (Video match : MainActivity.masterData.getVideos()) {
                                 if (match.getID().equals(nv.getID())) {
@@ -154,21 +155,21 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                         e.printStackTrace();
                     }
                 }
-              boolean unique = true;
+/*                boolean unique = true;
                 for (Channel match : MainActivity.masterData.getChannels()) {
-                    if (match.getID().equals(chan.getID())) {
+                    if (match.matches(chan.getID())) {
                         unique = false;
                     }
                 }
                 if (unique) {
-                    MainActivity.masterData.addChannel(chan);
+ */                 MainActivity.masterData.addChannel(chan);
                     System.out.println("adding channel "+chan.getTitle());
                     newChannelCount++;
-                }
+  /*              }
                 else {
                     System.out.println("duplicate channel rejected "+chan.getTitle());
                 }
-               } catch (IOException e) {
+  */             } catch (IOException e) {
                 e.printStackTrace();
             }
      //       System.out.println("finished initting channel"+chan.getVideos().size());

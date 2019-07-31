@@ -155,6 +155,7 @@ class Search {
             if (searchCount < 1) {
                 searching = false;
                 VideoFragment fragment = new VideoFragment();
+                MainActivity.masterData.sortsVideos();
                 fragment.setVideos(MainActivity.masterData.getsVideos());
 
                 FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
@@ -261,6 +262,7 @@ class Search {
             if (searchCount < 1) {
                 searching = false;
                 VideoFragment fragment = new VideoFragment();
+                MainActivity.masterData.sortsVideos();
                 fragment.setVideos(MainActivity.masterData.getsVideos());
 
                 FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
@@ -392,9 +394,11 @@ class Search {
                         if (!anchor.isEmpty()) {
                             String channelUrl=anchor.attr("href");
                             if (channelUrl.indexOf("channel")>0) {
+                                System.out.println(channelUrl);
                                 String[] segments = channelUrl.split("/");
-                                nc.setID(segments[segments.length - 1]);
-                                nc.setUrl(" https://www.youtube.com/feeds/videos.xml?channel_id=" + nc.getID());
+                                nc=new Channel(" https://www.youtube.com/feeds/videos.xml?channel_id="+segments[segments.length - 1]);
+                                //nc.setID(segments[segments.length - 1]);
+                              //  nc.setUrl(" https://www.youtube.com/feeds/videos.xml?channel_id=" + nc.getID());
                                 nc.setTitle(anchor.attr("title"));
                                 nc.setDescription(anchor.attr("aria-label"));
                             }
@@ -439,6 +443,7 @@ class Search {
                 System.out.println("done searching for channels," );
                 searching = false;
                 ChannelFragment fragment = new ChannelFragment();
+
                 fragment.setChannels(MainActivity.masterData.getsChannels());
 
                 FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();

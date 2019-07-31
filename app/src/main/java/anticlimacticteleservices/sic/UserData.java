@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.webkit.WebView;
+import android.widget.Toast;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -57,7 +58,7 @@ public class UserData {
     }
     public void removeChannel(String ID){
         for (int i=0;i<channels.size();i++){
-            if (channels.get(i).getID().equals(ID)){
+            if (channels.get(i).matches(ID)){
                 channels.remove(i);
                 break;
             }
@@ -73,6 +74,10 @@ public class UserData {
     public void sortVideos(){
         Collections.sort(videos);
         System.out.println("sorted videos");
+    }
+    public void sortsVideos(){
+        Collections.sort(sVideos);
+        System.out.println("sorted search videos");
     }
     public void addVideo(Video value) {
         videos.add(value);
@@ -94,26 +99,36 @@ public class UserData {
     private Boolean useYoutube=true;
     private SharedPreferences.Editor editor;
 
-    public boolean isUseWebView() {
-        return playerChoice == 4;
+    public boolean youtubeUseWebView() {
+        return youtubePlayerChoice == 4;
     }
-    public boolean isUseVlc() {
-        return playerChoice == 1;
+    public boolean youtubeUseVlc() {
+        return youtubePlayerChoice == 1;
     }
-    public void setUseVlc(boolean useVlc){
-        this.playerChoice = 1;
+    public boolean youtubeUseDefault() {return youtubePlayerChoice ==2; }
+    public boolean bitchuteUseWebView() {
+        return youtubePlayerChoice == 4;
     }
+    public boolean bitchuteUseVlc() {
+        return youtubePlayerChoice == 1;
+    }
+    public boolean bitchuteUseDefault() {return youtubePlayerChoice ==2; }
 
-    public int getPlayerChoice() {
-        return playerChoice;
+    public int getYoutubePlayerChoice() {
+        return youtubePlayerChoice;
     }
-
-    public void setPlayerChoice(int playerChoice) {
-        this.playerChoice = playerChoice;
+    public int getBitchutePlayerChoice() {
+        return bitchutePlayerChoice;
     }
-
+    public void setYoutubePlayerChoice(int playerChoice) {
+        this.youtubePlayerChoice = playerChoice;
+    }
+    public void setBitchutePlayerChoice(int playerChoice) {
+        this.bitchutePlayerChoice = playerChoice;
+    }
     // 1=vlc, 2=system default, 4=webview
-    private int playerChoice;
+    private int youtubePlayerChoice;
+    private int bitchutePlayerChoice;
     public FragmentManager getFragmentManager() {
         return fragmentManager;
     }
@@ -149,8 +164,15 @@ public class UserData {
 
     public UserData(Context con) {
         editor = MainActivity.preferences.edit();
-        playerChoice = MainActivity.preferences.getInt("playerChoice", 1);
-        context = con;
+        youtubePlayerChoice = MainActivity.preferences.getInt("youtubePlayerChoice", 1);
+        bitchutePlayerChoice = MainActivity.preferences.getInt("bitchutePlayerChoice", 1);
+
+        //shouldn't be needed
+        if (youtubePlayerChoice==0)
+            youtubePlayerChoice=1;
+        if (bitchutePlayerChoice==0)
+            bitchutePlayerChoice=1;
+
         try {
             FileInputStream fileIn = new FileInputStream(this.context.getFilesDir() + "channels.ser");
             ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -164,6 +186,10 @@ public class UserData {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (NullPointerException e){
+            System.out.println("null pointer issue:");
+            e.printStackTrace();
+            //Toast.makeText(activity,"error reading in subsciption file, subscriptions reset",Toast.LENGTH_SHORT).show();
         }
         System.out.println("read in " + channels.size());
         for (Channel c : channels) {
@@ -177,7 +203,9 @@ public class UserData {
     public boolean saveUserData(){
         Context context = MainActivity.masterData.context;
         editor = MainActivity.preferences.edit();
-        editor.putInt("playerChoice", playerChoice);
+        editor.putInt("youtubePlayerChoice", youtubePlayerChoice);
+        editor.putInt("bitchutePlayerChoice", bitchutePlayerChoice);
+
         editor.commit();
         System.out.println("saved user preferences, saving "+channels.size());
         try {

@@ -10,20 +10,20 @@ cardview:cardElevation="3dp"
 cardview:cardUseCompatPadding="true">
 
 <RelativeLayout
-    android:id="@+id/RecView"
+    android:id="@+id/SmallRecView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/thumbnail"
-        android:layout_width="match_parent"
-        android:layout_height="180dp"
+        android:id="@+id/sthumbnail"
+        android:layout_width="109dp"
+        android:layout_height="128dp"
         android:layout_alignParentTop="true"
         android:elevation="0dp"
         android:scaleType="centerCrop" />
 
     <TextView
-        android:id="@+id/statusView"
+        android:id="@+id/sstatusView"
         android:layout_width="match_parent"
         android:layout_height="16dp"
         android:layout_above="@+id/movieName"
@@ -33,12 +33,14 @@ cardview:cardUseCompatPadding="true">
         />
 
     <TextView
-        android:id="@+id/movieName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:id="@+id/smovieName"
+        android:layout_width="229dp"
+        android:layout_height="86dp"
         android:layout_below="@+id/thumbnail"
         android:layout_centerVertical="true"
+        android:layout_marginStart="2dp"
         android:layout_marginLeft="12dp"
+        android:layout_toEndOf="@+id/sthumbnail"
         android:elevation="200dp"
         android:maxLines="3"
         android:padding="8dp"
@@ -48,9 +50,11 @@ cardview:cardUseCompatPadding="true">
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/author"
-        android:layout_width="411dp"
-        android:layout_height="wrap_content"
+        android:id="@+id/sauthor"
+        android:layout_width="289dp"
+        android:layout_height="36dp"
+        android:layout_alignStart="@+id/smovieName"
+        android:layout_marginStart="4dp"
         android:background="#80FFFFFF"
         android:elevation="200dp"
         android:ems="10"
@@ -59,15 +63,20 @@ cardview:cardUseCompatPadding="true">
         android:textStyle="bold" />
 
     <ImageView
-        android:id="@+id/videoserviceicon"
-        android:layout_width="37dp"
-        android:layout_height="28dp"
-        android:layout_alignParentStart="true"
+        android:id="@+id/serviceIcon"
+        android:layout_width="54dp"
+        android:layout_height="45dp"
+        android:layout_above="@+id/movieName"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="128dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="21dp"
+        android:layout_marginEnd="-2dp"
+        android:layout_marginBottom="24dp"
+        android:layout_toEndOf="@+id/smovieName"
         android:elevation="200dp"
-        android:visibility="visible" />
+        android:visibility="invisible"
+        cardview:srcCompat="@mipmap/playbutton" />
 
 </RelativeLayout>
 

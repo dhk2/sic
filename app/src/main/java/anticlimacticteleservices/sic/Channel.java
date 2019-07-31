@@ -21,11 +21,14 @@ class Channel implements Serializable{
     private String title;
     private String author;
     private String url;
+    private ArrayList<String> urls;
     private String thumbnailurl;
     private String description;
     private String profileImage;
     private String subscribers;
     private String ID;
+    private String bitchuteID;
+    private String youtubeID;
     private Date joined;   
     private Date lastsync;
     private ArrayList<Video> videos;
@@ -42,6 +45,9 @@ class Channel implements Serializable{
         this.description="";
         this.profileImage="";
         this.ID="";
+        this.youtubeID="";
+        this.bitchuteID="";
+        this.urls=new ArrayList<String>();
         this.videos=new ArrayList<Video>();
         this.lastsync=new Date();
         this.joined=lastsync;
@@ -49,12 +55,13 @@ class Channel implements Serializable{
     }
     public Channel(String url) {
         this.url = url;
-        this.description="";
-        this.thumbnailurl="";
-        this.profileImage="";
-        this.author="";
-        this.subscribers="";
-        int counter = 0;
+        urls = new ArrayList<String>();
+        urls.add(url);
+        description="";
+        thumbnailurl="";
+        profileImage="";
+        author="";
+        subscribers="";
         if (url.indexOf("youtube.com/feeds") > 0)
         {
             this.ID = url.substring(url.lastIndexOf("id=") + 3);
@@ -63,12 +70,20 @@ class Channel implements Serializable{
         else
         {
             String[] segments = url.split("/");
-            this.ID = segments[segments.length - 1];
+            ID = segments[segments.length - 1];
         }
-        this.lastsync = new Date();
-        this.joined = lastsync;
+        if (url.indexOf("youtube.com")>0){
+            youtubeID=ID;
+            bitchuteID="";
+        }
+        if (url.indexOf("bitchute.com")>0) {
+            bitchuteID = ID;
+            youtubeID="";
+        }
+        lastsync = new Date();
+        joined = lastsync;
         videos=new ArrayList<Video>();
-        System.out.println("starting scrape of channel:"+url);
+        toString();
     }
     
 //          Getters 
@@ -104,34 +119,36 @@ class Channel implements Serializable{
         return this.videos;
     }
     public String getBitchuteRssFeedUrl(){
-        if (url.indexOf("bitchute")>0) {
-            return "https://www.bitchute.com/feeds/rss/channel/" + ID;
+        for (String u : urls) {
+            if (u.indexOf("bitchute") > 0) {
+                return "https://www.bitchute.com/feeds/rss/channel/" + bitchuteID;
+            }
         }
-        else{
-            return "";
-        }
+        return "";
     }
     public String getBitchuteUrl() {
-        if (url.indexOf("bitchute") > 0) {
-            return "https://www.bitchute.com/channel/" + ID;
+        for (String u : urls){
+            if (u.indexOf("bitchute") > 0) {
+                return "https://www.bitchute.com/channel/" + bitchuteID;
+            }
         }
-        else{
-            return "";
-        }
+        return "";
     }
     public String getYoutubeRssFeedUrl() {
-        if (url.indexOf("youtube") > 0) {
-            return "https://www.youtube.com/feeds/videos.xml?channel_id=" + ID;
-        } else {
-            return "";
+        for (String u : urls) {
+            if (url.indexOf("youtube") > 0) {
+                return "https://www.youtube.com/feeds/videos.xml?channel_id=" + youtubeID;
+            }
         }
+        return "";
     }
     public String getYoutubeUrl(){
-        if (url.indexOf("youtube") > 0) {
-            return "https://www.youtube.com/channel/"+ID;
-        } else {
-            return "";
+        for (String u : urls) {
+            if (u.indexOf("youtube") > 0) {
+                return "https://www.youtube.com/channel/" + youtubeID;
+            }
         }
+        return "";
     }
 
    //           setters 
@@ -145,17 +162,21 @@ class Channel implements Serializable{
         this.lastsync = lastsync;
     }
     public void setUrl(String value){
-        this.url=value;
-       /* if (this.ID.isEmpty()){
+        if (value.indexOf("youtube.com")>0 && youtubeID.isEmpty()){
             if (value.indexOf("youtube.com/feeds") > 0) {
-                this.ID = value.substring(value.lastIndexOf("id=") + 3);
+                youtubeID = value.substring(value.lastIndexOf("id=") + 3);
             }
+            else {
+                String[] segments = value.split("/");
+                youtubeID = segments[segments.length - 1];
+            }
+            urls.add(value);
         }
-        else {
+        if (value.indexOf("bitchute.com")>0 && bitchuteID.isEmpty()){
             String[] segments = value.split("/");
-            this.ID = segments[segments.length - 1];
+            bitchuteID = segments[segments.length - 1];
+            urls.add(value);
         }
-    */
     }
     public void setTitle(String value){
         this.title=value;
@@ -183,7 +204,10 @@ class Channel implements Serializable{
     public String toString(){
         return("title:"+this.title+"\n"+
                 "ID:"+this.ID+"\n"+
-                "url:"+this.url+"\n"+
+                "youtube id:"+youtubeID+"\n"+
+                "bitchute id:"+bitchuteID+"\n"+
+                "url:"+url+"\n"+
+                "url count"+urls.size()+"\n"+
                 "thumbnail:"+this.thumbnailurl+"\n"+
                 "author:"+this.author+"\n"+
                 "profile image"+this.profileImage+"\n"+
@@ -191,6 +215,7 @@ class Channel implements Serializable{
                 "date joined"+this.joined+"\n"+
                 "Last Sync"+this.lastsync+"\n"+
                 "description:"+this.description+"\n");
+
 
     }
     public boolean isBitchute(){
@@ -200,5 +225,12 @@ class Channel implements Serializable{
     public boolean isYoutube(){
         return this.url.indexOf("youtube.com") > 0;
     }
-
+    public boolean matches(String value){
+        System.out.println("trying to match:"+value);
+        toString();
+        if (youtubeID.equals(value) || bitchuteID.equals(value)){
+            return true;
+        }
+        return false;
+    }
 }

@@ -32,14 +32,13 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         private TextView author;
         private ImageView youtubeIcon;
         private ImageView bitchuteIcon;
-
+        private ImageView serviceIcon;
         CustomViewHolder(View view) {
             super(view);
             name = view.findViewById(R.id.movieName);
             image = view.findViewById(R.id.thumbnail);
             author = view.findViewById(R.id.author);
-            youtubeIcon = view.findViewById(R.id.yahooIcon);
-            bitchuteIcon = view.findViewById(R.id.bitchuteIcon);
+            serviceIcon = view.findViewById(R.id.videoserviceicon);
         }
     }
     public VideoAdapter(){
@@ -50,7 +49,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
     @Override
     public CustomViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.videolist, null, false);
+                .inflate(R.layout.videolist, parent, false);
         return new CustomViewHolder(itemView);
     }
     @Override
@@ -60,13 +59,14 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         holder.name.setText(video.getTitle());
 
         if (video.isBitchute()) {
-            holder.bitchuteIcon.setVisibility(View.VISIBLE);
-            holder.youtubeIcon.setVisibility(View.INVISIBLE);
-        } else {
-            holder.youtubeIcon.setVisibility(View.VISIBLE);
-            holder.bitchuteIcon.setVisibility(View.INVISIBLE);
+            System.out.println("setting video bitchute icon");
+            hold.serviceIcon.setImageResource(R.drawable.bitchuteicon2);
         }
-        Picasso.get().load(video.getThumbnail()).into(holder.image);
+        if (video.isYoutube()){
+            System.out.println("setting video youtube icon");
+           hold.serviceIcon.setImageResource(R.drawable.youtubeicon);
+        }
+        Picasso.get().load(video.getThumbnail()).into(hold.image);
         Long diff = new Date().getTime()- video.getDate().getTime();
         int minutes = (int) ((diff / (1000*60)) % 60);
         int hours   = (int) ((diff / (1000*60*60)) % 24);
@@ -90,7 +90,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         if (days>1){
             timehack= days +" days,"+timehack;
         }
-        holder.author.setText(video.getAuthor()+ "  "+timehack );
+        hold.author.setText(video.getAuthor()+ "  "+timehack );
 
 // load Mp4 if it's blank
         if (video.getMp4().isEmpty() && (video.isBitchute())){
@@ -98,16 +98,21 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    Video vid=null;
                     try {
-                        Video vid = videos.get(position);
+                        vid = videos.get(position);
 //                        System.out.println("no mp4 so setting in onbind" + vid);
-                        Document hackDoc = Jsoup.connect(vid.getUrl()).get();
+                        Document hackDoc = Jsoup.connect(vid.getBitchuteUrl()).get();
                         vid.setMp4(hackDoc.getElementsByTag("Source").first().attr("src"));
 
                     } catch (MalformedURLException e) {
                         System.out.println("Malformed URL: " + e.getMessage());
                     } catch (IOException e) {
                         System.out.println("I/O Error: " + e.getMessage());
+                    }
+                    catch (NullPointerException e){
+                        System.out.println("null pointer error: " + e.getMessage());
+                        System.out.println(vid);
                     }
                 }
             });
@@ -126,8 +131,20 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                 dialog.setContentView(R.layout.videoprop);
                 dialog.setTitle(vid.getTitle());
                 WebView webView = dialog.findViewById(R.id.channelDetails);
+
+                WebSettings webSettings = webView.getSettings();
+                webSettings.setJavaScriptEnabled(true);
                 webView.loadData(vid.toString(), "text/html", "UTF-8");
-                webView.loadUrl(("https://dissenter.com/discussion/begin?url="+vid.getYoutubeUrl()));
+                //webView.loadData(disqus(""),"text/html","utf-8");
+                System.out.println();
+                /*
+                if (vid.isYoutube()) {
+                    webView.loadUrl(("https://dissenter.com/discussion/begin?url=" + vid.getYoutubeUrl()));
+                }
+                if (vid.isBitchute()) {
+                    webView.loadUrl(("https://dissenter.com/discussion/begin?url=" + vid.getBitchuteUrl()));
+                }
+                */
                 webView.getSettings().setUseWideViewPort(true);
                 webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
                 webView.setScrollbarFadingEnabled(false);
@@ -155,10 +172,12 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                 Video vid = videos.get(position);
                 Uri uri;
 
-                if (MainActivity.masterData.isUseWebView()){
+                if ((MainActivity.masterData.youtubeUseWebView() && vid.isYoutube()) || (MainActivity.masterData.bitchuteUseWebView() && vid.isBitchute()) ){
                     if (!(MainActivity.masterData.webPlayer == null)) {
                         MainActivity.masterData.webPlayer.destroy();
                     }
+                    System.out.println("using webview"+MainActivity.masterData.getBitchutePlayerChoice()+" "+MainActivity.masterData.getYoutubePlayerChoice());
+
                     final Dialog dialog = new Dialog(v.getContext());
                     dialog.setContentView(R.layout.video_player);
                     dialog.setTitle(vid.getTitle());
@@ -191,11 +210,12 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                         path = vid.getMp4();
                     }
                     else {
-                        path = vid.getUrl();
+                        path = vid.getYoutubeUrl();
                     }
                     uri=Uri.parse(path);
    //                 System.out.println("trying to open player with path"+path);
-                    if (MainActivity.masterData.isUseVlc()) {
+                    if ((MainActivity.masterData.youtubeUseVlc() && vid.isYoutube()) || (MainActivity.masterData.bitchuteUseVlc() && vid.isBitchute()) ){
+                        System.out.println("using vlc "+MainActivity.masterData.getBitchutePlayerChoice()+" "+MainActivity.masterData.getYoutubePlayerChoice());
                         vlcIntent.setPackage("org.videolan.vlc");
                     }
                     vlcIntent.setDataAndTypeAndNormalize(uri, "video/*");
@@ -277,5 +297,15 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
     @Override
     public int getItemCount() {
         return videos.size();
+    }
+    public String disqus(String ID){
+        // trying out various ways to make the comment threads show up well
+
+        String script="";
+
+        return script;
+
+
+
     }
 }
