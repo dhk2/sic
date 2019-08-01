@@ -150,7 +150,9 @@ class Channel implements Serializable{
         }
         return "";
     }
-
+    public ArrayList<String> getUrls(){
+        return urls;
+    }
    //           setters 
     public void setJoined(Date joined) {
         this.joined = joined;
@@ -227,10 +229,6 @@ class Channel implements Serializable{
     }
     public boolean matches(String value){
         System.out.println("trying to match:"+value);
-        toString();
-        if (youtubeID.equals(value) || bitchuteID.equals(value)){
-            return true;
-        }
-        return false;
+        return youtubeID.equals(value) || bitchuteID.equals(value);
     }
 }

@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -186,6 +187,21 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                     WebSettings webSettings = webView.getSettings();
                     webSettings.setJavaScriptEnabled(true);
 
+                    String htmlComments = getHtmlComment("yourId", "yourShortName");
+
+                    WebView webDisqus = dialog.findViewById(R.id.channel_description);
+                    // set up disqus
+                    WebSettings webSettings2 = webDisqus.getSettings();
+                    webSettings2.setJavaScriptEnabled(true);
+                    webSettings2.setBuiltInZoomControls(true);
+                    webDisqus.requestFocusFromTouch();
+                    webDisqus.setWebViewClient(new WebViewClient());
+                    webDisqus.setWebChromeClient(new WebChromeClient());
+                    webDisqus.loadData(htmlComments, "text/html", null);
+
+
+
+
                     webView.loadData(vid.toString(), "text/html", "UTF-8");
                     webView.loadUrl(vid.getEmbeddedUrl());
                     MainActivity.masterData.webPlayer=webView;
@@ -224,88 +240,25 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                 }
             }
         });
- /*
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        int adapterPos = holder.getAdapterPosition();
-                        Video vid = videos.get(position);
-                        Uri uri = null;
-                        int vlcRequestCode = 42;
-                        if (vid.getUrl().indexOf("bitchute")>0) {
-                            if (vid.getMp4().isEmpty()) {
-                                try {
-                                    Document hackDoc = Jsoup.connect(vid.getUrl()).get();
-                                    vid.setMp4(hackDoc.getElementsByTag("Source").first().attr("src"));
-                                    //System.out.println("no mp4 "+vid);
-                                    uri = Uri.parse(vid.getMp4());
-                                } catch (MalformedURLException e) {
-                                    System.out.println("Malformed URL: " + e.getMessage());
-                                } catch (IOException e) {
-                                    System.out.println("I/O Error: " + e.getMessage());
-                                }
-                            }
-                            else {
-                                uri = Uri.parse(vid.getMp4());
-                            }
-                        }
-                        else
-                        {
-                            uri = Uri.parse(vid.getUrl());
-                        }
 
-                        Intent vlcIntent = new Intent(Intent.ACTION_VIEW);
-
-                        if (MainActivity.masterData.isUseWebView()){
-                            final Dialog dialog = new Dialog(v.getContext());
-                            dialog.setContentView(R.layout.videoprop);
-                            dialog.setTitle(vid.getTitle());
-                            WebView webView = (WebView) dialog.findViewById(R.id.channelDetails);
-                            webView.loadData(vid.toString(), "text/html", "UTF-8");
-                            webView.loadUrl(vid.getUrl());
-                            ImageView image = (ImageView) dialog.findViewById(R.id.thumbNailView);
-                            Picasso.get().load(vid.getThumbnail()).into(image);
-                            Button dialogButton = (Button) dialog.findViewById(R.id.closeButton);
-                            // if button is clicked, close the custom dialog
-                            dialogButton.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    dialog.dismiss();
-                                }
-                            });
-                            dialog.show();
-                        }
-                        else {
-                            if (MainActivity.masterData.isUseVlc()) {
-                                vlcIntent.setPackage("org.videolan.vlc");
-                            }
-                            vlcIntent.setDataAndTypeAndNormalize(uri, "video/*");
-                            vlcIntent.putExtra("title", vid.getTitle());
-                            v.getContext().startActivity(vlcIntent);
-                        }
-                    }
-
-                } );
-                thread.start();
-            }
-        });
-   */
     }
     @Override
     public int getItemCount() {
         return videos.size();
     }
-    public String disqus(String ID){
-        // trying out various ways to make the comment threads show up well
+    public String getHtmlComment(String idPost, String shortName) {
 
-        String script="";
-
-        return script;
-
-
-
+        return "<div id='disqus_thread'></div>"
+                + "<script type='text/javascript'>"
+                + "var disqus_identifier = '"
+                + "/video/owmm3OCx38XQ"
+                + "';"
+                + "var disqus_shortname = '"
+                + "www-bitchute-com"
+                + "';"
+                + " (function() { var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;"
+                + "dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';"
+                + "(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq); })();"
+                + "</script>";
     }
 }

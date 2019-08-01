@@ -76,6 +76,7 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
                         }
                         MainActivity.masterData.addVideo(nv);
                         chan.addVideo(nv);
+                        MainActivity.masterData.setDirtydata(1);
                         System.out.println("adding video "+nv.getTitle()+ " published on:"+nv.getDate());
                     }
                 }
@@ -107,6 +108,7 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
                         nv.setAuthor(chan.getTitle());
                         MainActivity.masterData.addVideo(nv);
                         chan.addVideo(nv);
+                        MainActivity.masterData.setDirtydata(1);
                         newcount++;
                         System.out.println("adding video " + nv.getTitle() + " published on:" + nv.getDate());
                     }

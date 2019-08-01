@@ -16,8 +16,6 @@ import android.support.v4.app.FragmentTransaction;
 
 class Search {
     private int searchCount = 0;
-//    private ArrayList<Video> sVideos;
-//    private ArrayList<Channel> sChannels;
     private Document doc;
     private boolean searching;
 
@@ -69,23 +67,7 @@ class Search {
         }
 
     }
-/*
-    public ArrayList<Video> getVideos() {
-        System.out.println(sVideos.size());
-        System.out.println(searching);
 
-        return this.sVideos;
-    }
-
-    public Document getDoc() {
-        System.out.println(this.doc.html());
-        return this.doc;
-    }
-
-    public boolean getStatus() {
-        return searching;
-    }
-*/
     private class YoutubeVideoSearcher extends AsyncTask<String, String, String> {
 
         private String resp;
@@ -178,7 +160,6 @@ class Search {
 
 
     }
-
     private class BitchuteVideoSearcher extends AsyncTask<String, String, String> {
 
         private String resp;
@@ -296,7 +277,6 @@ class Search {
 
 
     }
-
     private class BitchuteChannelSearcher extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... params) {
@@ -370,7 +350,6 @@ class Search {
            // searchCount++;
         }
     }
-
     private class YoutubeChannelSearcher extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... params) {

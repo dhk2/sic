@@ -99,6 +99,7 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                         if (unique) {
                             System.out.println("g is:"+g +"   id is "+chan.getID()+ "    url is "+chan.getUrl());
                             chan.addVideo(nv);
+                            MainActivity.masterData.setDirtydata(1);
                         }
                     }
                 }
@@ -146,6 +147,7 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                             }
                             if (unique) {
                                 chan.addVideo(nv);
+                                MainActivity.masterData.setDirtydata(1);
                              }
                         }
                        // System.out.println("finished scraping videos");
@@ -177,14 +179,16 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
             MainActivity.masterData.sortVideos();
 
         }
+        MainActivity.masterData.sortVideos();
+        System.out.println("sorting"+MainActivity.masterData.getVideos().size());
+        MainActivity.masterData.saveUserData();
         return 69;
     }
 
     @Override
     protected void onPostExecute(Integer integer) {
         super.onPostExecute(integer);
-        MainActivity.masterData.sortVideos();
-        System.out.println("sorting"+MainActivity.masterData.getVideos().size());
+
         if (newChannelCount ==1){
             Toast.makeText(MainActivity.masterData.context,"added "+chan.getTitle()+ " with "+newVideoCount+" videos",Toast.LENGTH_SHORT).show();
         }

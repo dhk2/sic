@@ -7,7 +7,7 @@
     android:layout_height="match_parent">
 
     <Button
-        android:id="@+id/closeButton"
+        android:id="@+id/xcloseButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -19,19 +19,15 @@
         app:layout_constraintStart_toEndOf="@+id/subscribe_button" />
 
     <ImageView
-        android:id="@+id/thumbNailView"
+        android:id="@+id/xthumbNailView"
         android:layout_width="386dp"
         android:layout_height="142dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/channel_name"
+        tools:layout_editor_absoluteX="12dp"
+        tools:layout_editor_absoluteY="73dp"
         tools:srcCompat="@tools:sample/avatars" />
 
     <Button
-        android:id="@+id/subscribe_button"
+        android:id="@+id/xsubscribe_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -41,32 +37,13 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/channel_description"
-        android:layout_width="402dp"
-        android:layout_height="352dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="8dp"
-        android:autoLink="web|email"
-        android:paddingLeft="36dp"
-        android:textAlignment="textStart"
-        android:textIsSelectable="true"
-        app:layout_constraintBottom_toTopOf="@+id/subscribe_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.739"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/thumbNailView"
-        app:layout_constraintVertical_bias="1.0" />
-
-    <TextView
-        android:id="@+id/channel_name"
+        android:id="@+id/xchannel_name"
         android:layout_width="390dp"
         android:layout_height="41dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="8dp"
         android:text="TextView"
         android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/thumbNailView"
+        app:layout_constraintBottom_toTopOf="@+id/xthumbNailView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

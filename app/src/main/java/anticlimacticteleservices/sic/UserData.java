@@ -3,18 +3,10 @@ package anticlimacticteleservices.sic;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.Loader;
-import android.support.v7.app.AppCompatActivity;
 import android.webkit.WebView;
-import android.widget.Toast;
-
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -29,10 +21,43 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static anticlimacticteleservices.sic.MainActivity.masterData;
-
 public class UserData {
+    final SimpleDateFormat bdf = new SimpleDateFormat("EEE','  dd MMM yyyy HH:mm:SSZZZZ");
+    final SimpleDateFormat ydf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+    public List<Channel> getChannels() {
+        return channels;
+    }
+    public void setChannels(ArrayList<Channel> value) {
+        this.channels = value;
+    }
     private List<Channel> sChannels = new ArrayList<Channel>();
+    private List<Channel> channels = new ArrayList<Channel>();
+    public Context context;
+    private List<Video>videos = new ArrayList<Video>();
+    public List<Video> getVideos() {
+        return videos;
+    }
+    public void setVideos(List<Video> value) {
+        this.videos = value;
+    }
+    private List<Video>sVideos = new ArrayList<Video>();
+    public VideoAdapter searchVideoAdapter= new VideoAdapter(sVideos);
+    private Set<String> feedLinks =new HashSet<String>();
+    private Boolean useYoutube=true;
+    private SharedPreferences.Editor editor;
+    // 1=vlc, 2=system default, 4=webview
+    private int youtubePlayerChoice;
+    private int bitchutePlayerChoice;
+    FragmentManager fragmentManager;
+    Fragment fragment;
+    private FragmentTransaction transaction;
+    public Activity activity;
+    private boolean forceRefresh;
+    public WebView webPlayer;
+
+
+
+    public int dirtyData =0;
     public List<Channel> getsChannels() {
         return sChannels;
     }
@@ -42,34 +67,19 @@ public class UserData {
     public void addsChannel(Channel value){
         sChannels.add(value);
     }
-    private List<Channel> channels = new ArrayList<Channel>();
-    public Context context;
-    public WebView webPlayer;
-    final SimpleDateFormat bdf = new SimpleDateFormat("EEE','  dd MMM yyyy HH:mm:SSZZZZ");
-    final SimpleDateFormat ydf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-    public List<Channel> getChannels() {
-        return channels;
-    }
-    public void setChannels(ArrayList<Channel> value) {
-        this.channels = value;
-    }
     public void addChannel(Channel value){
         this.channels.add(value);
+        this.dirtyData++;
     }
     public void removeChannel(String ID){
+
         for (int i=0;i<channels.size();i++){
             if (channels.get(i).matches(ID)){
                 channels.remove(i);
+                dirtyData++;
                 break;
             }
         }
-    }
-    private List<Video>videos = new ArrayList<Video>();
-    public List<Video> getVideos() {
-        return videos;
-    }
-    public void setVideos(List<Video> value) {
-        this.videos = value;
     }
     public void sortVideos(){
         Collections.sort(videos);
@@ -82,7 +92,6 @@ public class UserData {
     public void addVideo(Video value) {
         videos.add(value);
     }
-    private List<Video>sVideos = new ArrayList<Video>();
     public List<Video> getsVideos() {
         return sVideos;
     }
@@ -92,13 +101,6 @@ public class UserData {
     public void addsVideos(Video value){
         this.sVideos.add(value);
     }
-
-    public VideoAdapter searchVideoAdapter= new VideoAdapter(sVideos);
-
-    private Set<String> feedLinks =new HashSet<String>();
-    private Boolean useYoutube=true;
-    private SharedPreferences.Editor editor;
-
     public boolean youtubeUseWebView() {
         return youtubePlayerChoice == 4;
     }
@@ -113,7 +115,6 @@ public class UserData {
         return youtubePlayerChoice == 1;
     }
     public boolean bitchuteUseDefault() {return youtubePlayerChoice ==2; }
-
     public int getYoutubePlayerChoice() {
         return youtubePlayerChoice;
     }
@@ -126,47 +127,29 @@ public class UserData {
     public void setBitchutePlayerChoice(int playerChoice) {
         this.bitchutePlayerChoice = playerChoice;
     }
-    // 1=vlc, 2=system default, 4=webview
-    private int youtubePlayerChoice;
-    private int bitchutePlayerChoice;
     public FragmentManager getFragmentManager() {
         return fragmentManager;
     }
-
     public void setFragmentManager(FragmentManager fragmentManager) {
         this.fragmentManager = fragmentManager;
     }
-    FragmentManager fragmentManager;
-
     public Fragment getFragment() {
         return fragment;
     }
-
     public void setFragment(Fragment fragment) {
         this.fragment = fragment;
     }
-
-    Fragment fragment;
-
     public FragmentTransaction getTransaction() {
         return transaction;
     }
-
     public void setTransaction(FragmentTransaction transaction) {
         this.transaction = transaction;
     }
-
-    private FragmentTransaction transaction;
-    public Activity activity;
-    private boolean forceRefresh;
-
-
-
     public UserData(Context con) {
         editor = MainActivity.preferences.edit();
         youtubePlayerChoice = MainActivity.preferences.getInt("youtubePlayerChoice", 1);
         bitchutePlayerChoice = MainActivity.preferences.getInt("bitchutePlayerChoice", 1);
-
+        this.context=con;
         //shouldn't be needed
         if (youtubePlayerChoice==0)
             youtubePlayerChoice=1;
@@ -192,6 +175,44 @@ public class UserData {
             //Toast.makeText(activity,"error reading in subsciption file, subscriptions reset",Toast.LENGTH_SHORT).show();
         }
         System.out.println("read in " + channels.size());
+        if(channels.isEmpty()){
+            try {
+                FileInputStream fileIn = new FileInputStream(this.context.getFilesDir() + "channels.lkg");
+                ObjectInputStream in = new ObjectInputStream(fileIn);
+                channels = (ArrayList<Channel>) in.readObject();
+                System.out.println("last known good channels read "+channels.size());
+                in.close();
+                fileIn.close();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (NullPointerException e){
+                System.out.println("null pointer issue:");
+                e.printStackTrace();
+                //Toast.makeText(activity,"error reading in subsciption file, subscriptions reset",Toast.LENGTH_SHORT).show();
+            }
+        }
+        else {
+            try (FileInputStream in = new FileInputStream("channels.src")) {
+                try (FileOutputStream out = new FileOutputStream("channels.lkg")) {
+                    // Transfer bytes from in to out
+                    byte[] buf = new byte[1024];
+                    int len;
+                    while ((len = in.read(buf)) > 0) {
+                        out.write(buf, 0, len);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         for (Channel c : channels) {
             for (Video v : c.getVideos()) {
                 videos.add(v);
@@ -208,20 +229,22 @@ public class UserData {
 
         editor.commit();
         System.out.println("saved user preferences, saving "+channels.size());
-        try {
-            FileOutputStream fileOut = new FileOutputStream(context.getFilesDir()+"channels.ser");
-            ObjectOutputStream out = new ObjectOutputStream(fileOut);
-            out.writeObject(channels);
-            out.close();
-            fileOut.close();
+        if (dirtyData>0) {
+            try {
+                FileOutputStream fileOut = new FileOutputStream(context.getFilesDir() + "channels.ser");
+                ObjectOutputStream out = new ObjectOutputStream(fileOut);
+                out.writeObject(channels);
+                out.close();
+                fileOut.close();
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
 
+            }
         }
-
+        dirtyData=0;
         return true;
     }
     public void setForceRefresh(boolean forceRefresh) {
@@ -308,16 +331,20 @@ public class UserData {
         editor.commit();
         forceRefresh=true;
     }
-
     public Boolean getUseYoutube() {
         return useYoutube;
     }
-
     public void callImport() {
         System.out.print("creating new import subscription");
         //this was the death of me
        ImportSubscriptions is = new ImportSubscriptions();
        is.execute();
+    }
+    public int getDirtydata() {
+        return dirtyData;
+    }
+    public void setDirtydata(int dirtydata) {
+        dirtyData = dirtydata;
     }
 }
    

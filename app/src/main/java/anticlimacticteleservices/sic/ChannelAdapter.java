@@ -11,12 +11,15 @@ import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 import java.util.Set;
@@ -101,6 +104,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
         hold.subscribed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                status=(String)sub.getText();
                 if(status.equals("Unsubscribe")){
                     status="Subscribe";
                     MainActivity.masterData.removeChannel(channel.getID());
@@ -131,6 +135,14 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
                 TextView description = dialog.findViewById(R.id.channel_description);
                 Spanned spanned = HtmlCompat.fromHtml(chan.getDescription(), HtmlCompat.FROM_HTML_MODE_COMPACT);
                 description.setText(spanned);
+                description.append(System.getProperty("line.separator"));
+                description.append("Subscribers:"+chan.getSubscribers()+System.getProperty("line.separator"));
+                description.append("last synch:"+chan.getLastsync()+System.getProperty("line.separator"));
+                for (String h : chan.getUrls()) {
+                    description.append("source url:"+h+System.getProperty("line.separator"));
+                }
+                //description.append("youtube:"+chan.getSubscribers()+System.getProperty("line.separator"));
+
                 ImageView image = dialog.findViewById(R.id.thumbNailView);
                 if (!chan.getThumbnail().isEmpty()){
                     Picasso.get().load(chan.getThumbnail()).into(image);
@@ -141,7 +153,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
                 name.setText(chan.getTitle());
                 status="Subscribe";
                 for (Channel c : MainActivity.masterData.getChannels()){
-                    if (c.getUrl().equals(channel.getUrl())){
+                    if (c.matches(channel.getID())){
                         status="Unsubscribe";
                     }
                 }
