@@ -201,25 +201,33 @@ public class SettingsFragment extends Fragment {
         {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 // checkedId is the RadioButton selected
-
+                System.out.println(checkedId);
                 switch(checkedId) {
                     case R.id.youtubeuse_vlc:
                         MainActivity.masterData.setYoutubePlayerChoice(1);
+                        System.out.println(("setting vlc"));
                         break;
                     case R.id.youtubeuse_default:
                         MainActivity.masterData.setYoutubePlayerChoice(2);
+                        System.out.println(("setting default"));
                         break;
                     case R.id.youtubeuse_webview:
                         MainActivity.masterData.setYoutubePlayerChoice(4);
+                        System.out.println(("setting webview"));
                 }
+                System.out.println("use yt vlc:"+MainActivity.masterData.youtubeUseVlc());
+                System.out.println("use yt default:"+MainActivity.masterData.youtubeUseDefault());
+                System.out.println("use yt webview:"+MainActivity.masterData.youtubeUseWebView());
             }
         });
         switch(MainActivity.masterData.getBitchutePlayerChoice()){
             case 1:
                 bitchuteUseVlc.setChecked(true);
+                System.out.println(("setting vlc"));
                 break;
             case 2:
                 bitchuteUseDefault.setChecked(true);
+                System.out.println(("setting default"));
                 break;
             case 4:
                 bitchuteUseWebview.setChecked(true);
@@ -239,6 +247,10 @@ public class SettingsFragment extends Fragment {
                     case R.id.bitchuteuse_webview:
                         MainActivity.masterData.setBitchutePlayerChoice(4);
                 }
+                System.out.println("playersetting "+MainActivity.masterData.getBitchutePlayerChoice());
+                System.out.println("use bitchute vlc:"+MainActivity.masterData.bitchuteUseVlc());
+                System.out.println("use bitchute default:"+MainActivity.masterData.bitchuteUseDefault());
+                System.out.println("use bitchute webview:"+MainActivity.masterData.bitchuteUseWebView());
             }
         });
     }
