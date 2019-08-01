@@ -27,8 +27,7 @@ class Search {
             MainActivity.masterData.setsVideos(new ArrayList <Video>());
             final String location = "https://www.youtube.com/results?search_query=" + fixedTerm + "&sp=EgIQAQ%253D%253D";
             final String location2 = "https://search.bitchute.com/renderer?query=" + fixedTerm + "&use=bitchute-json&name=Search&login=bcadmin&key=7ea2d72b62aa4f762cc5a348ef6642b8&fqr.kind=video";
-
-            //this.sVideos = new ArrayList<Video>();
+            final String location3 = "https://www.google.com/search?q="+fixedTerm+"+%22www.bitchute.com/channel%22";
             if (youtube){
                 searchCount++;
             }
@@ -48,10 +47,13 @@ class Search {
             MainActivity.masterData.setsChannels(new ArrayList <Channel>());
             final String location = "https://www.youtube.com/results?search_query=" + fixedTerm + "&sp=EgIQAg%253D%253D";
             final String location2 = "https://search.bitchute.com/renderer?query=" + fixedTerm + "&use=bitchute-json&name=Search&login=bcadmin&key=7ea2d72b62aa4f762cc5a348ef6642b8&fqa.kind=channel";
+            final String location3 = "https://www.google.com/search?q="+fixedTerm+"+%22www.bitchute.com/channel%22&num=25";
+
             if (youtube){
                 searchCount++;
             }
             if (bitchute){
+                searchCount++;
                 searchCount++;
             }
 
@@ -63,6 +65,8 @@ class Search {
             {
                 BitchuteChannelSearcher bitchutecScraper = new BitchuteChannelSearcher();
                 bitchutecScraper.execute(location2);
+                BitchuteGoogleSearcher bgScraper = new BitchuteGoogleSearcher();
+                bgScraper.execute(location3);
             }
         }
 
@@ -441,6 +445,97 @@ class Search {
             System.out.println("starting to scrape youtube");
         }
 
+    }
+
+    private class BitchuteGoogleSearcher extends AsyncTask<String, String, String> {
+        @Override
+        protected String doInBackground(String... params) {
+            //          String tempAuthor=doc.title();
+            String thumbnail = "";
+            try {
+                System.out.println("scraping youtube search at " + params[0]);
+                doc = Jsoup.connect(params[0]).get();
+                  //System.out.println(doc);
+                  Elements links = doc.getElementsByAttribute("href");
+                  for (Element l : links){
+
+                      Channel nc;
+                      String foo =l.attr("href");
+                      if ((foo.length()>33) && (foo.substring(0,33).equals("https://www.bitchute.com/channel/"))){
+                          System.out.println("[[[[["+foo+"]]]]]");
+                          nc=new Channel(foo);
+                          //need to convert uuid to text uid
+                          Document doc = Jsoup.connect(nc.getBitchuteUrl()).get();
+                          nc = new Channel("https://www.bitchute.com" + doc.getElementsByClass("name").first().getElementsByTag("a").first().attr("href"));
+                          nc.setTitle(doc.title());
+                          nc.setDescription(doc.getElementsByAttributeValue("name", "description").attr("content"));
+                          nc.setThumbnail(doc.getElementsByAttributeValue("itemprop", "thumbnailUrl").attr("href"));
+                          MainActivity.masterData.addsChannel(nc);
+                     }
+                  }
+/*
+                Elements results = doc.getElementsByClass("osscmnrdr oss-result");
+                Elements parts = results.first().getAllElements();
+                Channel nc = new Channel();
+                for (Element r : parts) {
+                    //                 System.out.println(">>>>>"+r+"<<<<");
+                    //                   System.out.println(r.className());
+                    switch (r.className()) {
+
+                        case "osscmnrdr ossfieldrdr1":
+                            nc =new Channel(r.child(0).attr("href"));
+                            nc.setTitle(r.child(0).text());
+                            break;
+                        case "osscmnrdr ossfieldrdr2":
+                            nc.setThumbnail(r.child(0).child(0).attr("src"));
+                            break;
+                        case "osscmnrdr ossfieldrdr3":
+                            nc.setDescription(r.text());
+                            break;
+                        case "osscmnrdr ossfieldrdr8 oss-item-displayviews":
+                            System.out.println(nc);
+                            MainActivity.masterData.addsChannel(nc);
+                            nc=new Channel();
+                            break;
+                    }
+                }
+                */
+            } catch (MalformedURLException e) {
+                System.out.println("Malformed URL: " + e.getMessage());
+            } catch (IOException e) {
+                System.out.println("I/O Error: " + e.getMessage());
+            } catch(NullPointerException e){
+                System.out.println("Null pointer exception"+e.getMessage());
+            }
+            return "done";
+        }
+        @Override
+        protected void onPostExecute(String result) {
+            // execution of result of Long time consuming operation
+            super.onPostExecute(result);
+            System.out.println("Search count:"+searchCount);
+            System.out.println(MainActivity.masterData.getsChannels().size());
+            searchCount--;
+            if (searchCount < 1) {
+                searching = false;
+                ChannelFragment fragment = new ChannelFragment();
+                fragment.setChannels(MainActivity.masterData.getsChannels());
+
+                FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
+                transaction.replace(R.id.search_subfragment, fragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
+            } else {
+                System.out.println("Bitchute google search finished but searching isn't done yet");
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {
+            System.out.println("starting to scrape BitChute");
+            searching = true;
+            // searchCount++;
+        }
     }
 }
 

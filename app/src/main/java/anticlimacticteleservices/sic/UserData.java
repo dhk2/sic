@@ -65,7 +65,15 @@ public class UserData {
         this.sChannels = value;
     }
     public void addsChannel(Channel value){
-        sChannels.add(value);
+        boolean unique = true;
+        for (Channel test : sChannels) {
+            if (test.matches(value.getID())){
+                unique=false;
+            }
+        }
+        if (unique==true) {
+            sChannels.add(value);
+        }
     }
     public void addChannel(Channel value){
         this.channels.add(value);
