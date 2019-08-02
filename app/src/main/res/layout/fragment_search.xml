@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="top">
+    android:gravity="top"
+    android:orientation="vertical"
+    android:paddingTop="16dp"
+    android:paddingEnd="16dp">
 
 
     <LinearLayout
@@ -63,7 +65,7 @@
         android:layout_height="659dp"
         android:orientation="vertical"
         tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="8dp" >
+        tools:layout_editor_absoluteY="8dp">
 
     </LinearLayout>
 

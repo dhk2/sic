@@ -311,7 +311,7 @@ class Search {
                             nc.setDescription(r.text());
                             break;
                         case "osscmnrdr ossfieldrdr8 oss-item-displayviews":
-                            System.out.println(nc);
+                          //  System.out.println(nc);
                            MainActivity.masterData.addsChannel(nc);
                             nc=new Channel();
                             break;
@@ -456,56 +456,50 @@ class Search {
                 System.out.println("scraping youtube search at " + params[0]);
                 doc = Jsoup.connect(params[0]).get();
                   //System.out.println(doc);
-                  Elements links = doc.getElementsByAttribute("href");
+              //    Elements links = doc.getElementsByAttribute("href");
+                Elements links = doc.getElementsByClass("rc");
                   for (Element l : links){
-
-                      Channel nc;
+                    //  System.out.println("[[[[["+l+"]]]]]");
+                      String link=l.getElementsByAttribute("href").first().attr("href");
+                      if ((link.length()>33) && (link.substring(0,33).equals("https://www.bitchute.com/channel/"))) {
+                          Channel nc = new Channel(link);
+                          nc.setDescription(l.getElementsByClass("st").text());
+                          nc.setTitle(l.getElementsByTag("h3").text());
+                          nc.setThumbnail("https://i2.wp.com/www.xanjero.com/wp-content/uploads/2018/04/G-Suite-apps-cards.png");
+                          MainActivity.masterData.addsChannel(nc);
+                      }
+                /*      Channel nc;
                       String foo =l.attr("href");
                       if ((foo.length()>33) && (foo.substring(0,33).equals("https://www.bitchute.com/channel/"))){
                           System.out.println("[[[[["+foo+"]]]]]");
                           nc=new Channel(foo);
                           //need to convert uuid to text uid
-                          Document doc = Jsoup.connect(nc.getBitchuteUrl()).get();
-                          nc = new Channel("https://www.bitchute.com" + doc.getElementsByClass("name").first().getElementsByTag("a").first().attr("href"));
-                          nc.setTitle(doc.title());
-                          nc.setDescription(doc.getElementsByAttributeValue("name", "description").attr("content"));
-                          nc.setThumbnail(doc.getElementsByAttributeValue("itemprop", "thumbnailUrl").attr("href"));
-                          MainActivity.masterData.addsChannel(nc);
+                         // Document doc = Jsoup.connect(nc.getBitchuteUrl()).get();
+                         try {
+                             String location4 = "https://www.bitchute.com" + doc.getElementsByClass("name").attr("href");
+                             System.out.println(location4);
+                             nc = new Channel(location4);
+                             nc.setTitle(doc.title());
+                             System.out.println(doc);
+                             nc.setDescription(doc.getElementsByAttributeValue("name", "description").attr("content"));
+                             nc.setThumbnail(doc.getElementsByAttributeValue("name", "twitter:image:src").attr("content"));
+                             System.out.println(nc);
+                             MainActivity.masterData.addsChannel(nc);
+                         }
+                         catch(NullPointerException e) {
+                             System.out.println("Null pointer exception" + e.getMessage());
+                             e.printStackTrace();
+                         }
                      }
+                  */
                   }
-/*
-                Elements results = doc.getElementsByClass("osscmnrdr oss-result");
-                Elements parts = results.first().getAllElements();
-                Channel nc = new Channel();
-                for (Element r : parts) {
-                    //                 System.out.println(">>>>>"+r+"<<<<");
-                    //                   System.out.println(r.className());
-                    switch (r.className()) {
-
-                        case "osscmnrdr ossfieldrdr1":
-                            nc =new Channel(r.child(0).attr("href"));
-                            nc.setTitle(r.child(0).text());
-                            break;
-                        case "osscmnrdr ossfieldrdr2":
-                            nc.setThumbnail(r.child(0).child(0).attr("src"));
-                            break;
-                        case "osscmnrdr ossfieldrdr3":
-                            nc.setDescription(r.text());
-                            break;
-                        case "osscmnrdr ossfieldrdr8 oss-item-displayviews":
-                            System.out.println(nc);
-                            MainActivity.masterData.addsChannel(nc);
-                            nc=new Channel();
-                            break;
-                    }
-                }
-                */
             } catch (MalformedURLException e) {
                 System.out.println("Malformed URL: " + e.getMessage());
             } catch (IOException e) {
                 System.out.println("I/O Error: " + e.getMessage());
             } catch(NullPointerException e){
                 System.out.println("Null pointer exception"+e.getMessage());
+                e.printStackTrace();
             }
             return "done";
         }
