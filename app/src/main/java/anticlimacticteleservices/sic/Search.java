@@ -8,7 +8,6 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 import java.net.*;
 import java.io.*;
-import java.util.List;
 
 import android.app.*;
 import android.os.*;
@@ -65,7 +64,7 @@ class Search {
             {
                 BitchuteChannelSearcher bitchutecScraper = new BitchuteChannelSearcher();
                 bitchutecScraper.execute(location2);
-                BitchuteGoogleSearcher bgScraper = new BitchuteGoogleSearcher();
+                BitchuteGoogleChannelSearcher bgScraper = new BitchuteGoogleChannelSearcher();
                 bgScraper.execute(location3);
             }
         }
@@ -447,7 +446,7 @@ class Search {
 
     }
 
-    private class BitchuteGoogleSearcher extends AsyncTask<String, String, String> {
+    private class BitchuteGoogleChannelSearcher extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... params) {
             //          String tempAuthor=doc.title();
@@ -468,30 +467,6 @@ class Search {
                           nc.setThumbnail("https://i2.wp.com/www.xanjero.com/wp-content/uploads/2018/04/G-Suite-apps-cards.png");
                           MainActivity.masterData.addsChannel(nc);
                       }
-                /*      Channel nc;
-                      String foo =l.attr("href");
-                      if ((foo.length()>33) && (foo.substring(0,33).equals("https://www.bitchute.com/channel/"))){
-                          System.out.println("[[[[["+foo+"]]]]]");
-                          nc=new Channel(foo);
-                          //need to convert uuid to text uid
-                         // Document doc = Jsoup.connect(nc.getBitchuteUrl()).get();
-                         try {
-                             String location4 = "https://www.bitchute.com" + doc.getElementsByClass("name").attr("href");
-                             System.out.println(location4);
-                             nc = new Channel(location4);
-                             nc.setTitle(doc.title());
-                             System.out.println(doc);
-                             nc.setDescription(doc.getElementsByAttributeValue("name", "description").attr("content"));
-                             nc.setThumbnail(doc.getElementsByAttributeValue("name", "twitter:image:src").attr("content"));
-                             System.out.println(nc);
-                             MainActivity.masterData.addsChannel(nc);
-                         }
-                         catch(NullPointerException e) {
-                             System.out.println("Null pointer exception" + e.getMessage());
-                             e.printStackTrace();
-                         }
-                     }
-                  */
                   }
             } catch (MalformedURLException e) {
                 System.out.println("Malformed URL: " + e.getMessage());
@@ -526,7 +501,7 @@ class Search {
 
         @Override
         protected void onPreExecute() {
-            System.out.println("starting to scrape BitChute");
+            System.out.println("starting to scrape google for BitChute channels");
             searching = true;
             // searchCount++;
         }

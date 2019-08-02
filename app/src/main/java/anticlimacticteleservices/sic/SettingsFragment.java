@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -37,7 +38,8 @@ public class SettingsFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
     private String mParam1;
     private String mParam2;
-
+    Dialog dialogHandle;
+    WebView webviewHandle;
     public SettingsFragment() {
         // Required empty public constructor
     }
@@ -76,12 +78,15 @@ public class SettingsFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         final Button importBitchute = view.findViewById(R.id.load_bitchute);
+        final Button importYoutube = view.findViewById(R.id.load_youtube);
         importBitchute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Dialog dialog = new Dialog(v.getContext());
+                  final Dialog dialog = new Dialog(v.getContext());
                 dialog.setContentView(R.layout.importdialog);
                 final WebView webView = dialog.findViewById(R.id.idplayer_window);
+                dialogHandle=dialog;
+                webviewHandle = webView;
                 webView.setWebViewClient(new WebViewClient() {
                     @Override
                     public void onPageFinished(WebView view, String url) {
@@ -97,9 +102,6 @@ public class SettingsFragment extends Fragment {
                 webView.getSettings().setUseWideViewPort(true);
                 webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
                 webView.setScrollbarFadingEnabled(false);
-
-
-
                 webView.loadUrl("https://www.bitchute.com/subscriptions/");
                 Button closeButton = dialog.findViewById(R.id.idclosebutton);
                 closeButton.setText("close");
@@ -131,7 +133,6 @@ public class SettingsFragment extends Fragment {
 
         });
   */
-        final Button importYoutube = view.findViewById(R.id.load_youtube);
         importYoutube.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -275,6 +276,9 @@ public class SettingsFragment extends Fragment {
                 for (Element s : subscriptions) {
                    new ChannelInit().execute("https://www.bitchute.com"+s.getElementsByTag("a").first().attr("href"));
                 }
+//                webviewHandle.destroy();
+                dialogHandle.dismiss();
+                Toast.makeText(MainActivity.masterData.context,"adding "+subscriptions.size()+ " channels from bitchute.",Toast.LENGTH_SHORT).show();
             }
             if (doc.title().equals("Subscription manager - YouTube")) {
                 Elements channels = doc.getElementsByClass("guide-item yt-uix-sessionlink yt-valign spf-link    ");
@@ -286,6 +290,9 @@ public class SettingsFragment extends Fragment {
                         new ChannelInit().execute(url);
                     }
                 }
+  //              webviewHandle.destroy();
+                dialogHandle.dismiss();
+                Toast.makeText(MainActivity.masterData.context,"adding "+channels.size()+ " channels from youtube.",Toast.LENGTH_SHORT).show();
             }
         }
     }

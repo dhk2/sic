@@ -2,8 +2,14 @@ package anticlimacticteleservices.sic;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.net.Uri;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.text.HtmlCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +20,8 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.VideoView;
+
 import com.squareup.picasso.Picasso;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -131,12 +139,14 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                 final Dialog dialog = new Dialog(view.getContext());
                 dialog.setContentView(R.layout.videoprop);
                 dialog.setTitle(vid.getTitle());
-                WebView webView = dialog.findViewById(R.id.channelDetails);
+                TextView textView = dialog.findViewById(R.id.channelDetails);
 
-                WebSettings webSettings = webView.getSettings();
-                webSettings.setJavaScriptEnabled(true);
-                webView.loadData(vid.toString(), "text/html", "UTF-8");
+             //   WebSettings webSettings = webView.getSettings();
+             //   webSettings.setJavaScriptEnabled(true);
+                Spanned spanned = HtmlCompat.fromHtml(vid.getDescription(), HtmlCompat.FROM_HTML_MODE_COMPACT);
+            //    webView.loadData(String.valueOf(spanned), "text/html", "UTF-8");
                 //webView.loadData(disqus(""),"text/html","utf-8");
+                textView.setText(Html.fromHtml(vid.getDescription()));
                 System.out.println();
                 /*
                 if (vid.isYoutube()) {
@@ -146,11 +156,13 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                     webView.loadUrl(("https://dissenter.com/discussion/begin?url=" + vid.getBitchuteUrl()));
                 }
                 */
-                webView.getSettings().setUseWideViewPort(true);
-                webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
-                webView.setScrollbarFadingEnabled(false);
+                //webView.getSettings().setUseWideViewPort(true);
+                //webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+               // webView.setScrollbarFadingEnabled(false);
                 ImageView image = dialog.findViewById(R.id.thumbNailView);
                 Picasso.get().load(vid.getThumbnail()).into(image);
+                TextView title = dialog.findViewById(R.id.videoproptitle);
+                title.setText(vid.getTitle());
                 Button dialogButton = dialog.findViewById(R.id.closeButton);
                 // if button is clicked, close the custom dialog
                 dialogButton.setOnClickListener(new View.OnClickListener() {
@@ -222,16 +234,15 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                     int vlcRequestCode = 42;
                     String path;
                     Intent vlcIntent = new Intent(Intent.ACTION_VIEW);
-                    if (!vid.getMp4().isEmpty()){
+                    if (!vid.getMp4().isEmpty()) {
                         path = vid.getMp4();
-                    }
-                    else {
+                    } else {
                         path = vid.getYoutubeUrl();
                     }
-                    uri=Uri.parse(path);
-   //                 System.out.println("trying to open player with path"+path);
-                    if ((MainActivity.masterData.youtubeUseVlc() && vid.isYoutube()) || (MainActivity.masterData.bitchuteUseVlc() && vid.isBitchute()) ){
-                        System.out.println("using vlc "+MainActivity.masterData.getBitchutePlayerChoice()+" "+MainActivity.masterData.getYoutubePlayerChoice());
+                    uri = Uri.parse(path);
+                    //                 System.out.println("trying to open player with path"+path);
+                    if ((MainActivity.masterData.youtubeUseVlc() && vid.isYoutube()) || (MainActivity.masterData.bitchuteUseVlc() && vid.isBitchute())) {
+                        System.out.println("using vlc " + MainActivity.masterData.getBitchutePlayerChoice() + " " + MainActivity.masterData.getYoutubePlayerChoice());
                         vlcIntent.setPackage("org.videolan.vlc");
                     }
                     vlcIntent.setDataAndTypeAndNormalize(uri, "video/*");

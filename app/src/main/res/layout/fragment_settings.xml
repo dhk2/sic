@@ -11,11 +11,12 @@
         <TextView
             android:id="@+id/textView2"
             android:layout_width="401dp"
-            android:layout_height="102dp"
+            android:layout_height="133dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:autoLink="web"
+            android:paddingTop="16dp"
             android:text="Which video player to use. VLC is open source and ad free, and supports youtube backwards compatibility. it can be installed from the app store at
  https://play.google.com/store/apps/details?id=org.videolan.vlc Other players that support network playback should work as straight Bitchute clients.
 webview is mildly functional." />
@@ -24,7 +25,10 @@ webview is mildly functional." />
             android:id="@+id/textView5"
             android:layout_width="match_parent"
             android:layout_height="37dp"
-            android:text="Youtube settings" />
+            android:text="Youtube settings"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
         <RadioGroup
             android:id="@+id/youtubeplayerradioGroup"
@@ -67,7 +71,10 @@ webview is mildly functional." />
             android:id="@+id/textView4"
             android:layout_width="match_parent"
             android:layout_height="35dp"
-            android:text="Bitchute settings" />
+            android:text="Bitchute settings"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
         <RadioGroup
             android:id="@+id/bitchuteplayerradioGroup"
@@ -117,7 +124,7 @@ webview is mildly functional." />
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:autoLink="web"
-            android:text="To import your Bitchute or Youtube channels click the appropriate button and logon. It should open a page showing a list of your subscriptions. It will start synching them up in the background. You can close the window and start using [sic]." />
+            android:text="To import,click the appropriate button and logon. Once logged in it should show a list of subscriptions and immediately start importing them." />
 
     </LinearLayout>
 

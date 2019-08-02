@@ -89,9 +89,10 @@ public class MainActivity extends AppCompatActivity {
 
                         return true;
                     case R.id.navigation_history:
-                        //getSupportActionBar().show();
-                        //setTitle("Not implemented yet");
-                       new ChannelUpdate().execute();
+                        getSupportActionBar().show();
+                        setTitle("Not implemented yet");
+                        MainActivity.masterData.setForceRefresh(true);
+                        new ChannelUpdate().execute();
 
 
                         return false;
@@ -126,8 +127,8 @@ public class MainActivity extends AppCompatActivity {
                         return true;
 
                     case R.id.navigation_settings:
-                        getSupportActionBar().show();
-                        setTitle("settings");
+                        getSupportActionBar().hide();
+                        //setTitle("settings");
                         fragment = new SettingsFragment();
                         manager = getSupportFragmentManager();
                         transaction = manager.beginTransaction();
@@ -163,9 +164,9 @@ public class MainActivity extends AppCompatActivity {
             dialog.setContentView(R.layout.videoprop);
             dialog.setTitle("new user");
 
-            WebView message = dialog.findViewById(R.id.channelDetails);
+            TextView message = dialog.findViewById(R.id.channelDetails);
 
-            message.loadDataWithBaseURL(null,"<center>Looks like this is your first time</center> <br> You can use the search feature to find channels,<p> or import channels from the settings page" , "text/html", "UTF-8", null);
+            message.setText("Looks like this is your first time\n You can use the search feature to find channels,\n or import channels from the settings page");
           //  message.loadData(,"html","utf-8");
             ImageView image = dialog.findViewById(R.id.thumbNailView);
             image.setImageResource(R.mipmap.sic_round);

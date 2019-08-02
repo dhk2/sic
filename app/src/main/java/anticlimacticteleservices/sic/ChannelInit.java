@@ -31,13 +31,13 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
         channels:for (String g : params) {
             chan = new Channel(g);
 
- /*           for (Channel c : MainActivity.masterData.getChannels()){
+           for (Channel c : MainActivity.masterData.getChannels()){
                 if (chan.matches(c.getID())) {
                     System.out.println("channel already exists");
                     continue channels;
                 }
             }
-*/            try {
+           try {
                 //chan.setUrl(g);
                 chan = new Channel(g);
                 if (chan.isBitchute()){

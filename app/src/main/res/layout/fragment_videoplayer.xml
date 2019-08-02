@@ -3,15 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
->
+    tools:context=".fragment_videoplayer">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/vrv"
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipChildren="true"
-        android:clipToPadding="true"
-        android:paddingTop="16dp"
-        tools:layout_editor_absoluteX="-67dp"
-        tools:layout_editor_absoluteY="270dp" />
+        android:text="@string/hello_blank_fragment" />
+
 </FrameLayout>

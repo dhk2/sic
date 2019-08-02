@@ -87,8 +87,8 @@ public class SearchFragment extends Fragment {
                 // If the event is a key-down event on the "enter" button
                 if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
                         (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    ((MainActivity) getActivity())
-                            .setMainTitle("Searching...");
+         //           ((MainActivity) getActivity())
+                   //         .setMainTitle("Searching...");
                     Search target;
                     String searchText = sText.getText().toString();
                     target = new Search(searchText, videoSearch.isChecked(),youtubeSearch.isChecked(),bitchuteSearch.isChecked());

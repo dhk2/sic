@@ -44,7 +44,7 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
             int hours   = (int) ((diff / (1000*60*60)) % 24);
             int days = (int) ((diff / (1000*60*60*24)));
             System.out.println(chan.getTitle()+"synched days:"+days+" hours:"+hours+" minutes:"+minutes);
-            if (hours>0){
+            if (hours>0 || MainActivity.masterData.getForceRefresh()){
                 chan.setLastsync(new Date());
                 if (chan.isYoutube()){
                     try {
@@ -120,6 +120,7 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
         if (newcount>1){
             MainActivity.masterData.sortVideos();
         }
+        MainActivity.masterData.setForceRefresh(false);
         return true;
     }
 
