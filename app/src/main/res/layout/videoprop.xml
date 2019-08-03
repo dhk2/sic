@@ -68,7 +68,7 @@
         android:paddingRight="24dp"
         android:text="Sharing Is Caring"
         android:textAlignment="center"
-        android:textSize="36sp"
+        android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/channelDetails"
         app:layout_constraintEnd_toEndOf="parent"

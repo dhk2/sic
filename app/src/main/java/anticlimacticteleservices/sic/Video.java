@@ -1,6 +1,7 @@
 package anticlimacticteleservices.sic;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 
@@ -23,6 +24,7 @@ class Video implements Serializable,Comparable<Video>
     private String commentCount;
     private String hashtags;
     private String category;
+    private ArrayList comments;
 
     public Video()
     {
@@ -44,6 +46,7 @@ class Video implements Serializable,Comparable<Video>
         this.commentCount = "0";
         this.hashtags = "";
         this.category = "";
+        this.comments = new ArrayList<Comment>();
     }
 
     public Video(String location)
@@ -252,5 +255,7 @@ class Video implements Serializable,Comparable<Video>
     public String getYoutubeUrl(){
         return "https://www.youtube.com/watch?v="+this.ID;
     }
-
+    public void addComment(Comment com){
+        comments.add(com);
+    }
 }

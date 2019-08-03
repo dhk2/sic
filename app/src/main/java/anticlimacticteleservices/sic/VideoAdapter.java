@@ -104,7 +104,8 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
 
 // load Mp4 if it's blank
         if (video.getMp4().isEmpty() && (video.isBitchute())){
-  //          System.out.println("missing mp4 in bitchute, running runnable");
+            new VideoScrape().execute(video);
+  /*          System.out.println("missing mp4 in bitchute, running runnable");
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -127,6 +128,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                 }
             });
             thread.start();
+*/
         }
         else
         {
@@ -135,7 +137,10 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
+
                 Video vid = videos.get(position);
+                VideoScrape scrapper = new VideoScrape();
+                scrapper.execute(vid);
                 System.out.println(vid.toString());
                 final Dialog dialog = new Dialog(view.getContext());
                 dialog.setContentView(R.layout.videoprop);
@@ -229,7 +234,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                         vlcIntent.setPackage("org.videolan.vlc");
                     case 2:
                         //update for additional sources
-                    if (!vid.getMp4().isEmpty()) {
+                    if (vid.isBitchute()) {
                         path = vid.getMp4();
                     } else {
                         path = vid.getYoutubeUrl();
@@ -255,19 +260,5 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
     public int getItemCount() {
         return videos.size();
     }
-    public String getHtmlComment(String idPost, String shortName) {
 
-        return "<div id='disqus_thread'></div>"
-                + "<script type='text/javascript'>"
-                + "var disqus_identifier = '"
-                + "/video/owmm3OCx38XQ"
-                + "';"
-                + "var disqus_shortname = '"
-                + "www-bitchute-com"
-                + "';"
-                + " (function() { var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;"
-                + "dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';"
-                + "(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq); })();"
-                + "</script>";
-    }
 }
