@@ -196,8 +196,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                     switcher = MainActivity.masterData.getBitchutePlayerChoice();
                 }
                 // 1=vlc, 2=system default, 4=webview, 8=internal player
-                if( vid.isBitchute())
-                    switcher=8;
+            //    if( vid.isBitchute())switcher=8;
                 switch(switcher){
                     case 4:
                          if (!(MainActivity.masterData.webPlayer == null)) {
