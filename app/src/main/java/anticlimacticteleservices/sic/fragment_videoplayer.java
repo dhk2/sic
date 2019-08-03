@@ -7,6 +7,11 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.MediaController;
+import android.widget.VideoView;
 
 
 /**
@@ -17,12 +22,12 @@ import android.view.ViewGroup;
  * Use the {@link fragment_videoplayer#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class fragment_videoplayer extends Fragment {
+public class fragment_videoplayer extends Fragment  {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String PassedUrl = "URL";
     private static final String PassedVideo = "VIDEO";
-
+    private static Uri uri;
     // TODO: Rename and change types of parameters
     private String url;
     private Video video;
@@ -42,11 +47,11 @@ public class fragment_videoplayer extends Fragment {
      * @return A new instance of fragment fragment_videoplayer.
      */
     // TODO: Rename and change types and number of parameters
-    public static fragment_videoplayer newInstance(String param1, String param2) {
+    public static fragment_videoplayer newInstance(String param1, Video param2) {
         fragment_videoplayer fragment = new fragment_videoplayer();
         Bundle args = new Bundle();
         args.putString(PassedUrl, param1);
-        args.putString(PassedVideo, param2);
+        args.putSerializable(PassedVideo, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -57,14 +62,56 @@ public class fragment_videoplayer extends Fragment {
         if (getArguments() != null) {
             url = getArguments().getString(PassedUrl);
             video = (Video) getArguments().getSerializable(PassedVideo);
+            if (null == video){
+                video=new Video(url);
+            }
+            if ((null == url) || (url.isEmpty())){
+                url=video.getMp4();
+            }
+
         }
+        System.out.println(url);
+        System.out.println(video);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_videoplayer, container, false);
+
+        View v = inflater.inflate(R.layout.fragment_videoplayer, container, false);
+        WebView comments=v.findViewById(R.id.comments);
+        WebSettings webSettings = comments.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        comments.setWebViewClient(new WebViewClient() {
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                view.loadUrl(url);
+                return true;
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                view.loadUrl("javascript:document.getElementById('mb-2').style.display = 'none'; void(0);");
+                view.loadUrl("javascript:document.getElementById('hydra-top-bar').style.display = 'none'; void(0);");
+            }
+
+        });
+
+        comments.loadUrl("https://dissenter.com/discussion/begin?url="+ video.getBitchuteUrl());
+        VideoView simpleVideoView = (VideoView) v.findViewById(R.id.videoview); // initiate a video view
+        uri = Uri.parse(url);
+        System.out.println(uri);
+        System.out.println(simpleVideoView.getId());
+        simpleVideoView.setVideoURI(uri);
+        MediaController mediaController = new
+                MediaController(v.getContext());
+        mediaController.setAnchorView(simpleVideoView);
+        simpleVideoView.setMediaController(mediaController);
+
+        simpleVideoView.start();
+        return v;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

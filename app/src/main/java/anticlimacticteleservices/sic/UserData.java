@@ -45,7 +45,7 @@ public class UserData {
     private Set<String> feedLinks =new HashSet<String>();
     private Boolean useYoutube=true;
     private SharedPreferences.Editor editor;
-    // 1=vlc, 2=system default, 4=webview
+
     private int youtubePlayerChoice;
     private int bitchutePlayerChoice;
     FragmentManager fragmentManager;

@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.Fragment;
@@ -47,7 +48,7 @@ import java.util.Locale;
 import java.util.Set;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements fragment_videoplayer.OnFragmentInteractionListener {
     public Context dirtyHack = this;
 
     FragmentManager manager;
@@ -192,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
             fragment = new VideoFragment();
             ((VideoFragment) fragment).setVideos(masterData.getVideos());
             manager = getSupportFragmentManager();
+            MainActivity.masterData.setFragmentManager(manager);
             transaction = manager.beginTransaction();
             transaction.replace(R.id.fragment, fragment);
             transaction.commit();
@@ -226,5 +228,10 @@ public class MainActivity extends AppCompatActivity {
     }
     public void hideMainTitle(){
         getSupportActionBar().hide();
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }

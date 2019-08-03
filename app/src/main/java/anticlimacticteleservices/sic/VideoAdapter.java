@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.text.HtmlCompat;
 import android.support.v7.widget.RecyclerView;
@@ -184,70 +185,68 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                 int adapterPos = holder.getAdapterPosition();
                 Video vid = videos.get(position);
                 Uri uri;
-
-                if ((MainActivity.masterData.youtubeUseWebView() && vid.isYoutube()) || (MainActivity.masterData.bitchuteUseWebView() && vid.isBitchute()) ){
-                    if (!(MainActivity.masterData.webPlayer == null)) {
-                        MainActivity.masterData.webPlayer.destroy();
-                    }
-                    System.out.println("using webview"+MainActivity.masterData.getBitchutePlayerChoice()+" "+MainActivity.masterData.getYoutubePlayerChoice());
-
-                    final Dialog dialog = new Dialog(v.getContext());
-                    dialog.setContentView(R.layout.video_player);
-                    dialog.setTitle(vid.getTitle());
-                    final WebView webView = dialog.findViewById(R.id.player_window);
-                    webView.setWebViewClient(new WebViewClient());
-                    WebSettings webSettings = webView.getSettings();
-                    webSettings.setJavaScriptEnabled(true);
-
-                    String htmlComments = getHtmlComment("yourId", "yourShortName");
-
-                    WebView webDisqus = dialog.findViewById(R.id.channel_description);
-                    // set up disqus
-                    WebSettings webSettings2 = webDisqus.getSettings();
-                    webSettings2.setJavaScriptEnabled(true);
-                    webSettings2.setBuiltInZoomControls(true);
-                    webDisqus.requestFocusFromTouch();
-                    webDisqus.setWebViewClient(new WebViewClient());
-                    webDisqus.setWebChromeClient(new WebChromeClient());
-                    webDisqus.loadData(htmlComments, "text/html", null);
-
-
-
-
-                    webView.loadData(vid.toString(), "text/html", "UTF-8");
-                    webView.loadUrl(vid.getEmbeddedUrl());
-                    MainActivity.masterData.webPlayer=webView;
-                    Button dialogButton = dialog.findViewById(R.id.closebutton);
-                    dialogButton.setText("close");
-                    dialogButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            webView.destroy();
-                            dialog.dismiss();
-                        }
-                    });
-
-                    dialog.show();
+                int vlcRequestCode = 42;
+                String path;
+                Intent vlcIntent = new Intent(Intent.ACTION_VIEW);
+                int switcher = 0;
+                if (vid.isYoutube()){
+                    switcher = MainActivity.masterData.getYoutubePlayerChoice();
                 }
-                else {
+                if (vid.isBitchute()){
+                    switcher = MainActivity.masterData.getBitchutePlayerChoice();
+                }
+                // 1=vlc, 2=system default, 4=webview, 8=internal player
+                if( vid.isBitchute())
+                    switcher=8;
+                switch(switcher){
+                    case 4:
+                         if (!(MainActivity.masterData.webPlayer == null)) {
+                            MainActivity.masterData.webPlayer.destroy();
+                         }
+                        System.out.println("using webview"+MainActivity.masterData.getBitchutePlayerChoice()+" "+MainActivity.masterData.getYoutubePlayerChoice());
 
-                    int vlcRequestCode = 42;
-                    String path;
-                    Intent vlcIntent = new Intent(Intent.ACTION_VIEW);
+                        final Dialog dialog = new Dialog(v.getContext());
+                        dialog.setContentView(R.layout.video_player);
+                        dialog.setTitle(vid.getTitle());
+                        final WebView webView = dialog.findViewById(R.id.player_window);
+                        webView.setWebViewClient(new WebViewClient());
+                        WebSettings webSettings = webView.getSettings();
+                        webSettings.setJavaScriptEnabled(true);
+                        webView.loadUrl(vid.getEmbeddedUrl());
+                        MainActivity.masterData.webPlayer=webView;
+                        Button dialogButton = dialog.findViewById(R.id.closebutton);
+                        dialogButton.setText("close");
+                        dialogButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                webView.destroy();
+                                dialog.dismiss();
+                            }
+                        });
+                        dialog.show();
+                        break;
+                    case 1:
+                        //no break to prevent duplication of case 2 code
+                        vlcIntent.setPackage("org.videolan.vlc");
+                    case 2:
+                        //update for additional sources
                     if (!vid.getMp4().isEmpty()) {
                         path = vid.getMp4();
                     } else {
                         path = vid.getYoutubeUrl();
                     }
                     uri = Uri.parse(path);
-                    //                 System.out.println("trying to open player with path"+path);
-                    if ((MainActivity.masterData.youtubeUseVlc() && vid.isYoutube()) || (MainActivity.masterData.bitchuteUseVlc() && vid.isBitchute())) {
-                        System.out.println("using vlc " + MainActivity.masterData.getBitchutePlayerChoice() + " " + MainActivity.masterData.getYoutubePlayerChoice());
-                        vlcIntent.setPackage("org.videolan.vlc");
-                    }
                     vlcIntent.setDataAndTypeAndNormalize(uri, "video/*");
                     vlcIntent.putExtra("title", vid.getTitle());
                     v.getContext().startActivity(vlcIntent);
+                    break;
+                    case 8:
+                        fragment_videoplayer fragment = fragment_videoplayer.newInstance("",vid);
+                        FragmentManager manager = MainActivity.masterData.getFragmentManager();
+                        FragmentTransaction transaction = manager.beginTransaction();
+                        transaction.replace(R.id.fragment, fragment);
+                        transaction.addToBackStack(null);
+                        transaction.commit();
                 }
             }
         });

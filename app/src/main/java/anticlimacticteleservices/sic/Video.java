@@ -125,6 +125,7 @@ class Video implements Serializable,Comparable<Video>
         return this.ID;
     }
     public String getEmbeddedUrl(){
+        //update for new video sources
         if (url.indexOf("youtube") > 0) {
             return "https://www.youtube.com/embed/"+this.ID+"?autoplay=1&modestbranding=1";
         } else {
@@ -251,4 +252,5 @@ class Video implements Serializable,Comparable<Video>
     public String getYoutubeUrl(){
         return "https://www.youtube.com/watch?v="+this.ID;
     }
+
 }
