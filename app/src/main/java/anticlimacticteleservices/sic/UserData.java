@@ -231,13 +231,8 @@ public class UserData {
     }
     public boolean saveUserData(){
         Context context = MainActivity.masterData.context;
-        editor = MainActivity.preferences.edit();
-        editor.putInt("youtubePlayerChoice", youtubePlayerChoice);
-        editor.putInt("bitchutePlayerChoice", bitchutePlayerChoice);
-
-        editor.commit();
-        System.out.println("saved user preferences, saving "+channels.size());
         if (dirtyData>0) {
+            dirtyData=0;
             try {
                 FileOutputStream fileOut = new FileOutputStream(context.getFilesDir() + "channels.ser");
                 ObjectOutputStream out = new ObjectOutputStream(fileOut);
@@ -252,7 +247,12 @@ public class UserData {
 
             }
         }
-        dirtyData=0;
+
+        editor = MainActivity.preferences.edit();
+        editor.putInt("youtubePlayerChoice", youtubePlayerChoice);
+        editor.putInt("bitchutePlayerChoice", bitchutePlayerChoice);
+
+        editor.commit();
         return true;
     }
     public void setForceRefresh(boolean forceRefresh) {
@@ -298,37 +298,45 @@ public class UserData {
     }
     public void addFeedLinks(Set<String> newLinks) {
         for (String newLink : newLinks) {
-            boolean unique = true;
-            for (String g : feedLinks) {
-                if (g.equals(newLink)) {
-                    unique = false;
-                    System.out.println("rejecting duplicate feed" + g);
+            try {
+                boolean unique = true;
+                for (String g : feedLinks) {
+                    if (g.equals(newLink)) {
+                        unique = false;
+                        System.out.println("rejecting duplicate feed" + g);
+                    }
                 }
+                if (unique) {
+                    feedLinks.add(newLink);
+                }
+                System.out.println("count of feeds:" + feedLinks.size());
+                editor = MainActivity.preferences.edit();
+                editor.putStringSet("channelUrls", feedLinks);
+                editor.commit();
+                forceRefresh = true;
             }
-            if (unique) {
-               feedLinks.add(newLink);
+            catch(NullPointerException e) {
+                System.out.println("null pointer error adding feed links");
+                e.printStackTrace();
             }
-            System.out.println("count of feeds:"+ feedLinks.size());
-            editor = MainActivity.preferences.edit();
-            editor.putStringSet("channelUrls", feedLinks);
-            editor.commit();
-            forceRefresh=true;
         }
     }
     public void addFeedLink(String newLink) {
         boolean unique=true;
-        for (String g : feedLinks) {
-            if (g.equals(newLink)) {
-                unique = false;
+        if ((null != newLink ) && (!"".equals(newLink))) {
+            for (String g : feedLinks) {
+                if (g.equals(newLink)) {
+                    unique = false;
+                }
+            }
+            if (unique) {
+                feedLinks.add(newLink);
+                editor = MainActivity.preferences.edit();
+                editor.putStringSet("channelUrls", feedLinks);
+                editor.commit();
+                forceRefresh = true;
             }
         }
-        if (unique){
-            feedLinks.add(newLink);
-        }
-        editor = MainActivity.preferences.edit();
-        editor.putStringSet("channelUrls", feedLinks);
-        editor.commit();
-        forceRefresh=true;
     }
     public void setFeedLinks(Set<String> links){
         feedLinks.clear();

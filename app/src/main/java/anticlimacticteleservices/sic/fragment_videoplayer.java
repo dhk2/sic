@@ -20,12 +20,12 @@ import android.view.ViewGroup;
 public class fragment_videoplayer extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String PassedUrl = "URL";
+    private static final String PassedVideo = "VIDEO";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private String url;
+    private Video video;
 
     private OnFragmentInteractionListener mListener;
 
@@ -45,8 +45,8 @@ public class fragment_videoplayer extends Fragment {
     public static fragment_videoplayer newInstance(String param1, String param2) {
         fragment_videoplayer fragment = new fragment_videoplayer();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(PassedUrl, param1);
+        args.putString(PassedVideo, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -55,8 +55,8 @@ public class fragment_videoplayer extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            url = getArguments().getString(PassedUrl);
+            video = (Video) getArguments().getSerializable(PassedVideo);
         }
     }
 

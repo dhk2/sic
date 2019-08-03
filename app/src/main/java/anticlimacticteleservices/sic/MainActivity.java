@@ -216,7 +216,9 @@ public class MainActivity extends AppCompatActivity {
     public void onPause() {
         //need to add a dirty data switch to skip saving if unneeded
         super.onPause();
-        masterData.saveUserData();
+        if (MainActivity.masterData.getDirtydata()>0) {
+            MainActivity.masterData.saveUserData();
+        }
     }
     public void setMainTitle(String t){
         getSupportActionBar().show();
