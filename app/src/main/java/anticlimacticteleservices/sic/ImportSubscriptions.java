@@ -1,5 +1,5 @@
 package anticlimacticteleservices.sic;
-// method deprecated with current direct import from web in settings class, this work around no longer needed
+// method of importing deprecated with current direct import from web in settings class, this work around no longer needed
 
 import android.os.AsyncTask;
 

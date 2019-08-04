@@ -187,6 +187,7 @@ public class SettingsFragment extends Fragment {
         RadioButton bitchuteUseVlc =view.findViewById(R.id.bitchuteuse_vlc);
         RadioButton bitchuteUseDefault =view.findViewById(R.id.bitchuteuse_default);
         RadioButton bitchuteUseWebview =view.findViewById(R.id.bitchuteuse_webview);
+        RadioButton bitchuteUseNative = view.findViewById(R.id.bitchuteuse_native);
         System.out.println("player choice:"+MainActivity.masterData.getYoutubePlayerChoice()+"  "+MainActivity.masterData.getBitchutePlayerChoice());
         switch(MainActivity.masterData.getYoutubePlayerChoice()){
             case 1:
@@ -197,6 +198,7 @@ public class SettingsFragment extends Fragment {
                 break;
             case 4:
                 youtubeUseWebview.setChecked(true);
+                break;
         }
         youtubeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
@@ -232,6 +234,10 @@ public class SettingsFragment extends Fragment {
                 break;
             case 4:
                 bitchuteUseWebview.setChecked(true);
+                break;
+            case 8:
+                bitchuteUseNative.setChecked(true);
+                break;
         }
         bitchuteRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
@@ -247,11 +253,17 @@ public class SettingsFragment extends Fragment {
                         break;
                     case R.id.bitchuteuse_webview:
                         MainActivity.masterData.setBitchutePlayerChoice(4);
+                        break;
+                    case R.id.bitchuteuse_native:
+                        MainActivity.masterData.setBitchutePlayerChoice(8);
+                        break;
                 }
                 System.out.println("playersetting "+MainActivity.masterData.getBitchutePlayerChoice());
                 System.out.println("use bitchute vlc:"+MainActivity.masterData.bitchuteUseVlc());
                 System.out.println("use bitchute default:"+MainActivity.masterData.bitchuteUseDefault());
                 System.out.println("use bitchute webview:"+MainActivity.masterData.bitchuteUseWebView());
+                System.out.println("use bitchute built in player:"+MainActivity.masterData.bitchuteUseNative());
+
             }
         });
     }

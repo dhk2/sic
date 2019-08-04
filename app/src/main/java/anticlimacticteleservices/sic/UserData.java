@@ -117,12 +117,13 @@ public class UserData {
     }
     public boolean youtubeUseDefault() {return youtubePlayerChoice ==2; }
     public boolean bitchuteUseWebView() {
-        return youtubePlayerChoice == 4;
+        return bitchutePlayerChoice == 4;
     }
     public boolean bitchuteUseVlc() {
-        return youtubePlayerChoice == 1;
+        return bitchutePlayerChoice == 1;
     }
-    public boolean bitchuteUseDefault() {return youtubePlayerChoice ==2; }
+    public boolean bitchuteUseDefault() {return bitchutePlayerChoice ==2; }
+    public boolean bitchuteUseNative() {return bitchutePlayerChoice ==8; }
     public int getYoutubePlayerChoice() {
         return youtubePlayerChoice;
     }

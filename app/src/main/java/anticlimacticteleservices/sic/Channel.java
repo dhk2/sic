@@ -228,7 +228,7 @@ class Channel implements Serializable{
         return this.url.indexOf("youtube.com") > 0;
     }
     public boolean matches(String value){
-        System.out.println("trying to match:"+value);
+      //  System.out.println("trying to match:"+value);
         return youtubeID.equals(value) || bitchuteID.equals(value);
     }
 }

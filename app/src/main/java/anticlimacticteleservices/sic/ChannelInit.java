@@ -98,7 +98,7 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                             }
                         }
                         if (unique) {
-                            System.out.println("g is:"+g +"   id is "+chan.getID()+ "    url is "+chan.getUrl());
+                      //      System.out.println("g is:"+g +"   id is "+chan.getID()+ "    url is "+chan.getUrl());
                             chan.addVideo(nv);
                             MainActivity.masterData.setDirtydata(1);
                         }

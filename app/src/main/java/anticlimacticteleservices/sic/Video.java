@@ -78,6 +78,7 @@ class Video implements Serializable,Comparable<Video>
         this.commentCount = "0";
         this.hashtags = "";
         this.category = "";
+        this.comments = new ArrayList<Comment>();
     }
 
 //  	     Getters
@@ -151,6 +152,9 @@ class Video implements Serializable,Comparable<Video>
             }
         }
     }
+
+    
+
     public void setTitle(String value)
     {
         this.title = value;
@@ -255,7 +259,9 @@ class Video implements Serializable,Comparable<Video>
     public String getYoutubeUrl(){
         return "https://www.youtube.com/watch?v="+this.ID;
     }
-    public void addComment(Comment com){
-        comments.add(com);
+
+    public ArrayList<Comment> getComments(){
+        return comments;
     }
+
 }

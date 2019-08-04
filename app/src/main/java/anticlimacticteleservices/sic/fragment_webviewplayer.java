@@ -7,22 +7,23 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.MediaController;
 import android.widget.VideoView;
-
-import java.util.ArrayList;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link fragment_videoplayer.OnFragmentInteractionListener} interface
+ * {@link fragment_webviewplayer.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link fragment_videoplayer#newInstance} factory method to
+ * Use the {@link fragment_webviewplayer#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class fragment_videoplayer extends Fragment  {
+public class fragment_webviewplayer extends Fragment  {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String PassedUrl = "URL";
@@ -34,7 +35,7 @@ public class fragment_videoplayer extends Fragment  {
 
     private OnFragmentInteractionListener mListener;
 
-    public fragment_videoplayer() {
+    public fragment_webviewplayer() {
         // Required empty public constructor
     }
 
@@ -47,8 +48,8 @@ public class fragment_videoplayer extends Fragment  {
      * @return A new instance of fragment fragment_videoplayer.
      */
     // TODO: Rename and change types and number of parameters
-    public static fragment_videoplayer newInstance(String param1, Video param2) {
-        fragment_videoplayer fragment = new fragment_videoplayer();
+    public static fragment_webviewplayer newInstance(String param1, Video param2) {
+        fragment_webviewplayer fragment = new fragment_webviewplayer();
         Bundle args = new Bundle();
         args.putString(PassedUrl, param1);
         args.putSerializable(PassedVideo, param2);
@@ -66,7 +67,7 @@ public class fragment_videoplayer extends Fragment  {
                 video=new Video(url);
             }
             if ((null == url) || (url.isEmpty())){
-                url=video.getMp4();
+                url=video.getEmbeddedUrl();
             }
 
         }
@@ -79,8 +80,8 @@ public class fragment_videoplayer extends Fragment  {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        View v = inflater.inflate(R.layout.fragment_videoplayer, container, false);
-        WebView comments=v.findViewById(R.id.commentsdetails);
+        View v = inflater.inflate(R.layout.fragment_webviewplayer, container, false);
+        WebView comments=v.findViewById(R.id.webviewcomments);
         String description=video.getDescription();
 
         if (!(null == video.getComments())) {
@@ -92,17 +93,13 @@ public class fragment_videoplayer extends Fragment  {
         System.out.println(description);
         System.out.println("this many comments should be showing up >>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+video.getComments().size());
         comments.loadData(description,"text/html","utf-8");
-        VideoView simpleVideoView = (VideoView) v.findViewById(R.id.videoview); // initiate a video view
-        uri = Uri.parse(url);
-        System.out.println(uri);
-        System.out.println(simpleVideoView.getId());
-        simpleVideoView.setVideoURI(uri);
-        MediaController mediaController = new
-                MediaController(v.getContext());
-        mediaController.setAnchorView(simpleVideoView);
-        simpleVideoView.setMediaController(mediaController);
 
-        simpleVideoView.start();
+
+        final WebView webView =v.findViewById(R.id.webviewplayer);
+        webView.setWebViewClient(new WebViewClient());
+        WebSettings webSettings = webView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webView.loadUrl(video.getEmbeddedUrl());
         return v;
     }
 

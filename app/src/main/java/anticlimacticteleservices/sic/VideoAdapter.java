@@ -66,6 +66,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
     public void onBindViewHolder(CustomViewHolder hold, final int position) {
         Video video = videos.get(position);
         final CustomViewHolder holder = hold;
+        new VideoScrape().execute(video);
         holder.name.setText(video.getTitle());
 
         if (video.isBitchute()) {
@@ -101,43 +102,9 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
             timehack= days +" days,"+timehack;
         }
         hold.author.setText(video.getAuthor()+ "  "+timehack );
-
-// load Mp4 if it's blank
-        if (video.getMp4().isEmpty() && (video.isBitchute())){
-            new VideoScrape().execute(video);
-  /*          System.out.println("missing mp4 in bitchute, running runnable");
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Video vid=null;
-                    try {
-                        vid = videos.get(position);
-//                        System.out.println("no mp4 so setting in onbind" + vid);
-                        Document hackDoc = Jsoup.connect(vid.getBitchuteUrl()).get();
-                        vid.setMp4(hackDoc.getElementsByTag("Source").first().attr("src"));
-
-                    } catch (MalformedURLException e) {
-                        System.out.println("Malformed URL: " + e.getMessage());
-                    } catch (IOException e) {
-                        System.out.println("I/O Error: " + e.getMessage());
-                    }
-                    catch (NullPointerException e){
-                        System.out.println("null pointer error: " + e.getMessage());
-                        System.out.println(vid);
-                    }
-                }
-            });
-            thread.start();
-*/
-        }
-        else
-        {
-  //          System.out.println("either mp4 is populated or this is youtube"+video);
-        }
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-
                 Video vid = videos.get(position);
                 VideoScrape scrapper = new VideoScrape();
                 scrapper.execute(vid);
@@ -146,31 +113,17 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                 dialog.setContentView(R.layout.videoprop);
                 dialog.setTitle(vid.getTitle());
                 TextView textView = dialog.findViewById(R.id.channelDetails);
-
-             //   WebSettings webSettings = webView.getSettings();
-             //   webSettings.setJavaScriptEnabled(true);
                 Spanned spanned = HtmlCompat.fromHtml(vid.getDescription(), HtmlCompat.FROM_HTML_MODE_COMPACT);
-            //    webView.loadData(String.valueOf(spanned), "text/html", "UTF-8");
-                //webView.loadData(disqus(""),"text/html","utf-8");
-                textView.setText(Html.fromHtml(vid.getDescription()));
-                System.out.println();
-                /*
-                if (vid.isYoutube()) {
-                    webView.loadUrl(("https://dissenter.com/discussion/begin?url=" + vid.getYoutubeUrl()));
+                String description=vid.getDescription()+"<p>";
+                for (Comment c : vid.getComments()) {
+                    description = description + c.toHtml();
                 }
-                if (vid.isBitchute()) {
-                    webView.loadUrl(("https://dissenter.com/discussion/begin?url=" + vid.getBitchuteUrl()));
-                }
-                */
-                //webView.getSettings().setUseWideViewPort(true);
-                //webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
-               // webView.setScrollbarFadingEnabled(false);
+                textView.setText(Html.fromHtml(description));
                 ImageView image = dialog.findViewById(R.id.thumbNailView);
                 Picasso.get().load(vid.getThumbnail()).into(image);
                 TextView title = dialog.findViewById(R.id.videoproptitle);
                 title.setText(vid.getTitle());
                 Button dialogButton = dialog.findViewById(R.id.closeButton);
-                // if button is clicked, close the custom dialog
                 dialogButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -202,59 +155,43 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                 }
                 // 1=vlc, 2=system default, 4=webview, 8=internal player
             //    if( vid.isBitchute())switcher=8;
+                FragmentManager manager = MainActivity.masterData.getFragmentManager();
+                FragmentTransaction transaction = manager.beginTransaction();
                 switch(switcher){
-                    case 4:
-                         if (!(MainActivity.masterData.webPlayer == null)) {
-                            MainActivity.masterData.webPlayer.destroy();
-                         }
-                        System.out.println("using webview"+MainActivity.masterData.getBitchutePlayerChoice()+" "+MainActivity.masterData.getYoutubePlayerChoice());
-
-                        final Dialog dialog = new Dialog(v.getContext());
-                        dialog.setContentView(R.layout.video_player);
-                        dialog.setTitle(vid.getTitle());
-                        final WebView webView = dialog.findViewById(R.id.player_window);
-                        webView.setWebViewClient(new WebViewClient());
-                        WebSettings webSettings = webView.getSettings();
-                        webSettings.setJavaScriptEnabled(true);
-                        webView.loadUrl(vid.getEmbeddedUrl());
-                        MainActivity.masterData.webPlayer=webView;
-                        Button dialogButton = dialog.findViewById(R.id.closebutton);
-                        dialogButton.setText("close");
-                        dialogButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                webView.destroy();
-                                dialog.dismiss();
-                            }
-                        });
-                        dialog.show();
-                        break;
                     case 1:
                         //no break to prevent duplication of case 2 code
                         vlcIntent.setPackage("org.videolan.vlc");
                     case 2:
-                        //update for additional sources
-                    if (vid.isBitchute()) {
-                        path = vid.getMp4();
-                    } else {
-                        path = vid.getYoutubeUrl();
-                    }
-                    uri = Uri.parse(path);
-                    vlcIntent.setDataAndTypeAndNormalize(uri, "video/*");
-                    vlcIntent.putExtra("title", vid.getTitle());
-                    v.getContext().startActivity(vlcIntent);
-                    break;
-                    case 8:
-                        fragment_videoplayer fragment = fragment_videoplayer.newInstance("",vid);
-                        FragmentManager manager = MainActivity.masterData.getFragmentManager();
-                        FragmentTransaction transaction = manager.beginTransaction();
-                        transaction.replace(R.id.fragment, fragment);
+                            //update for additional sources
+                        if (vid.isBitchute()) {
+                            path = vid.getMp4();
+                        } else {
+                            path = vid.getYoutubeUrl();
+                        }
+                        uri = Uri.parse(path);
+                        vlcIntent.setDataAndTypeAndNormalize(uri, "video/*");
+                        vlcIntent.putExtra("title", vid.getTitle());
+                        v.getContext().startActivity(vlcIntent);
+                        break;
+                    case 4:
+                        fragment_webviewplayer wfragment = fragment_webviewplayer.newInstance("",vid);
+                        manager = MainActivity.masterData.getFragmentManager();
+                        transaction = manager.beginTransaction();
+                        transaction.replace(R.id.fragment, wfragment);
                         transaction.addToBackStack(null);
-                        transaction.commit();
+                        transaction.commitAllowingStateLoss();
+                        break;
+                    case 8:
+                        fragment_videoplayer vfragment = fragment_videoplayer.newInstance("",vid);
+                        manager = MainActivity.masterData.getFragmentManager();
+                        transaction = manager.beginTransaction();
+                        transaction.replace(R.id.fragment, vfragment);
+                        transaction.addToBackStack(null);
+                        transaction.commitAllowingStateLoss();
+                        break;
                 }
             }
         });
-
     }
     @Override
     public int getItemCount() {

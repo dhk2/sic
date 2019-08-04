@@ -48,7 +48,7 @@ import java.util.Locale;
 import java.util.Set;
 
 
-public class MainActivity extends AppCompatActivity implements fragment_videoplayer.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements fragment_videoplayer.OnFragmentInteractionListener, fragment_webviewplayer.OnFragmentInteractionListener {
     public Context dirtyHack = this;
 
     FragmentManager manager;

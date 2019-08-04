@@ -86,4 +86,11 @@ public class Comment implements Serializable {
     public String toString() {
         return this.author+": "+this.text;
     }
+    public String toHtml() {
+        String html = "<img src=\""+thumbnail+"\" height=\"30\" width=\"30\" style=\"float:left\">"+
+                "<b> "+author+"</b><p>"+text+"<p>";
+        //System.out.println(html);
+        return html;
+
+    }
 }
