@@ -61,6 +61,7 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
                                 continue youtubeLoop;
                             }
                         }
+                        nv.setAuthorID(chan.getID());
                         nv.setAuthor(chan.getAuthor());
                         nv.setTitle(entry.getElementsByTag("title").first().html());
                         nv.setThumbnail(entry.getElementsByTag("media:thumbnail").first().attr("url"));

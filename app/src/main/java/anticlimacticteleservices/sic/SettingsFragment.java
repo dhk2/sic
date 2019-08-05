@@ -139,6 +139,7 @@ public class SettingsFragment extends Fragment {
                 final Dialog dialog = new Dialog(v.getContext());
                 dialog.setContentView(R.layout.importdialog);
                 final WebView webView = dialog.findViewById(R.id.idplayer_window);
+                dialogHandle=dialog;
                 webView.setWebViewClient(new WebViewClient() {
                     @Override
                     public void onPageFinished(WebView view, String url) {

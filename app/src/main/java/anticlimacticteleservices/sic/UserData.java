@@ -76,7 +76,16 @@ public class UserData {
         }
     }
     public void addChannel(Channel value){
-        this.channels.add(value);
+        boolean unique = true;
+        for (Channel test : channels) {
+            if (test.matches(value.getID())){
+                unique=false;
+            }
+        }
+        if (unique==true) {
+            channels.add(value);
+            feedLinks.add(value.getUrl());
+        }
         this.dirtyData++;
     }
     public void removeChannel(String ID){
@@ -98,7 +107,16 @@ public class UserData {
         System.out.println("sorted search videos");
     }
     public void addVideo(Video value) {
-        videos.add(value);
+        boolean unique=true;
+        for (Video v : videos) {
+            if (v.getID().equals(value.getID())){
+                unique=false;
+                break;
+            }
+        }
+        if (unique){
+            videos.add(value);
+        }
     }
     public List<Video> getsVideos() {
         return sVideos;
@@ -156,20 +174,28 @@ public class UserData {
     }
     public UserData(Context con) {
         editor = MainActivity.preferences.edit();
-        youtubePlayerChoice = MainActivity.preferences.getInt("youtubePlayerChoice", 1);
-        bitchutePlayerChoice = MainActivity.preferences.getInt("bitchutePlayerChoice", 1);
+        youtubePlayerChoice = MainActivity.preferences.getInt("youtubePlayerChoice", 4);
+        bitchutePlayerChoice = MainActivity.preferences.getInt("bitchutePlayerChoice", 8);
+        feedLinks = MainActivity.preferences.getStringSet("feedlinks",feedLinks);
         this.context=con;
         //shouldn't be needed
         if (youtubePlayerChoice==0)
-            youtubePlayerChoice=1;
+            youtubePlayerChoice=4;
         if (bitchutePlayerChoice==0)
-            bitchutePlayerChoice=1;
+            bitchutePlayerChoice=8;
 
         try {
             FileInputStream fileIn = new FileInputStream(this.context.getFilesDir() + "channels.ser");
             ObjectInputStream in = new ObjectInputStream(fileIn);
             channels = (ArrayList<Channel>) in.readObject();
-            System.out.println("Saved channels read "+channels.size());
+            System.out.println("Saved channels read: "+channels.size());
+            in.close();
+            fileIn.close();
+
+            fileIn = new FileInputStream(this.context.getFilesDir() + "videos.ser");
+            in = new ObjectInputStream(fileIn);
+            videos = (ArrayList<Video>) in.readObject();
+            System.out.println("Saved videos read: "+channels.size());
             in.close();
             fileIn.close();
         } catch (ClassNotFoundException e) {
@@ -224,7 +250,7 @@ public class UserData {
         }
         for (Channel c : channels) {
             for (Video v : c.getVideos()) {
-                videos.add(v);
+                addsVideos(v);
             }
 
         }
@@ -241,6 +267,12 @@ public class UserData {
                 out.close();
                 fileOut.close();
 
+                fileOut = new FileOutputStream(context.getFilesDir() + "videos.ser");
+                out = new ObjectOutputStream(fileOut);
+                out.writeObject(videos);
+                out.close();
+                fileOut.close();
+
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -252,7 +284,7 @@ public class UserData {
         editor = MainActivity.preferences.edit();
         editor.putInt("youtubePlayerChoice", youtubePlayerChoice);
         editor.putInt("bitchutePlayerChoice", bitchutePlayerChoice);
-
+        editor.putStringSet("feedlinks",getFeedLinks());
         editor.commit();
         return true;
     }
@@ -263,21 +295,8 @@ public class UserData {
         return forceRefresh;
     }
     public Set<String> getFeedLinks(){
-       //ontext context =
-       //prefs =  getSharedPreferences( "com.mycompany.client", Context.MODE_PRIVATE);
-
-        editor = MainActivity.preferences.edit();
-        Set<String> feeds = MainActivity.preferences.getStringSet("channelUrls",null);
-//        commented out to improve speed in testing, need to fix
-       if (null == feeds){
-  //    if (true){
-            feeds=new HashSet<String>();
-            feeds.add("https://www.youtube.com/feeds/videos.xml?channel_id=UC-lHJZR3Gqxm24_Vd_AJ5Yw");
-            feeds.add("https://bitchute.com/channel/Styxhexenham/");
-        }
-        for ( String g :feeds){
-           feedLinks.add(g)
-;        }
+  //      editor = MainActivity.preferences.edit();
+  //      Set<String> feeds = MainActivity.preferences.getStringSet("channelUrls",null);
         return feedLinks;
     }
     public void removeFeedLink(String deadLink){
@@ -349,6 +368,7 @@ public class UserData {
         forceRefresh=true;
     }
     public Boolean getUseYoutube() {
+        //should probably get rid of this since the webview option means anyone can use youtube
         return useYoutube;
     }
     public void callImport() {

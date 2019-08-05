@@ -104,7 +104,6 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
                         fragment = new ChannelFragment();
                         ((ChannelFragment) fragment).setChannels(masterData.getChannels());
                         manager = getSupportFragmentManager();
-                        masterData.setFragmentManager(manager);
                         transaction = manager.beginTransaction();
                         transaction.replace(R.id.fragment, fragment);
                         transaction.commit();
@@ -158,34 +157,44 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
         setTitle("Loading video feed");
         preferences = getSharedPreferences( getPackageName() + "_preferences", MODE_PRIVATE);
         masterData = new UserData(getApplicationContext());
+        fragment = new SettingsFragment();
+        manager = getSupportFragmentManager();
+        masterData.setFragmentManager(manager);
         if (masterData.getVideos().isEmpty()){
             System.out.println("no videos");
-
-            final Dialog dialog = new Dialog(this);
-            dialog.setContentView(R.layout.videoprop);
-            dialog.setTitle("new user");
-
-            TextView message = dialog.findViewById(R.id.channelDetails);
-
-            message.setText("Looks like this is your first time\n You can use the search feature to find channels,\n or import channels from the settings page");
-          //  message.loadData(,"html","utf-8");
-            ImageView image = dialog.findViewById(R.id.thumbNailView);
-            image.setImageResource(R.mipmap.sic_round);
-            Button dialogButton = dialog.findViewById(R.id.closeButton);
-            dialogButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialog.dismiss();
+            if (masterData.getChannels().isEmpty()) {
+                for (String feed : masterData.getFeedLinks()) {
+                    new ChannelInit().execute(feed);
                 }
-            });
-            dialog.show();
-            getSupportActionBar().show();
-            setTitle("settings");
-            fragment = new SettingsFragment();
-            manager = getSupportFragmentManager();
-            transaction = manager.beginTransaction();
-            transaction.replace(R.id.fragment, fragment);
-            transaction.commit();
+            }
+            else {
+                new ChannelUpdate().execute();
+            }
+            if (masterData.getVideos().isEmpty()) {
+                final Dialog dialog = new Dialog(this);
+                dialog.setContentView(R.layout.videoprop);
+                dialog.setTitle("new user");
+
+                TextView message = dialog.findViewById(R.id.channelDetails);
+
+                message.setText("Looks like this is your first time\n You can use the search feature to find channels,\n or import channels from the settings page");
+                //  message.loadData(,"html","utf-8");
+                ImageView image = dialog.findViewById(R.id.thumbNailView);
+                image.setImageResource(R.mipmap.sic_round);
+                Button dialogButton = dialog.findViewById(R.id.closeButton);
+                dialogButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+                getSupportActionBar().show();
+                setTitle("settings");
+                transaction = manager.beginTransaction();
+                transaction.replace(R.id.fragment, fragment);
+                transaction.commit();
+            }
         }
         else {
             new ChannelUpdate().execute();
@@ -193,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
             fragment = new VideoFragment();
             ((VideoFragment) fragment).setVideos(masterData.getVideos());
             manager = getSupportFragmentManager();
-            MainActivity.masterData.setFragmentManager(manager);
+
             transaction = manager.beginTransaction();
             transaction.replace(R.id.fragment, fragment);
             transaction.commit();

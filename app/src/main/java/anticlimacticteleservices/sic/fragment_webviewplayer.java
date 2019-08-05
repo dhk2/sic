@@ -83,9 +83,8 @@ public class fragment_webviewplayer extends Fragment  {
         View v = inflater.inflate(R.layout.fragment_webviewplayer, container, false);
         WebView comments=v.findViewById(R.id.webviewcomments);
         String description=video.getDescription();
-
-        if (!(null == video.getComments())) {
-            System.out.println("this many comments should be showing up >>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+video.getComments().size());
+        if (!(video.getComments().isEmpty())) {
+            description =description+"<p><p><h2>comments</h2><p>";
             for (Comment c : video.getComments()) {
                 description = description + c.toHtml();
             }

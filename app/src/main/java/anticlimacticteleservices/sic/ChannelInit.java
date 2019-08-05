@@ -19,6 +19,7 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
     private final SimpleDateFormat ydf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
     private Channel chan;
     private int newVideoCount=0;
+    private int dupeCount=0;
     private int newChannelCount=0;
     @Override
     protected Integer doInBackground(String[] params) {
@@ -34,6 +35,7 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
            for (Channel c : MainActivity.masterData.getChannels()){
                 if (chan.matches(c.getID())) {
                     System.out.println("channel already exists");
+                    dupeCount++;
                     continue channels;
                 }
             }
@@ -68,6 +70,7 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                         Video nv = new Video(entry.getElementsByTag("link").first().attr("href"));
 
                         nv.setAuthor(chan.getAuthor());
+                        nv.setAuthorID(chan.getID());
                         nv.setTitle(entry.getElementsByTag("title").first().html());
                         nv.setThumbnail(entry.getElementsByTag("media:thumbnail").first().attr("url"));
 
@@ -85,6 +88,7 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                         for (Video match : MainActivity.masterData.getVideos()) {
                             if (match.getID().equals(nv.getID())) {
                                 unique = false;
+                                break;
                             }
                         }
                         if (unique) {
@@ -95,6 +99,7 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                         for (Video match : chan.getVideos()) {
                             if (match.getID().equals(nv.getID())) {
                                 unique = false;
+                                break;
                             }
                         }
                         if (unique) {
@@ -129,11 +134,13 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                             // Document hackDoc = Jsoup.connect(nv.getUrl()).get();
                             //  nv.setMp4(hackDoc.getElementsByTag("Source").first().attr("src"));
                             nv.setAuthor(channelRss.title());
+                            nv.setAuthorID(chan.getID());
                             //System.out.println(nv);
                             boolean unique=true;
                             for (Video match : MainActivity.masterData.getVideos()) {
                                 if (match.getID().equals(nv.getID())) {
                                     unique = false;
+                                    break;
                                 }
                             }
                             if (unique) {
@@ -144,6 +151,7 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                             for (Video match : chan.getVideos()) {
                                 if (match.getID().equals(nv.getID())) {
                                     unique = false;
+                                    break;
                                 }
                             }
                             if (unique) {

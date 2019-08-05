@@ -77,7 +77,9 @@ public class Comment implements Serializable {
     public String getDownVote() {
         return downVote;
     }
-
+    public String getID(){
+        return this.ID;
+    }
     public void setDownVote(String downVote) {
         this.downVote = downVote;
     }
@@ -91,6 +93,6 @@ public class Comment implements Serializable {
                 "<b> "+author+"</b><p>"+text+"<p>";
         //System.out.println(html);
         return html;
-
     }
+
 }

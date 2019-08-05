@@ -198,9 +198,18 @@ class Channel implements Serializable{
     
     //          OTher bits
     public void addVideo(Video vid){
-        videos.add(vid);
-        if (author.isEmpty()){
-            this.author = vid.getAuthor();
+        boolean unique=true;
+        for (Video match : videos) {
+            if (match.getID().equals(vid.getID())) {
+                unique = false;
+                break;
+            }
+        }
+        if (unique) {
+            videos.add(vid);
+            if (author.isEmpty()) {
+                this.author = vid.getAuthor();
+            }
         }
     }
     public String toString(){

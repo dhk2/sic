@@ -7,6 +7,15 @@ import java.util.HashSet;
 
 class Video implements Serializable,Comparable<Video>
 {
+    public String getAuthorID() {
+        return AuthorID;
+    }
+
+    public void setAuthorID(String authorID) {
+        AuthorID = authorID;
+    }
+
+    private String AuthorID;
     private String title;
     private String author;
     private String url;
@@ -18,13 +27,18 @@ class Video implements Serializable,Comparable<Video>
     private String description;
     private String viewCount;
     private String rating;
+
+    public String getUpCount() {
+        return upCount;
+    }
+
     private String upCount;
     private String downCount;
     private String ID;
     private String commentCount;
     private String hashtags;
     private String category;
-    private ArrayList comments;
+    private ArrayList comments = new ArrayList<Comment>();
 
     public Video()
     {
@@ -38,15 +52,14 @@ class Video implements Serializable,Comparable<Video>
         this.magnet = "";
         this.description = "";
         this.mp4 = "";
-        this.rating = "0";
-        this.viewCount = "0";
-        this.upCount = "0";
-        this.downCount = "0";
+        this.rating = "";
+        this.viewCount = "";
+        this.upCount = "";
+        this.downCount = "";
         this.ID = "";
         this.commentCount = "0";
         this.hashtags = "";
         this.category = "";
-        this.comments = new ArrayList<Comment>();
     }
 
     public Video(String location)
@@ -71,14 +84,13 @@ class Video implements Serializable,Comparable<Video>
         this.magnet = "";
         this.description = "";
         this.mp4 = "";
-        this.rating = "0";
-        this.viewCount = "0";
-        this.upCount = "0";
-        this.downCount = "0";
-        this.commentCount = "0";
+        this.rating = "";
+        this.viewCount = "";
+        this.upCount = "";
+        this.downCount = "";
+        this.commentCount = "";
         this.hashtags = "";
         this.category = "";
-        this.comments = new ArrayList<Comment>();
     }
 
 //  	     Getters
@@ -263,5 +275,19 @@ class Video implements Serializable,Comparable<Video>
     public ArrayList<Comment> getComments(){
         return comments;
     }
-
+    public boolean match(String matchID){
+        return (matchID.equals(ID));
+    }
+    public void addComment(Comment com){
+        Boolean unique=true;
+        for (int i=1;i<comments.size();i++) {
+            Comment match = (Comment) comments.get(i);
+            if (match.getID().equals(com.getID())) {
+                unique = false;
+            }
+        }
+        if (unique){
+            comments.add(com);
+        }
+    }
 }
