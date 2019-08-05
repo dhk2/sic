@@ -3,6 +3,7 @@ package anticlimacticteleservices.sic;
 import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -22,7 +23,9 @@ import android.text.Spanned;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.MediaController;
@@ -46,6 +49,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+
+import static android.app.PendingIntent.getActivity;
 
 
 public class MainActivity extends AppCompatActivity implements fragment_videoplayer.OnFragmentInteractionListener, fragment_webviewplayer.OnFragmentInteractionListener {
@@ -92,11 +97,33 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
                     case R.id.navigation_history:
                         getSupportActionBar().show();
                         setTitle("Not implemented yet");
-                        MainActivity.masterData.setForceRefresh(true);
-                        new ChannelUpdate().execute();
 
-
-                        return false;
+                        Uri uri;
+                        int vlcRequestCode = 42;
+                        String path;
+                        String subtitles="";
+                        Intent vlcIntent = new Intent(Intent.ACTION_VIEW);
+                        Video foo=new Video();
+                        for (Video v: masterData.getVideos()){
+                            if (v.getComments().size()>5 && v.isBitchute()){
+                                subtitles = Util.writeSubtitles(MainActivity.masterData.context,v);
+                                foo=v;
+                                break;
+                            }
+                        }
+                        vlcIntent.setPackage("org.videolan.vlc");
+                        if (foo.isBitchute()) {
+                            path = foo.getMp4();
+                        } else {
+                            path = foo.getYoutubeUrl();
+                        }
+                        uri = Uri.parse(path);
+                        vlcIntent.setDataAndTypeAndNormalize(uri, "video/*");
+                        vlcIntent.putExtra("subtitles_location"	, subtitles);
+                        vlcIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        System.out.println("trying to play vlc "+vlcIntent.toString());
+                        getApplication().startActivity(vlcIntent);
+                        return true;
                     case R.id.navigation_channels:
                         getSupportActionBar().hide();
                         masterData.getChannels();
@@ -229,6 +256,11 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
         super.onPause();
         if (MainActivity.masterData.getDirtydata()>0) {
             MainActivity.masterData.saveUserData();
+        }
+        for (Video v : MainActivity.masterData.getVideos()){
+            if (v.getMp4().isEmpty() && v.getUpCount().isEmpty()){
+                new VideoScrape().execute(v);
+            }
         }
     }
     public void setMainTitle(String t){

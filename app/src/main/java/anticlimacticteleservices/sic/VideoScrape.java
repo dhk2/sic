@@ -35,9 +35,9 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                 String sophlink ="https://dissenter.com/discussion/begin?url=https://www.bitchute.com/video/FNqiV8kL4cc/&cpp=69";
                 String dissent = "https://dissenter.com/discussion/begin?url="+vid.getBitchuteUrl()+"/&cpp=69";
                 doc = Jsoup.connect(dissent).get();
-                System.out.println(dissent);
+               // System.out.println(dissent);
                 Elements posts = doc.getElementsByClass("comment-container");
-                System.out.println("number of comments "+posts.size());
+                System.out.println(vid.getTitle()+"  "+posts.size()+"comments");
                 for (Element p : posts){
                     Comment com = new Comment(p.attr("data-comment-id"));
                     com.setText(p.getElementsByClass("comment-body").text());
@@ -73,7 +73,7 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                 doc = Jsoup.connect("https://dissenter.com/discussion/begin?url="+vid.getYoutubeUrl()+"&cpp=69").get();
                 //System.out.println("https://dissenter.com/discussion/begin?url="+vid.getBitchuteUrl()+"&cpp=69");
                 Elements posts = doc.getElementsByClass("comment-container");
-                System.out.println("number of comments "+posts.size());
+                System.out.println(vid.getTitle()+"  "+posts.size()+"comments");
                 //System.out.println(posts.first().toString());
                 for (Element p : posts){
                     Comment com = new Comment(p.attr("data-comment-id"));

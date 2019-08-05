@@ -69,6 +69,12 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         if (video.getMp4().isEmpty() && video.getUpCount().isEmpty()){
             new VideoScrape().execute(video);
         }
+        if (video.getComments().size()>0){
+            holder.name.setText(video.getTitle()+" ("+video.getComments().size()+")");
+        }
+        else {
+            holder.name.setText(video.getTitle());
+        }
         holder.name.setText(video.getTitle());
 
         if (video.isBitchute()) {
@@ -104,6 +110,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
             timehack= days +" days,"+timehack;
         }
         hold.author.setText(video.getAuthor()+ "  "+timehack );
+
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {

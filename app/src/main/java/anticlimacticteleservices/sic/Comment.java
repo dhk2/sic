@@ -86,6 +86,7 @@ public class Comment implements Serializable {
 
     @Override
     public String toString() {
+
         return this.author+": "+this.text;
     }
     public String toHtml() {

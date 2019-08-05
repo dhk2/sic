@@ -29,8 +29,10 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
     @Override
     protected void onPostExecute(Boolean aBoolean) {
         super.onPostExecute(aBoolean);
-        if (newcount>0)
-            Toast.makeText(MainActivity.masterData.context,newcount+" new videos added",Toast.LENGTH_SHORT).show();
+        if (newcount>0) {
+            Toast.makeText(MainActivity.masterData.context, newcount + " new videos added", Toast.LENGTH_SHORT).show();
+        }
+        Util.scheduleJob(MainActivity.masterData.context);
 
     }
 
