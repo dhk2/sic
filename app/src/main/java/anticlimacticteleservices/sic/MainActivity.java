@@ -2,6 +2,7 @@ package anticlimacticteleservices.sic;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -49,6 +50,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+
+import dao.FeedItemDAO;
 
 import static android.app.PendingIntent.getActivity;
 
@@ -182,8 +185,27 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         getSupportActionBar().show();
         setTitle("Loading video feed");
+
+
+
         preferences = getSharedPreferences( getPackageName() + "_preferences", MODE_PRIVATE);
         masterData = new UserData(getApplicationContext());
+        SicDatabase database = Room.databaseBuilder(this, SicDatabase.class, "mydb")
+                .allowMainThreadQueries()
+                .fallbackToDestructiveMigration()
+                .build();
+        System.out.println(database.toString());
+        masterData.setDB(database);
+        FeedItemDAO feeditemDAO = masterData.getDB().getFeedItemDAO();
+        List<FeedItem> items;
+        items = feeditemDAO.getFeedItems();
+        Video v;
+        for (FeedItem f : items){
+            v= (Video) Util.makeVideo(f);
+            System.out.println(v.getTitle());
+        }
+
+
         fragment = new SettingsFragment();
         manager = getSupportFragmentManager();
         masterData.setFragmentManager(manager);
