@@ -51,8 +51,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import dao.FeedItemDAO;
-
 import static android.app.PendingIntent.getActivity;
 
 
@@ -88,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
                     case R.id.navigation_home:
                         //setTitle("Video Feed");
                         getSupportActionBar().hide();
-                        new ChannelUpdate().execute();
+                        //new ChannelUpdate().execute();
                         fragment = new VideoFragment();
                         ((VideoFragment) fragment).setVideos(masterData.getVideos());
                         manager = getSupportFragmentManager();
@@ -100,8 +98,8 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
                     case R.id.navigation_history:
                         getSupportActionBar().show();
                         setTitle("Not implemented yet");
-
-                        Uri uri;
+                        new ChannelUpdate().execute();
+                  /*      Uri uri;
                         int vlcRequestCode = 42;
                         String path;
                         String subtitles="";
@@ -125,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
                         vlcIntent.putExtra("subtitles_location"	, subtitles);
                         vlcIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         System.out.println("trying to play vlc "+vlcIntent.toString());
-                        getApplication().startActivity(vlcIntent);
+                        getApplication().startActivity(vlcIntent);*/
                         return true;
                     case R.id.navigation_channels:
                         getSupportActionBar().hide();
@@ -190,21 +188,23 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
 
         preferences = getSharedPreferences( getPackageName() + "_preferences", MODE_PRIVATE);
         masterData = new UserData(getApplicationContext());
+        System.out.println("building database access");
         SicDatabase database = Room.databaseBuilder(this, SicDatabase.class, "mydb")
                 .allowMainThreadQueries()
                 .fallbackToDestructiveMigration()
                 .build();
         System.out.println(database.toString());
-        masterData.setDB(database);
-        FeedItemDAO feeditemDAO = masterData.getDB().getFeedItemDAO();
-        List<FeedItem> items;
-        items = feeditemDAO.getFeedItems();
-        Video v;
-        for (FeedItem f : items){
-            v= (Video) Util.makeVideo(f);
-            System.out.println(v.getTitle());
-        }
+        VideoDao videoDao = database.videoDao();
+        System.out.println("got DAO, passing it to masterdata");
 
+        if (null != videoDao){
+            System.out.println("loading videos from sql");
+            masterData.setVideos(videoDao.getVideos());
+            masterData.setVideoDAO((videoDao));
+        }
+        else{
+            System.out.println("VideoDAO is not effing working. this sucks");
+        }
 
         fragment = new SettingsFragment();
         manager = getSupportFragmentManager();
@@ -212,12 +212,13 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
         if (masterData.getVideos().isEmpty()){
             System.out.println("no videos");
             if (masterData.getChannels().isEmpty()) {
+                System.out.println("No channels");
                 for (String feed : masterData.getFeedLinks()) {
                     new ChannelInit().execute(feed);
                 }
             }
             else {
-                new ChannelUpdate().execute();
+               // new ChannelUpdate().execute();
             }
             if (masterData.getVideos().isEmpty()) {
                 final Dialog dialog = new Dialog(this);
@@ -246,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
             }
         }
         else {
-            new ChannelUpdate().execute();
+          //  new ChannelUpdate().execute();
             getSupportActionBar().hide();
             fragment = new VideoFragment();
             ((VideoFragment) fragment).setVideos(masterData.getVideos());

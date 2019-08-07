@@ -1,53 +1,64 @@
 package anticlimacticteleservices.sic;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 
+@Entity(tableName = "Feed_Item")
 class Video implements Serializable,Comparable<Video>
 {
-    public String getAuthorID() {
-        return AuthorID;
-    }
-
-    public void setAuthorID(String authorID) {
-        AuthorID = authorID;
-    }
-
-    private String AuthorID;
+    @PrimaryKey(autoGenerate = true)
+    private long ID;
+    @ColumnInfo(name = "author_id")
+    private long authorID;
+    @ColumnInfo(name = "title")
     private String title;
+    @ColumnInfo(name = "author")
     private String author;
+    @ColumnInfo(name = "url")
     private String url;
+    @ColumnInfo(name = "watched")
     private boolean watched;
-    private Date date;
+    @ColumnInfo(name = "date")
+    private long date;
+    @ColumnInfo(name = "currentPosition")
+    private long currentPosition;
+    @ColumnInfo(name = "thumbnail_url")
     private String thumbnailurl;
+    @ColumnInfo(name = "magnet_link")
     private String magnet;
+    @ColumnInfo(name = "video_link")
     private String mp4;
+    @ColumnInfo(name = "description")
     private String description;
+    @ColumnInfo(name = "view_count")
     private String viewCount;
+    @ColumnInfo(name = "rating")
     private String rating;
-
-    public String getUpCount() {
-        return upCount;
-    }
-
+    @ColumnInfo(name = "up_count")
     private String upCount;
+    @ColumnInfo(name = "down_count")
     private String downCount;
-    private String ID;
+    @ColumnInfo(name = "source_id")
+    private String sourceID;
+    @ColumnInfo(name = "comment_count")
     private String commentCount;
+    @ColumnInfo(name = "hash_tags")
     private String hashtags;
+    @ColumnInfo(name = "category")
     private String category;
-    private ArrayList comments = new ArrayList<Comment>();
-
     public Video()
     {
         this.title = "";
         this.author = "";
         this.url = "";
-        System.out.println("blank constructor url set to:" + this.url);
+    //    System.out.println("blank constructor url set to:" + this.url);
         this.watched = false;
-        this.date = new Date();
+        this.date = new Date().getTime();
         this.thumbnailurl = "";
         this.magnet = "";
         this.description = "";
@@ -56,7 +67,7 @@ class Video implements Serializable,Comparable<Video>
         this.viewCount = "";
         this.upCount = "";
         this.downCount = "";
-        this.ID = "";
+        this.sourceID = "";
         this.commentCount = "0";
         this.hashtags = "";
         this.category = "";
@@ -70,16 +81,16 @@ class Video implements Serializable,Comparable<Video>
         //System.out.println("new video created with" + this.url);
         if (location.indexOf("youtube") > 0)
         {
-            ID = location.substring(location.lastIndexOf("?v=") + 3);
+            sourceID = location.substring(location.lastIndexOf("?v=") + 3);
         }
         else
         {
             String[] segments = location.split("/");
-            ID = segments[segments.length - 1];
+            sourceID = segments[segments.length - 1];
         }
-       // System.out.println("got id "+ID+" from "+location);
+       // System.out.println("got id "+sourceID+" from "+location);
         this.watched = false;
-        this.date = new Date();
+        this.date = 0;
         this.thumbnailurl = "";
         this.magnet = "";
         this.description = "";
@@ -95,14 +106,24 @@ class Video implements Serializable,Comparable<Video>
 
 //  	     Getters
 
+    public long getAuthorID() {
+        return authorID;
+    }
+    public String getUpCount() {
+        return upCount;
+    }
+
+    public void setAuthorID(long authorID) {
+        this.authorID = authorID;
+    }
     public String getUrl()
     {
         return this.url;
 
     }
-    public Date getDate()
+    public long getDate()
     {
-        return this.date;
+        return date;
     }
     public String getDescription()
     {
@@ -136,16 +157,16 @@ class Video implements Serializable,Comparable<Video>
     {
         return this.watched;
     }
-    public String getID()
+    public String getSourceID()
     {
-        return this.ID;
+        return this.sourceID;
     }
     public String getEmbeddedUrl(){
         //update for new video sources
         if (url.indexOf("youtube") > 0) {
-            return "https://www.youtube.com/embed/"+this.ID+"?autoplay=1&modestbranding=1";
+            return "https://www.youtube.com/embed/"+this.sourceID +"?autoplay=1&modestbranding=1";
         } else {
-            return "https://www.bitchute.com/embed/"+this.ID;
+            return "https://www.bitchute.com/embed/"+this.sourceID;
         }
     }
 
@@ -155,12 +176,12 @@ class Video implements Serializable,Comparable<Video>
     public void setUrl(String value)
     {
         this.url = value;
-        if (this.ID.isEmpty()) {
+        if (this.sourceID.isEmpty()) {
             if (value.indexOf("youtube") > 0) {
-                ID = value.substring(value.lastIndexOf("?v=") + 3);
+                sourceID = value.substring(value.lastIndexOf("?v=") + 3);
             } else {
                 String[] segments = value.split("/");
-                ID = segments[segments.length - 1];
+                sourceID = segments[segments.length - 1];
             }
         }
     }
@@ -183,11 +204,14 @@ class Video implements Serializable,Comparable<Video>
     {
         this.magnet = value;
     }
-    public void setDate(Date date)
+    public void setDate(long date)
     {
-        System.out.println(date);
+        //System.out.println(date);
 
         this.date = date;
+    }
+    public void setDate(Date date){
+        this.date=date.getTime();
     }
     public void setMp4(String value)
     {
@@ -215,7 +239,7 @@ class Video implements Serializable,Comparable<Video>
     }
     public void setCommentCount(String value)
     {
-        this.rating = value;
+        this.commentCount = value;
     }
     public void setCategory(String value)
     {
@@ -225,9 +249,9 @@ class Video implements Serializable,Comparable<Video>
     {
         this.hashtags = value;
     }
-    public void setID(String value)
+    public void setSourceID(String value)
     {
-        this.ID = value;
+        this.sourceID = value;
     }
 //			Functions
 
@@ -238,7 +262,7 @@ class Video implements Serializable,Comparable<Video>
                 "thumbnail:" + thumbnailurl + "\n" +
                 "author:" + author + "\n" +
 //			"watched:" + watched.toString() + "\n" +
-                "uploaded:" + date.toString() + "\n" +
+                "uploaded:" + new Date(date).toString() + "\n" +
                 "magnet link:" + magnet + "\n" +
                 "description:" + description + "\n" +
                 "mp4 file" + mp4 + "\n" +
@@ -246,7 +270,7 @@ class Video implements Serializable,Comparable<Video>
                 "Views:" + viewCount + "\n" +
                 "Up votes:" + upCount + "\n" +
                 "Down votes:" + downCount + "\n" +
-                "ID:" + ID + "\n" +
+                "sourceID:" + sourceID + "\n" +
                 "Comments:" + commentCount + "\n" +
                 "Hash tags:" + hashtags  + "\n" +
                 "Category:" + category+ "\n");
@@ -257,37 +281,89 @@ class Video implements Serializable,Comparable<Video>
     @Override
     public int compareTo(Video candidate)
     {
-        return (this.getDate().after(candidate.getDate())  ? -1 :
-                this.getDate().equals(candidate.getDate()) ? 0 : 1);
+        return (this.getDate()>(candidate.getDate())  ? -1 :
+                this.getDate()==(candidate.getDate()) ? 0 : 1);
     }
 
     public boolean isBitchute(){
         return (this.url.indexOf("bitchute.com") > 0);
     }
-    public String getBitchuteUrl() {return "https://www.bitchute.com/video/"+this.ID;}
+    public String getBitchuteUrl() {return "https://www.bitchute.com/video/"+this.sourceID;}
     public boolean isYoutube(){
         return this.url.indexOf("youtube.com") > 0;
     }
     public String getYoutubeUrl(){
-        return "https://www.youtube.com/watch?v="+this.ID;
+        return "https://www.youtube.com/watch?v="+this.sourceID;
     }
 
     public ArrayList<Comment> getComments(){
-        return comments;
+        //comments disabled until they can be roomiied
+        return null;
     }
     public boolean match(String matchID){
-        return (matchID.equals(ID));
+        return (matchID.equals(sourceID));
     }
+
+    public long getID() {
+        return ID;
+    }
+
+    public String getCommentCount() {
+        return commentCount;
+    }
+
+    public void setID(long ID) {
+        this.ID = ID;
+    }
+    public void setWatched(boolean watched) {
+        this.watched = watched;
+    }
+
+    public long getCurrentPosition() {
+        return currentPosition;
+    }
+
+    public void setCurrentPosition(long currentPosition) {
+        this.currentPosition = currentPosition;
+    }
+
+    public String getThumbnailurl() {
+        return thumbnailurl;
+    }
+
+    public void setThumbnailurl(String thumbnailurl) {
+        this.thumbnailurl = thumbnailurl;
+    }
+
+    public String getMagnet() {
+        return magnet;
+    }
+
+    public String getDownCount() {
+        return downCount;
+    }
+
+    public String getHashtags() {
+        return hashtags;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
     public void addComment(Comment com){
+        //comments disabled
+        /*
         Boolean unique=true;
         for (int i=1;i<comments.size();i++) {
             Comment match = (Comment) comments.get(i);
-            if (match.getID().equals(com.getID())) {
+            if (match.getSourceID().equals(com.getSourceID())) {
                 unique = false;
             }
         }
         if (unique){
             comments.add(com);
         }
+        */
     }
 }

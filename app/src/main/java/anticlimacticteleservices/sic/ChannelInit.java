@@ -33,7 +33,7 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
             chan = new Channel(g);
 
            for (Channel c : MainActivity.masterData.getChannels()){
-                if (chan.matches(c.getID())) {
+                if (chan.matches(c.getSourceID())) {
                     System.out.println("channel already exists");
                     dupeCount++;
                     continue channels;
@@ -57,7 +57,7 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
 
                 chan.setTitle(channelRss.title());
 
-               System.out.println("g is:"+g +"\n   id is "+chan.getID()+ "\n    url is "+chan.getBitchuteUrl()+"\n   youtube rss: "+chan.getYoutubeRssFeedUrl()+"\n  bitchute rss feed "+chan.getBitchuteRssFeedUrl());
+               System.out.println("g is:"+g +"\n   id is "+chan.getSourceID()+ "\n    url is "+chan.getBitchuteUrl()+"\n   youtube rss: "+chan.getYoutubeRssFeedUrl()+"\n  bitchute rss feed "+chan.getBitchuteRssFeedUrl());
 
                if (chan.isYoutube()) {
                     chan.setTitle(channelRss.title());
@@ -86,7 +86,7 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                         }
                         boolean unique = true;
                         for (Video match : MainActivity.masterData.getVideos()) {
-                            if (match.getID().equals(nv.getID())) {
+                            if (match.getSourceID().equals(nv.getSourceID())) {
                                 unique = false;
                                 break;
                             }
@@ -94,18 +94,6 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                         if (unique) {
                             MainActivity.masterData.addVideo(nv);
                             newVideoCount++;
-                        }
-                        unique = true;
-                        for (Video match : chan.getVideos()) {
-                            if (match.getID().equals(nv.getID())) {
-                                unique = false;
-                                break;
-                            }
-                        }
-                        if (unique) {
-                      //      System.out.println("g is:"+g +"   id is "+chan.getID()+ "    url is "+chan.getUrl());
-                            chan.addVideo(nv);
-                            MainActivity.masterData.setDirtydata(1);
                         }
                     }
                 }
@@ -138,7 +126,7 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                             //System.out.println(nv);
                             boolean unique=true;
                             for (Video match : MainActivity.masterData.getVideos()) {
-                                if (match.getID().equals(nv.getID())) {
+                                if (match.getSourceID().equals(nv.getSourceID())) {
                                     unique = false;
                                     break;
                                 }
@@ -147,17 +135,6 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                                 MainActivity.masterData.addVideo(nv);
                                 newVideoCount++;
                             }
-                            unique = true;
-                            for (Video match : chan.getVideos()) {
-                                if (match.getID().equals(nv.getID())) {
-                                    unique = false;
-                                    break;
-                                }
-                            }
-                            if (unique) {
-                                chan.addVideo(nv);
-                                MainActivity.masterData.setDirtydata(1);
-                             }
                         }
                        // System.out.println("finished scraping videos");
 
@@ -168,7 +145,7 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                 }
 /*                boolean unique = true;
                 for (Channel match : MainActivity.masterData.getChannels()) {
-                    if (match.matches(chan.getID())) {
+                    if (match.matches(chan.getSourceID())) {
                         unique = false;
                     }
                 }

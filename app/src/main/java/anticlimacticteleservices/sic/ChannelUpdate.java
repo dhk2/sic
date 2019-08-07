@@ -1,12 +1,9 @@
 package anticlimacticteleservices.sic;
-import android.app.Dialog;
-import android.net.Uri;
+import android.arch.persistence.room.Room;
+import android.content.Context;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.MediaController;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -16,7 +13,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Date;
 
 class ChannelUpdate extends AsyncTask<String, String, Boolean> {
@@ -25,23 +22,44 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
     private Document doc;
     private int dupecount=0;
     private int newcount=0;
+    private ArrayList<Video> allVideos;
+    private static Context context;
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        if (null==context) {
+            this.context = MainActivity.masterData.context;
+        }
+    }
 
     @Override
     protected void onPostExecute(Boolean aBoolean) {
         super.onPostExecute(aBoolean);
         if (newcount>0) {
-            Toast.makeText(MainActivity.masterData.context, newcount + " new videos added", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, newcount + " new videos added", Toast.LENGTH_SHORT).show();
         }
-        Util.scheduleJob(MainActivity.masterData.context);
+        Util.scheduleJob(context);
 
     }
 
     @Override
     protected Boolean doInBackground(String... params) {
-
-        int channelCount = MainActivity.masterData.getChannels().size();
+        SicDatabase database = Room.databaseBuilder(context, SicDatabase.class, "mydb")
+                .allowMainThreadQueries()
+                .fallbackToDestructiveMigration()
+                .build();
+        System.out.println(database.toString());
+        VideoDao videoDao = database.videoDao();
+        if (null != videoDao){
+            allVideos =(ArrayList)videoDao.getVideos();
+            System.out.println("loaded videos from database"+allVideos.size());
+        }
+        else {
+            System.out.println("error trying to access databse from background asynctask");
+        }
         for (Channel chan : MainActivity.masterData.getChannels()){
-            Long diff = new Date().getTime()- chan.getLastsync().getTime();
+            Long diff = new Date().getTime()- chan.getLastsync();
             int minutes = (int) ((diff / (1000*60)) % 60);
             int hours   = (int) ((diff / (1000*60*60)) % 24);
             int days = (int) ((diff / (1000*60*60*24)));
@@ -57,8 +75,8 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
                     Elements videos = doc.getElementsByTag("entry");
         youtubeLoop:for (Element entry : videos) {
                         Video nv = new Video(entry.getElementsByTag("link").first().attr("href"));
-                        for (Video match : MainActivity.masterData.getVideos()) {
-                            if (match.getID().equals(nv.getID())) {
+                        for (Video match : allVideos) {
+                            if (match.getSourceID().equals(nv.getSourceID())) {
                                 dupecount++;
                                 continue youtubeLoop;
                             }
@@ -78,7 +96,6 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
                             System.out.println(entry);
                         }
                         MainActivity.masterData.addVideo(nv);
-                        chan.addVideo(nv);
                         MainActivity.masterData.setDirtydata(1);
                         System.out.println("adding video "+nv.getTitle()+ " published on:"+nv.getDate());
                     }
@@ -92,12 +109,13 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
                     Elements videos = doc.getElementsByTag("item");
        bitchuteLoop:for (Element video : videos) {
                         Video nv = new Video(video.getElementsByTag("link").first().text());
-                        for (Video match : MainActivity.masterData.getVideos()) {
-                            if (match.getID().equals(nv.getID())) {
+                        for (Video match : allVideos) {
+                            if (match.getSourceID().equals(nv.getSourceID())) {
                                 dupecount++;
                                 continue bitchuteLoop;
                             }
                         }
+                        nv.setAuthorID(chan.getID());
                         nv.setTitle(video.getElementsByTag("title").first().text());
                         nv.setDescription(video.getElementsByTag("description").first().text());
                         nv.setUrl(video.getElementsByTag("link").first().text());
@@ -110,7 +128,6 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
                         }
                         nv.setAuthor(chan.getTitle());
                         MainActivity.masterData.addVideo(nv);
-                        chan.addVideo(nv);
                         MainActivity.masterData.setDirtydata(1);
                         newcount++;
                         System.out.println("adding video " + nv.getTitle() + " published on:" + nv.getDate());
@@ -121,9 +138,10 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
         }
         System.out.println(dupecount+ "duplicate videos discarded from RSS feeds, "+newcount+" new videos added");
         if (newcount>1){
-            MainActivity.masterData.sortVideos();
+            if (null != MainActivity.masterData) {
+                MainActivity.masterData.sortVideos();
+            }
         }
-        MainActivity.masterData.setForceRefresh(false);
         return true;
     }
 

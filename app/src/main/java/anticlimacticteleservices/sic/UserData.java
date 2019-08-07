@@ -1,9 +1,6 @@
 package anticlimacticteleservices.sic;
 
 import android.app.Activity;
-import android.arch.persistence.db.SupportSQLiteOpenHelper;
-import android.arch.persistence.room.DatabaseConfiguration;
-import android.arch.persistence.room.InvalidationTracker;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
@@ -24,11 +21,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import dao.FeedItemDAO;
 
 // import  dao.FeedItemDAO.getFeedItems;
 
 public class UserData {
+    private VideoDao videoDao;
+    public VideoDao getVideoDAO() {
+        System.out.println("getting video dao");
+        return videoDao;
+    }
+    public void setVideoDAO(VideoDao value) {
+        System.out.println("setting video dao in masterdata"+value.toString());
+        this.videoDao = value;
+    }
     final SimpleDateFormat bdf = new SimpleDateFormat("EEE','  dd MMM yyyy HH:mm:SSZZZZ");
     final SimpleDateFormat ydf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
     public List<Channel> getChannels() {
@@ -44,16 +49,12 @@ public class UserData {
     public List<Video> getVideos() {
         return videos;
     }
-    public void setVideos(List<Video> value) {
-        this.videos = value;
-    }
+    public void setVideos(List<Video> value) {this.videos = value;}
     private List<Video>sVideos = new ArrayList<Video>();
     public VideoAdapter searchVideoAdapter= new VideoAdapter(sVideos);
     private Set<String> feedLinks =new HashSet<String>();
     private Boolean useYoutube=true;
     private SharedPreferences.Editor editor;
-    public  FeedItemDAO feeditemDAO;
-
     private int youtubePlayerChoice;
     private int bitchutePlayerChoice;
     FragmentManager fragmentManager;
@@ -62,29 +63,6 @@ public class UserData {
     public Activity activity;
     private boolean forceRefresh;
     public WebView webPlayer;
-    private SicDatabase DB =new SicDatabase() {
-        @Override
-        public FeedItemDAO getFeedItemDAO() {
-            return null;
-        }
-
-        @Override
-        protected SupportSQLiteOpenHelper createOpenHelper(DatabaseConfiguration config) {
-            return null;
-        }
-
-        @Override
-        protected InvalidationTracker createInvalidationTracker() {
-            return null;
-        }
-    };
-
-    public void setDB(SicDatabase room){
-        DB=room;
-    }
-    public SicDatabase getDB(){
-        return DB;
-    }
     public int dirtyData =0;
     public List<Channel> getsChannels() {
         return sChannels;
@@ -95,7 +73,7 @@ public class UserData {
     public void addsChannel(Channel value){
         boolean unique = true;
         for (Channel test : sChannels) {
-            if (test.matches(value.getID())){
+            if (test.matches(value.getSourceID())){
                 unique=false;
             }
         }
@@ -106,7 +84,7 @@ public class UserData {
     public void addChannel(Channel value){
         boolean unique = true;
         for (Channel test : channels) {
-            if (test.matches(value.getID())){
+            if (test.matches(value.getSourceID())){
                 unique=false;
             }
         }
@@ -137,15 +115,15 @@ public class UserData {
     public void addVideo(Video value) {
         boolean unique=true;
         for (Video v : videos) {
-            if (v.getID().equals(value.getID())){
+            if (v.getSourceID().equals(value.getSourceID())){
                 unique=false;
                 break;
             }
         }
         if (unique){
+            System.out.println("trying to add"+value);
             videos.add(value);
-            feeditemDAO = DB.getFeedItemDAO();
-            feeditemDAO.insert(Util.makeFeedItem(value));
+            getVideoDAO().insert(value);
         }
     }
     public List<Video> getsVideos() {
@@ -221,7 +199,7 @@ public class UserData {
             System.out.println("Saved channels read: "+channels.size());
             in.close();
             fileIn.close();
-
+/*
             feeditemDAO = DB.getFeedItemDAO();
             List<FeedItem> items = feeditemDAO.getFeedItems();
             Video v;
@@ -230,7 +208,7 @@ public class UserData {
                 System.out.println(v.getTitle());
             }
 
-
+*/
 
 
             fileIn = new FileInputStream(this.context.getFilesDir() + "videos.ser");
@@ -289,13 +267,6 @@ public class UserData {
                 e.printStackTrace();
             }
         }
-        for (Channel c : channels) {
-            for (Video v : c.getVideos()) {
-                addsVideos(v);
-            }
-
-        }
-        Collections.sort(videos);
     }
     public boolean saveUserData(){
         Context context = MainActivity.masterData.context;

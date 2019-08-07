@@ -379,8 +379,8 @@ class Search {
                                 System.out.println(channelUrl);
                                 String[] segments = channelUrl.split("/");
                                 nc=new Channel(" https://www.youtube.com/feeds/videos.xml?channel_id="+segments[segments.length - 1]);
-                                //nc.setID(segments[segments.length - 1]);
-                              //  nc.setUrl(" https://www.youtube.com/feeds/videos.xml?channel_id=" + nc.getID());
+                                //nc.setSourceID(segments[segments.length - 1]);
+                              //  nc.setUrl(" https://www.youtube.com/feeds/videos.xml?channel_id=" + nc.getSourceID());
                                 nc.setTitle(anchor.attr("title"));
                                 nc.setDescription(anchor.attr("aria-label"));
                             }
@@ -397,7 +397,7 @@ class Search {
                         }
    */
 
-//                        nc.setUrl(" https://www.youtube.com/feeds/videos.xml?channel_id="+nc.getID());
+//                        nc.setUrl(" https://www.youtube.com/feeds/videos.xml?channel_id="+nc.getSourceID());
                         MainActivity.masterData.addsChannel(nc);
  //                       System.out.println("adding channel to search results:"+nc);
                     }
