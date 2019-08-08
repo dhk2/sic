@@ -13,6 +13,33 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Util {
+    public static String getHowLongAgo(Long pointInTime){
+        Long diff = new Date().getTime()- pointInTime;
+        int minutes = (int) ((diff / (1000*60)) % 60);
+        int hours   = (int) ((diff / (1000*60*60)) % 24);
+        int days = (int) ((diff / (1000*60*60*24)));
+        String timehack="";
+        if (minutes ==1) {
+            timehack= "1 minute ago";
+        }
+        if (minutes>1){
+            timehack = minutes + " minutes ago";
+        }
+        if (hours==1){
+            timehack="1 hour,"+timehack;
+        }
+        if (hours>1){
+            timehack= hours +" hours,"+timehack;
+        }
+        if (days==1){
+            timehack="1 day,"+timehack;
+        }
+        if (days>1){
+            timehack= days +" days,"+timehack;
+        }
+        return timehack;
+    }
+
 
     public static void scheduleJob(Context context) {
         ComponentName serviceComponent = new ComponentName(context, SicSync.class);

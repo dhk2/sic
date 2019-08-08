@@ -151,7 +151,7 @@ class Channel implements Serializable{
     }
     public String getYoutubeUrl() {
 
-        if (!bitchuteID.isEmpty()) {
+        if (!youtubeID.isEmpty()) {
             return "https://www.youtube.com/channel/" + youtubeID;
         } else {
             return "";

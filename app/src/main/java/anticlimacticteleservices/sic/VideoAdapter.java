@@ -76,7 +76,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         else {
             holder.name.setText(video.getTitle());
         }
-        holder.name.setText(video.getTitle());
+
 
         if (video.isBitchute()) {
             System.out.println("setting video bitchute icon");
@@ -87,37 +87,13 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
            hold.serviceIcon.setImageResource(R.drawable.youtubeicon);
         }
         Picasso.get().load(video.getThumbnail()).into(hold.image);
-        Long diff = new Date().getTime()- video.getDate();
-        int minutes = (int) ((diff / (1000*60)) % 60);
-        int hours   = (int) ((diff / (1000*60*60)) % 24);
-        int days = (int) ((diff / (1000*60*60*24)));
-        String timehack="";
-        if (minutes ==1) {
-             timehack= "1 minute ago";
-        }
-        if (minutes>1){
-             timehack = minutes + " minutes ago";
-        }
-        if (hours==1){
-            timehack="1 hour,"+timehack;
-        }
-        if (hours>1){
-            timehack= hours +" hours,"+timehack;
-        }
-        if (days==1){
-            timehack="1 day,"+timehack;
-        }
-        if (days>1){
-            timehack= days +" days,"+timehack;
-        }
-        hold.author.setText(video.getAuthor()+ "  "+timehack );
+        hold.author.setText(video.getAuthor()+ " \n "+Util.getHowLongAgo(video.getDate()) );
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 Video vid = videos.get(position);
-                VideoScrape scrapper = new VideoScrape();
-                scrapper.execute(vid);
+                new VideoScrape().execute(vid);
                 System.out.println(vid.toString());
                 final Dialog dialog = new Dialog(view.getContext());
                 dialog.setContentView(R.layout.videoprop);

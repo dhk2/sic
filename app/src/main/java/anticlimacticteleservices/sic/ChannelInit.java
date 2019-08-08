@@ -49,10 +49,10 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                     channelRss= Jsoup.connect(chan.getBitchuteRssFeedUrl()).get();
                 }
                 else {
-                 //   System.out.println(chan);
-                 //   System.out.println("<"+chan.getBitchuteRssFeedUrl()+"><"+chan.getYoutubeRssFeedUrl())
+                    System.out.println(chan);
+                    System.out.println("<"+chan.getBitchuteRssFeedUrl()+"><"+chan.getYoutubeUrl());
                     channelRss = Jsoup.connect(chan.getYoutubeRssFeedUrl()).get();
-                    channelPage=Jsoup.connect(chan.getYoutubeUrl()).get();
+                    channelPage= Jsoup.connect(chan.getYoutubeUrl()).get();
                 }
 
                 chan.setTitle(channelRss.title());

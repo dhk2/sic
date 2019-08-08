@@ -76,7 +76,7 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
         else{
             System.out.println("failed to load channel list from sql");
         }
-        channelDatabase.close();
+
         for (Channel chan :allChannels){
             Long diff = new Date().getTime()- chan.getLastsync();
             int minutes = (int) ((diff / (1000*60)) % 60);
@@ -86,6 +86,7 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
             //TODO implement variable refresh rate by channel here
             if (hours>0 ){
                 chan.setLastsync(new Date());
+                channelDao.update(chan);
                 if (chan.isYoutube()){
                     try {
                         doc = Jsoup.connect(chan.getYoutubeRssFeedUrl()).get();
@@ -168,6 +169,7 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
             }
         }
         database.close();
+        channelDatabase.close();
         System.out.println(dupecount+ "duplicate videos discarded from RSS feeds, "+newcount+" new videos added");
         return true;
     }
