@@ -3,12 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
->
+    android:background="@color/colorPrimaryDark">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/vrv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/colorPrimaryDark"
         android:clipChildren="true"
         android:clipToPadding="true"
         android:paddingTop="16dp"

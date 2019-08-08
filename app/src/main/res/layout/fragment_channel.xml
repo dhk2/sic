@@ -9,6 +9,7 @@
         android:id="@+id/crv"
         android:layout_width="match_parent"
         android:layout_height="658dp"
+        android:background="@color/colorPrimaryDark"
         android:paddingTop="22dp"
         android:paddingBottom="20dp"
         tools:layout_editor_absoluteX="-67dp"
