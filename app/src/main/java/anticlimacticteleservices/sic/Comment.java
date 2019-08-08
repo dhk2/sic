@@ -1,23 +1,59 @@
 package anticlimacticteleservices.sic;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+
 import java.io.Serializable;
-
+@Entity(tableName = "comment")
 public class Comment implements Serializable {
-    String ID;
+    @PrimaryKey(autoGenerate = true)
+    Long ID;
+    @ColumnInfo(name = "feedID")
+    Long feedID;
+    @ColumnInfo(name = "source_id")
+    String sourceID;
+    @ColumnInfo(name = "url")
     String url;
+    @ColumnInfo(name = "text")
     String text;
+    @ColumnInfo(name = "time_stamp")
     String timestamp;
+    @ColumnInfo(name = "thumbnail")
     String thumbnail;
+    @ColumnInfo(name = "parent_id")
     String parent;
+    @ColumnInfo(name = "upvote")
     String upVote;
+    @ColumnInfo(name = "downvote")
     String downVote;
-
+    @ColumnInfo(name = "author")
     String author;
 
-    public Comment(String ID) {
-        this.ID = ID;
+    public Comment(String sourceid) {
+        feedID =0l;
+        this.sourceID = sourceid;
+        url = "";
+        text="";
+        timestamp="";
+        thumbnail="";
+        parent = "";
+        upVote = "";
+        downVote = "";
+        author = "";
     }
-
+    public Comment() {
+        feedID =0l;
+        this.sourceID = "";
+        url = "";
+        text="";
+        timestamp="";
+        thumbnail="";
+        parent = "";
+        upVote = "";
+        downVote = "";
+        author = "";
+    }
     public String getAuthor() {
         return author;
     }
@@ -77,11 +113,23 @@ public class Comment implements Serializable {
     public String getDownVote() {
         return downVote;
     }
-    public String getID(){
-        return this.ID;
+    public String getSourceID(){
+        return this.sourceID;
     }
     public void setDownVote(String downVote) {
         this.downVote = downVote;
+    }
+
+    public void setSourceID(String sourceID) {
+        this.sourceID = sourceID;
+    }
+
+    public Long getFeedID() {
+        return feedID;
+    }
+
+    public void setFeedID(Long feedID) {
+        this.feedID = feedID;
     }
 
     @Override

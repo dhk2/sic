@@ -255,8 +255,7 @@ class Video implements Serializable,Comparable<Video>
     }
 //			Functions
 
-    public String toString()
-    {
+    public String toDebugString()  {
         return ("title:" + title + "\n" +
                 "url:" + url + "\n" +
                 "thumbnail:" + thumbnailurl + "\n" +
@@ -276,8 +275,9 @@ class Video implements Serializable,Comparable<Video>
                 "Category:" + category+ "\n");
     }
 
-
-
+    public String toString() {
+        return (new Date(date).toString() + " " + title + "  by" + author);
+    }
     @Override
     public int compareTo(Video candidate)
     {
@@ -296,10 +296,10 @@ class Video implements Serializable,Comparable<Video>
         return "https://www.youtube.com/watch?v="+this.sourceID;
     }
 
-    public ArrayList<Comment> getComments(){
-        //comments disabled until they can be roomiied
-        return null;
-    }
+ //   public ArrayList<Comment> getComments(){
+//        //comments disabled until they can be roomiied
+ //       return null;
+ //   }
     public boolean match(String matchID){
         return (matchID.equals(sourceID));
     }

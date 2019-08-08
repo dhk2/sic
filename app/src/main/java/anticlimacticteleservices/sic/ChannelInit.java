@@ -66,9 +66,21 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                     chan.setDescription(channelPage.getElementsByAttributeValue("name", "description").attr("content"));
                     chan.setThumbnail(channelPage.getElementsByAttributeValue("itemprop", "thumbnailUrl").attr("href"));
                     Elements entries = channelRss.getElementsByTag("entry");
+                    Date pd=new Date(1);
                     for (Element entry : entries) {
+                        try {
+                            pd = ydf.parse(entry.getElementsByTag("published").first().text());
+                        } catch (ParseException ex) {
+                            Log.v("Exception parsing date", ex.getLocalizedMessage());
+                            System.out.println(entry);
+                        }
+                        //TODO put in exception for archived channels here when implemented
+                        if (pd.getTime()+(MainActivity.masterData.getFeedAge()*24*60*60*1000)<new Date().getTime()){
+                            System.out.println("out of feed range for "+chan.getTitle());
+                            break;
+                        }
                         Video nv = new Video(entry.getElementsByTag("link").first().attr("href"));
-
+                        nv.setDate(pd);
                         nv.setAuthor(chan.getAuthor());
                         nv.setAuthorID(chan.getID());
                         nv.setTitle(entry.getElementsByTag("title").first().html());
@@ -77,13 +89,7 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                         nv.setDescription(entry.getElementsByTag("media:description").first().text());
                         nv.setRating(entry.getElementsByTag("media:starRating").first().attr("average"));
                         nv.setViewCount(entry.getElementsByTag("media:statistics").first().attr("views"));
-                        try {
-                            Date pd = ydf.parse(entry.getElementsByTag("published").first().text());
-                            nv.setDate(pd);
-                        } catch (ParseException ex) {
-                            Log.v("Exception parsing date", ex.getLocalizedMessage());
-                            System.out.println(entry);
-                        }
+
                         boolean unique = true;
                         for (Video match : MainActivity.masterData.getVideos()) {
                             if (match.getSourceID().equals(nv.getSourceID())) {
@@ -165,9 +171,9 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
             MainActivity.masterData.sortVideos();
 
         }
-        MainActivity.masterData.sortVideos();
-        System.out.println("sorting"+MainActivity.masterData.getVideos().size());
-        MainActivity.masterData.saveUserData();
+       // MainActivity.masterData.sortVideos();
+    //    System.out.println("sorting"+MainActivity.masterData.getVideos().size());
+    //    MainActivity.masterData.saveUserData();
         return 69;
     }
 

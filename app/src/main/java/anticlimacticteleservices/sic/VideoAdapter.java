@@ -35,7 +35,7 @@ import static android.app.PendingIntent.getActivity;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHolder> {
    private List<Video> videos = new ArrayList<>();
-
+   private List<Comment> comments = new ArrayList<>();
     public class CustomViewHolder extends RecyclerView.ViewHolder {
         private TextView name;
         private ImageView image;
@@ -69,11 +69,11 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         if (video.getMp4().isEmpty() && video.getUpCount().isEmpty()){
             new VideoScrape().execute(video);
         }
-/*          comments disabled
-        if (video.getComments().size()>0){
-            holder.name.setText(video.getTitle()+" ("+video.getComments().size()+")");
+        comments = MainActivity.masterData.getCommentDao().getCommentsByFeedId(video.getID());
+        if (comments.size()>0){
+            holder.name.setText(video.getTitle()+" ("+comments.size()+")");
         }
-*/        else {
+        else {
             holder.name.setText(video.getTitle());
         }
         holder.name.setText(video.getTitle());
@@ -125,11 +125,9 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                 TextView textView = dialog.findViewById(R.id.channelDetails);
                 Spanned spanned = HtmlCompat.fromHtml(vid.getDescription(), HtmlCompat.FROM_HTML_MODE_COMPACT);
                 String description=vid.getDescription()+"<p>";
-     /*    comments disabled
-                for (Comment c : vid.getComments()) {
+                for (Comment c : comments) {
                     description = description + c.toHtml();
                 }
-                */
                 textView.setText(Html.fromHtml(description));
                 ImageView image = dialog.findViewById(R.id.thumbNailView);
                 Picasso.get().load(vid.getThumbnail()).into(image);

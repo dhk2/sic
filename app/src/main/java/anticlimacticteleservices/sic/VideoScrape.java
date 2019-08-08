@@ -23,6 +23,8 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
     @Override
     protected Video doInBackground(Video... videos) {
         Video vid = videos[0];
+        System.out.println(videos.length+" videos passed to scrape");
+        System.out.println(vid);
 
         if (vid.isBitchute()){
             Document doc = null;
@@ -32,7 +34,6 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                 vid.setDescription(doc.getElementsByClass("full hidden").toString());
                 vid.setMagnet(doc.getElementsByClass("video-actions").first().getElementsByAttribute("href").first().attr("href"));
                 vid.setMp4(doc.getElementsByTag("source").attr("src"));
-                String sophlink ="https://dissenter.com/discussion/begin?url=https://www.bitchute.com/video/FNqiV8kL4cc/&cpp=69";
                 String dissent = "https://dissenter.com/discussion/begin?url="+vid.getBitchuteUrl()+"/&cpp=69";
                 doc = Jsoup.connect(dissent).get();
                // System.out.println(dissent);
@@ -43,7 +44,11 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                     com.setText(p.getElementsByClass("comment-body").text());
                     com.setThumbnail(p.getElementsByClass("profile-picture mr-3").attr("src"));
                     com.setAuthor(p.getElementsByClass("profile-name").text());
-                    vid.addComment(com);
+                    com.setFeedID(vid.getID());
+                    Comment test = MainActivity.masterData.getCommentDao().dupeCheck(vid.getID(),com.getText(),com.getAuthor());
+                    if (null == test){
+                        MainActivity.masterData.getCommentDao().insert(com);
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -73,14 +78,18 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                 doc = Jsoup.connect("https://dissenter.com/discussion/begin?url="+vid.getYoutubeUrl()+"&cpp=69").get();
                 //System.out.println("https://dissenter.com/discussion/begin?url="+vid.getBitchuteUrl()+"&cpp=69");
                 Elements posts = doc.getElementsByClass("comment-container");
-                System.out.println(vid.getTitle()+"  "+posts.size()+"comments");
+                System.out.println(MainActivity.masterData.getVideos().size()+")"+vid.getTitle()+"  "+posts.size()+"comments");
                 //System.out.println(posts.first().toString());
                 for (Element p : posts){
                     Comment com = new Comment(p.attr("data-comment-id"));
                     com.setText(p.getElementsByClass("comment-body").text());
                     com.setThumbnail(p.getElementsByClass("profile-picture mr-3").attr("src"));
                     com.setAuthor(p.getElementsByClass("profile-name").text());
-                    vid.addComment(com);
+                    com.setFeedID(vid.getID());
+                    Comment test = MainActivity.masterData.getCommentDao().dupeCheck(vid.getID(),com.getText(),com.getAuthor());
+                    if (null == test){
+                        MainActivity.masterData.getCommentDao().insert(com);
+                    }
                 }
                // System.out.println(vid);
             } catch (IOException e) {
@@ -89,6 +98,7 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                 e.printStackTrace();
             }
         }
+        MainActivity.masterData.getVideoDao().update(vid);
         return null;
     }
 }

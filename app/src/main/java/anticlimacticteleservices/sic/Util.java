@@ -37,7 +37,7 @@ public class Util {
             e.printStackTrace();
         }
         PrintWriter printWriter = new PrintWriter(fileWriter);
-        for (Comment c : video.getComments()){
+        for (Comment c : MainActivity.masterData.getCommentDao().getCommentsByFeedId(video.getID())){
             String text = c.getText();
             String left=text;
             while (!text.isEmpty()){

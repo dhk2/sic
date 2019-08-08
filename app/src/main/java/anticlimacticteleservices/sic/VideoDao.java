@@ -18,7 +18,7 @@ public interface VideoDao {
     @Delete
     public void delete(Video  feed_item);
 
-    @Query("SELECT * FROM feed_item")
+    @Query("SELECT * FROM feed_item ORDER BY date DESC")
     List<Video> getVideos();
 
 

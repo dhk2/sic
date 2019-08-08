@@ -136,9 +136,8 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
                 description.append(System.getProperty("line.separator"));
                 description.append("Subscribers:"+chan.getSubscribers()+System.getProperty("line.separator"));
                 description.append("last synch:"+chan.getLastsync()+System.getProperty("line.separator"));
-                for (String h : chan.getUrls()) {
-                    description.append("source url:"+h+System.getProperty("line.separator"));
-                }
+                description.append("source url:"+chan.getUrl()+System.getProperty("line.separator"));
+
                 //description.append("youtube:"+chan.getSubscribers()+System.getProperty("line.separator"));
 
                 ImageView image = dialog.findViewById(R.id.thumbNailView);
@@ -204,7 +203,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
                             FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
                             transaction.replace(R.id.fragment, fragment);
                             transaction.addToBackStack(null);
-                            transaction.commit();
+                            transaction.commitAllowingStateLoss();
                         }
                     }
                 } );

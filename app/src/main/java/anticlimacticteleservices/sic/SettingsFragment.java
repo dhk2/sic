@@ -79,6 +79,8 @@ public class SettingsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         final Button importBitchute = view.findViewById(R.id.load_bitchute);
         final Button importYoutube = view.findViewById(R.id.load_youtube);
+        final TextView feedAge = view.findViewById(R.id.feedage);
+        feedAge.setText(Long.toString(MainActivity.masterData.getFeedAge()));
         importBitchute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -1,6 +1,7 @@
 package anticlimacticteleservices.sic;
 
 import android.app.Activity;
+import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
@@ -25,14 +26,42 @@ import java.util.Set;
 // import  dao.FeedItemDAO.getFeedItems;
 
 public class UserData {
+    public SicDatabase sicDatabase;
+    public ChannelDatabase channelDatabase;
+    public CommentDatabase commentDatabase;
+    public long feedAge;
+    public long getFeedAge() {
+        return feedAge;
+    }
+    public void setFeedAge(long feedAge) {
+        this.feedAge = feedAge;
+    }
+    private CommentDao commentDao;
+    public CommentDao getCommentDao() {
+        System.out.println("getting comment dao");
+        return commentDao;
+    }
+    public void setCommentDao(CommentDao value) {
+        System.out.println("setting comment dao in masterdata"+value.toString());
+        this.commentDao = value;
+    }
     private VideoDao videoDao;
-    public VideoDao getVideoDAO() {
+    public VideoDao getVideoDao() {
         System.out.println("getting video dao");
         return videoDao;
     }
-    public void setVideoDAO(VideoDao value) {
+    public void setVideoDao(VideoDao value) {
         System.out.println("setting video dao in masterdata"+value.toString());
         this.videoDao = value;
+    }
+    private ChannelDao channelDao;
+    public ChannelDao getChannelDao() {
+        System.out.println("getting Channel dao");
+        return channelDao;
+    }
+    public void setChannelDao(ChannelDao value) {
+        System.out.println("setting video dao in masterdata"+value.toString());
+        this.channelDao = value;
     }
     final SimpleDateFormat bdf = new SimpleDateFormat("EEE','  dd MMM yyyy HH:mm:SSZZZZ");
     final SimpleDateFormat ydf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
@@ -91,6 +120,7 @@ public class UserData {
         if (unique==true) {
             channels.add(value);
             feedLinks.add(value.getUrl());
+            getChannelDao().insert(value);
         }
         this.dirtyData++;
     }
@@ -113,9 +143,11 @@ public class UserData {
         System.out.println("sorted search videos");
     }
     public void addVideo(Video value) {
+
         boolean unique=true;
         for (Video v : videos) {
             if (v.getSourceID().equals(value.getSourceID())){
+                System.out.println("attempted to add duplicate video");
                 unique=false;
                 break;
             }
@@ -123,7 +155,7 @@ public class UserData {
         if (unique){
             System.out.println("trying to add"+value);
             videos.add(value);
-            getVideoDAO().insert(value);
+            getVideoDao().insert(value);
         }
     }
     public List<Video> getsVideos() {
@@ -181,121 +213,54 @@ public class UserData {
         this.transaction = transaction;
     }
     public UserData(Context con) {
+        context=con;
+        //TODO rationalize the preferences betwixt userdata and mainactivity.
         editor = MainActivity.preferences.edit();
         youtubePlayerChoice = MainActivity.preferences.getInt("youtubePlayerChoice", 4);
         bitchutePlayerChoice = MainActivity.preferences.getInt("bitchutePlayerChoice", 8);
+        feedAge = MainActivity.preferences.getLong("feedAge",7);
         feedLinks = MainActivity.preferences.getStringSet("feedlinks",feedLinks);
-        this.context=con;
+        System.out.println("loaded/reloaded preferences:"+feedAge+" "+youtubePlayerChoice+" "+bitchutePlayerChoice);
         //shouldn't be needed
         if (youtubePlayerChoice==0)
             youtubePlayerChoice=4;
         if (bitchutePlayerChoice==0)
             bitchutePlayerChoice=8;
 
-        try {
-            FileInputStream fileIn = new FileInputStream(this.context.getFilesDir() + "channels.ser");
-            ObjectInputStream in = new ObjectInputStream(fileIn);
-            channels = (ArrayList<Channel>) in.readObject();
-            System.out.println("Saved channels read: "+channels.size());
-            in.close();
-            fileIn.close();
-/*
-            feeditemDAO = DB.getFeedItemDAO();
-            List<FeedItem> items = feeditemDAO.getFeedItems();
-            Video v;
-            for (FeedItem f : items){
-                v= (Video) Util.makeVideo(f);
-                System.out.println(v.getTitle());
-            }
-
-*/
-
-
-            fileIn = new FileInputStream(this.context.getFilesDir() + "videos.ser");
-            in = new ObjectInputStream(fileIn);
-            videos = (ArrayList<Video>) in.readObject();
-            System.out.println("Saved videos read: "+channels.size());
-            in.close();
-            fileIn.close();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e){
-            System.out.println("null pointer issue:");
-            e.printStackTrace();
-            //Toast.makeText(activity,"error reading in subsciption file, subscriptions reset",Toast.LENGTH_SHORT).show();
+        channelDatabase = Room.databaseBuilder(context , ChannelDatabase.class, "channel")
+                .allowMainThreadQueries()
+                .fallbackToDestructiveMigration()
+                .build();
+        channelDao = channelDatabase.ChannelDao();
+        if (null != channelDao){
+            setChannels((ArrayList<Channel>) channelDao.getChannels());
         }
-        System.out.println("read in " + channels.size());
-        if(channels.isEmpty()){
-            try {
-                FileInputStream fileIn = new FileInputStream(this.context.getFilesDir() + "channels.lkg");
-                ObjectInputStream in = new ObjectInputStream(fileIn);
-                channels = (ArrayList<Channel>) in.readObject();
-                System.out.println("last known good channels read "+channels.size());
-                in.close();
-                fileIn.close();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (NullPointerException e){
-                System.out.println("null pointer issue:");
-                e.printStackTrace();
-                //Toast.makeText(activity,"error reading in subsciption file, subscriptions reset",Toast.LENGTH_SHORT).show();
-            }
+        else{
+            System.out.println("ChannelDAO failed to load channels");
         }
-        else {
-            try (FileInputStream in = new FileInputStream("channels.src")) {
-                try (FileOutputStream out = new FileOutputStream("channels.lkg")) {
-                    // Transfer bytes from in to out
-                    byte[] buf = new byte[1024];
-                    int len;
-                    while ((len = in.read(buf)) > 0) {
-                        out.write(buf, 0, len);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        sicDatabase = Room.databaseBuilder(con, SicDatabase.class, "mydb")
+                .allowMainThreadQueries()
+                .fallbackToDestructiveMigration()
+                .build();
+        videoDao = sicDatabase.videoDao();
+        if (null != videoDao){
+            setVideos(videoDao.getVideos());
         }
+        else{
+            System.out.println("VideoDAO failure, this can't end well");
+        }
+        commentDatabase = Room.databaseBuilder(context , CommentDatabase.class, "comment")
+                .allowMainThreadQueries()
+                .fallbackToDestructiveMigration()
+                .build();
+        commentDao = commentDatabase.CommentDao();
     }
-    public boolean saveUserData(){
+        public boolean saveUserData(){
         Context context = MainActivity.masterData.context;
-        if (dirtyData>0) {
-            dirtyData=0;
-            try {
-                FileOutputStream fileOut = new FileOutputStream(context.getFilesDir() + "channels.ser");
-                ObjectOutputStream out = new ObjectOutputStream(fileOut);
-                out.writeObject(channels);
-                out.close();
-                fileOut.close();
-
-                fileOut = new FileOutputStream(context.getFilesDir() + "videos.ser");
-                out = new ObjectOutputStream(fileOut);
-                out.writeObject(videos);
-                out.close();
-                fileOut.close();
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-
-            }
-        }
-
         editor = MainActivity.preferences.edit();
         editor.putInt("youtubePlayerChoice", youtubePlayerChoice);
         editor.putInt("bitchutePlayerChoice", bitchutePlayerChoice);
+        editor.putLong("feedAge",feedAge);
         editor.putStringSet("feedlinks",getFeedLinks());
         editor.commit();
         return true;
@@ -378,22 +343,6 @@ public class UserData {
         editor.putStringSet("channelUrls", feedLinks);
         editor.commit();
         forceRefresh=true;
-    }
-    public Boolean getUseYoutube() {
-        //should probably get rid of this since the webview option means anyone can use youtube
-        return useYoutube;
-    }
-    public void callImport() {
-        System.out.print("creating new import subscription");
-        //this was the death of me
-       ImportSubscriptions is = new ImportSubscriptions();
-       is.execute();
-    }
-    public int getDirtydata() {
-        return dirtyData;
-    }
-    public void setDirtydata(int dirtydata) {
-        dirtyData = dirtydata;
     }
 }
    

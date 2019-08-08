@@ -19,8 +19,6 @@ class Channel implements Serializable{
     private String author;
     @ColumnInfo(name = "url")
     private String url;
-    @ColumnInfo(name = "urls")
-    private ArrayList<String> urls;
     @ColumnInfo(name = "thumbnail_url")
     private String thumbnailurl;
     @ColumnInfo(name = "description")
@@ -40,13 +38,13 @@ class Channel implements Serializable{
     @ColumnInfo(name = "last_sync")
     private long lastsync;
 
-
+/*
 
     //private ArrayList<Video> videos;
     final SimpleDateFormat bdf = new SimpleDateFormat("MMM dd, yyyy");
     final SimpleDateFormat ydf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
     final SimpleDateFormat bdf2 = new SimpleDateFormat( "                   hh:mm zzz    MMMM dd    yyyy");
-    
+   */
  //         Constructors   
     public Channel(){
         this.title="";
@@ -58,7 +56,7 @@ class Channel implements Serializable{
         this.sourceID ="";
         this.youtubeID="";
         this.bitchuteID="";
-        this.urls=new ArrayList<String>();
+      //  this.urls=new ArrayList<String>();
      //   this.videos=new ArrayList<Video>();
         this.lastsync=new Date().getTime();
         this.joined=lastsync;
@@ -66,8 +64,8 @@ class Channel implements Serializable{
     }
     public Channel(String url) {
         this.url = url;
-        urls = new ArrayList<String>();
-        urls.add(url);
+      //  urls = new ArrayList<String>();
+//        urls.add(url);
         description="";
         thumbnailurl="";
         profileImage="";
@@ -128,41 +126,38 @@ class Channel implements Serializable{
 
     //public ArrayList<Video> getVideos(){return this.videos;}
     public String getBitchuteRssFeedUrl(){
-        for (String u : urls) {
-            if (u.indexOf("bitchute") > 0) {
-                return "https://www.bitchute.com/feeds/rss/channel/" + bitchuteID;
-            }
+        if (!bitchuteID.isEmpty()){
+            return "https://www.bitchute.com/feeds/rss/channel/" + bitchuteID;
         }
-        return "";
+        else {
+            return "";
+        }
     }
     public String getBitchuteUrl() {
-        for (String u : urls){
-            if (u.indexOf("bitchute") > 0) {
-                return "https://www.bitchute.com/channel/" + bitchuteID;
-            }
+        if (!bitchuteID.isEmpty()) {
+            return "https://www.bitchute.com/channel/" + bitchuteID;
+        } else {
+            return "";
         }
-        return "";
     }
     public String getYoutubeRssFeedUrl() {
-        for (String u : urls) {
-            if (url.indexOf("youtube") > 0) {
-                return "https://www.youtube.com/feeds/videos.xml?channel_id=" + youtubeID;
-            }
+
+        if (!youtubeID.isEmpty()){
+            return "https://www.youtube.com/feeds/videos.xml?channel_id=" + youtubeID;
         }
-        return "";
-    }
-    public String getYoutubeUrl(){
-        for (String u : urls) {
-            if (u.indexOf("youtube") > 0) {
-                return "https://www.youtube.com/channel/" + youtubeID;
-            }
+        else {
+            return "";
         }
-        return "";
     }
-    public ArrayList<String> getUrls(){
-        return urls;
+    public String getYoutubeUrl() {
+
+        if (!bitchuteID.isEmpty()) {
+            return "https://www.youtube.com/channel/" + youtubeID;
+        } else {
+            return "";
+        }
     }
-   //           setters 
+   //           setters
     public void setJoined(Date joined) {
         this.joined = joined.getTime();
     }
@@ -181,12 +176,12 @@ class Channel implements Serializable{
                 String[] segments = value.split("/");
                 youtubeID = segments[segments.length - 1];
             }
-            urls.add(value);
+            url=(value);
         }
         if (value.indexOf("bitchute.com")>0 && bitchuteID.isEmpty()){
             String[] segments = value.split("/");
             bitchuteID = segments[segments.length - 1];
-            urls.add(value);
+            url = value;
         }
     }
     public void setTitle(String value){
@@ -204,7 +199,47 @@ class Channel implements Serializable{
     public void setSourceID(String value){
         this.sourceID = value;
     }
-    
+
+    public String getThumbnailurl() {
+        return thumbnailurl;
+    }
+
+    public void setThumbnailurl(String thumbnailurl) {
+        this.thumbnailurl = thumbnailurl;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
+
+    public String getBitchuteID() {
+        return bitchuteID;
+    }
+
+    public void setBitchuteID(String bitchuteID) {
+        this.bitchuteID = bitchuteID;
+    }
+
+    public String getYoutubeID() {
+        return youtubeID;
+    }
+
+    public void setYoutubeID(String youtubeID) {
+        this.youtubeID = youtubeID;
+    }
+
+    public void setJoined(long joined) {
+        this.joined = joined;
+    }
+
+    public void setLastsync(long lastsync) {
+        this.lastsync = lastsync;
+    }
+
     //          OTher bits
     /*
     public void addVideo(Video vid){
@@ -229,7 +264,6 @@ class Channel implements Serializable{
                 "youtube id:"+youtubeID+"\n"+
                 "bitchute id:"+bitchuteID+"\n"+
                 "url:"+url+"\n"+
-                "url count"+urls.size()+"\n"+
                 "thumbnail:"+this.thumbnailurl+"\n"+
                 "author:"+this.author+"\n"+
                 "profile image"+this.profileImage+"\n"+
