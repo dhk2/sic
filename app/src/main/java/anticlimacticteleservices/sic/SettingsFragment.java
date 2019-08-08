@@ -40,6 +40,7 @@ public class SettingsFragment extends Fragment {
     private String mParam2;
     Dialog dialogHandle;
     WebView webviewHandle;
+    TextView feedAge;
     public SettingsFragment() {
         // Required empty public constructor
     }
@@ -79,7 +80,7 @@ public class SettingsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         final Button importBitchute = view.findViewById(R.id.load_bitchute);
         final Button importYoutube = view.findViewById(R.id.load_youtube);
-        final TextView feedAge = view.findViewById(R.id.feedage);
+        feedAge = view.findViewById(R.id.feed_age);
         feedAge.setText(Long.toString(MainActivity.masterData.getFeedAge()));
         importBitchute.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -310,6 +311,13 @@ public class SettingsFragment extends Fragment {
                 Toast.makeText(MainActivity.masterData.context,"adding "+channels.size()+ " channels from youtube.",Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MainActivity.masterData.setFeedAge(Long.parseLong( feedAge.getText().toString()));
+        MainActivity.masterData.saveUserData();
     }
 }
 

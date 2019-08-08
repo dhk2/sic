@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
                     case R.id.navigation_history:
                         getSupportActionBar().show();
                         setTitle("Not implemented yet");
-                        new ChannelUpdate().execute();
+                       // new ChannelUpdate().execute();
                   /*      Uri uri;
                         int vlcRequestCode = 42;
                         String path;
@@ -223,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
             }
         }
         else {
-          //  new ChannelUpdate().execute();
+            new ChannelUpdate().execute();
             getSupportActionBar().hide();
             fragment = new VideoFragment();
             ((VideoFragment) fragment).setVideos(masterData.getVideos());
@@ -264,9 +264,10 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        masterData.sicDatabase.close();
+      /*  masterData.sicDatabase.close();
         masterData.channelDatabase.close();
         masterData.commentDatabase.close();
+    */
     }
 
     public void setMainTitle(String t){
