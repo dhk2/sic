@@ -1,21 +1,22 @@
 package anticlimacticteleservices.sic;
+
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
 
-@Database(entities = {Video.class}, version = 4, exportSchema = false)
-public abstract class SicDatabase extends RoomDatabase {
-    private static SicDatabase INSTANCE;
+@Database(entities = {Channel.class}, version = 1, exportSchema = false)
+public abstract class ChannelDatabase extends RoomDatabase {
+    private static anticlimacticteleservices.sic.ChannelDatabase INSTANCE;
 
-    public abstract VideoDao videoDao();
+    public abstract ChannelDao ChannelDao();
 
-    public static SicDatabase getSicDatabase(Context context) {
+    public static anticlimacticteleservices.sic.ChannelDatabase getChannelDatabase(Context context) {
         if (INSTANCE == null) {
             INSTANCE =
-                    Room.databaseBuilder(context.getApplicationContext(), SicDatabase.class, "item_-database")
-                            // allow queries on the main thread.
+                    Room.databaseBuilder(context.getApplicationContext(),ChannelDatabase.class, "channel")
+        // allow queries on the main thread.
                             // Don't do this on a real app! See PersistenceBasicSample for an example.
                             .allowMainThreadQueries()
                             .build();
@@ -27,3 +28,4 @@ public abstract class SicDatabase extends RoomDatabase {
         INSTANCE = null;
     }
 }
+

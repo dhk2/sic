@@ -23,18 +23,22 @@
     <autoscroll-to-editor value="false" />
     <autoscroll-from-editor value="true" />
     <show-object-properties value="true" />
-    <loaded-nodes />
+    <loaded-nodes>
+      <connection connection-id="6735104a-c25f-4fcb-a1d3-f6bdddba64f2">
+        <schema name="main" object-types="view, table" />
+      </connection>
+    </loaded-nodes>
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
-    <connection id="71a4a867-c3a5-407e-95e6-073ed7ff2766">
-      <console name="Connection" type="STANDARD" schema="" session="Main" />
+    <connection id="6735104a-c25f-4fcb-a1d3-f6bdddba64f2">
+      <console name="Connection 2" type="STANDARD" schema="main" session="Main"><![CDATA[SELECT * from room_master_table]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
     <open-files />
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
-    <connection id="71a4a867-c3a5-407e-95e6-073ed7ff2766" />
+    <connection id="6735104a-c25f-4fcb-a1d3-f6bdddba64f2" />
   </component>
   <component name="DBNavigator.Project.EditorStateManager">
     <last-used-providers />
@@ -59,13 +63,13 @@
   </component>
   <component name="DBNavigator.Project.Settings">
     <connections>
-      <connection id="71a4a867-c3a5-407e-95e6-073ed7ff2766" active="true">
+      <connection id="6735104a-c25f-4fcb-a1d3-f6bdddba64f2" active="true">
         <database>
-          <name value="Connection" />
+          <name value="Connection 2" />
           <description value="" />
           <database-type value="SQLITE" />
           <config-type value="BASIC" />
-          <database-version value="9999.0" />
+          <database-version value="3.21" />
           <driver-source value="BUILTIN" />
           <driver-library value="" />
           <driver value="" />
@@ -74,7 +78,7 @@
           <port value="1234" />
           <database value="database" />
           <files>
-            <file path="sqlite.db" schema="main" />
+            <file path="C:\fuck\mydb" schema="main" />
           </files>
           <type value="NONE" />
           <user value="" />
@@ -114,7 +118,7 @@
           <max-connection-pool-size value="7" />
           <alternative-statement-delimiter value="" />
         </details>
-        <object-filters hide-empty-schemas="false" hide-pseudo-columns="false">
+        <object-filters hide-empty-schemas="true" hide-pseudo-columns="false">
           <object-type-filter use-master-settings="true">
             <object-type name="SCHEMA" enabled="true" />
             <object-type name="USER" enabled="true" />

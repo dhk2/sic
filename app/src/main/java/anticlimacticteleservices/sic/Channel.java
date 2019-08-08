@@ -1,41 +1,50 @@
 package anticlimacticteleservices.sic;
 
 
-import org.jsoup.Jsoup;
-import org.jsoup.helper.Validate;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-import java.text.ParseException;
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ArrayList;
-import java.net.*;
 import java.io.*;
-import android.os.Bundle;
-import android.app.*;
-import android.os.*;
-import android.util.Log;
-
+@Entity(tableName = "channel")
 class Channel implements Serializable{
+    @PrimaryKey(autoGenerate = true)
+    private long ID;
+    @ColumnInfo(name = "title")
     private String title;
+    @ColumnInfo(name = "author")
     private String author;
+    @ColumnInfo(name = "url")
     private String url;
-    private ArrayList<String> urls;
+    @ColumnInfo(name = "thumbnail_url")
     private String thumbnailurl;
+    @ColumnInfo(name = "description")
     private String description;
+    @ColumnInfo(name = "profile_image")
     private String profileImage;
+    @ColumnInfo(name = "subscribers")
     private String subscribers;
-    private String ID;
+    @ColumnInfo(name = "source_id")
+    private String sourceID;
+    @ColumnInfo(name = "bitchute_id")
     private String bitchuteID;
+    @ColumnInfo(name = "youtube_id")
     private String youtubeID;
-    private Date joined;   
-    private Date lastsync;
-    private ArrayList<Video> videos;
+    @ColumnInfo(name = "start date")
+    private long joined;
+    @ColumnInfo(name = "last_sync")
+    private long lastsync;
+
+/*
+
+    //private ArrayList<Video> videos;
     final SimpleDateFormat bdf = new SimpleDateFormat("MMM dd, yyyy");
     final SimpleDateFormat ydf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
     final SimpleDateFormat bdf2 = new SimpleDateFormat( "                   hh:mm zzz    MMMM dd    yyyy");
-    
+   */
  //         Constructors   
     public Channel(){
         this.title="";
@@ -44,19 +53,19 @@ class Channel implements Serializable{
         this.thumbnailurl="";
         this.description="";
         this.profileImage="";
-        this.ID="";
+        this.sourceID ="";
         this.youtubeID="";
         this.bitchuteID="";
-        this.urls=new ArrayList<String>();
-        this.videos=new ArrayList<Video>();
-        this.lastsync=new Date();
+      //  this.urls=new ArrayList<String>();
+     //   this.videos=new ArrayList<Video>();
+        this.lastsync=new Date().getTime();
         this.joined=lastsync;
         this.subscribers="";
     }
     public Channel(String url) {
         this.url = url;
-        urls = new ArrayList<String>();
-        urls.add(url);
+      //  urls = new ArrayList<String>();
+//        urls.add(url);
         description="";
         thumbnailurl="";
         profileImage="";
@@ -64,36 +73,36 @@ class Channel implements Serializable{
         subscribers="";
         if (url.indexOf("youtube.com/feeds") > 0)
         {
-            this.ID = url.substring(url.lastIndexOf("id=") + 3);
+            this.sourceID = url.substring(url.lastIndexOf("id=") + 3);
         }
         //if(url.indexOf("bitchute.com")>0)
         else
         {
             String[] segments = url.split("/");
-            ID = segments[segments.length - 1];
+            sourceID = segments[segments.length - 1];
         }
         if (url.indexOf("youtube.com")>0){
-            youtubeID=ID;
+            youtubeID= sourceID;
             bitchuteID="";
         }
         if (url.indexOf("bitchute.com")>0) {
-            bitchuteID = ID;
+            bitchuteID = sourceID;
             youtubeID="";
         }
-        lastsync = new Date();
+        lastsync = new Date().getTime();
         joined = lastsync;
-        videos=new ArrayList<Video>();
+       // videos=new ArrayList<Video>();
         toString();
     }
     
 //          Getters 
-    public String getID() {
-        return ID; 
+    public String getSourceID() {
+        return sourceID;
     }
-    public Date getJoined() {
+    public long getJoined() {
         return joined;
     }    
-    public Date getLastsync() {
+    public long getLastsync() {
         return lastsync;
     }    
     public String getSubscribers() {
@@ -115,53 +124,48 @@ class Channel implements Serializable{
         return this.thumbnailurl;
     }
 
-    public ArrayList<Video> getVideos(){
-        return this.videos;
-    }
+    //public ArrayList<Video> getVideos(){return this.videos;}
     public String getBitchuteRssFeedUrl(){
-        for (String u : urls) {
-            if (u.indexOf("bitchute") > 0) {
-                return "https://www.bitchute.com/feeds/rss/channel/" + bitchuteID;
-            }
+        if (!bitchuteID.isEmpty()){
+            return "https://www.bitchute.com/feeds/rss/channel/" + bitchuteID;
         }
-        return "";
+        else {
+            return "";
+        }
     }
     public String getBitchuteUrl() {
-        for (String u : urls){
-            if (u.indexOf("bitchute") > 0) {
-                return "https://www.bitchute.com/channel/" + bitchuteID;
-            }
+        if (!bitchuteID.isEmpty()) {
+            return "https://www.bitchute.com/channel/" + bitchuteID;
+        } else {
+            return "";
         }
-        return "";
     }
     public String getYoutubeRssFeedUrl() {
-        for (String u : urls) {
-            if (url.indexOf("youtube") > 0) {
-                return "https://www.youtube.com/feeds/videos.xml?channel_id=" + youtubeID;
-            }
+
+        if (!youtubeID.isEmpty()){
+            return "https://www.youtube.com/feeds/videos.xml?channel_id=" + youtubeID;
         }
-        return "";
-    }
-    public String getYoutubeUrl(){
-        for (String u : urls) {
-            if (u.indexOf("youtube") > 0) {
-                return "https://www.youtube.com/channel/" + youtubeID;
-            }
+        else {
+            return "";
         }
-        return "";
     }
-    public ArrayList<String> getUrls(){
-        return urls;
+    public String getYoutubeUrl() {
+
+        if (!youtubeID.isEmpty()) {
+            return "https://www.youtube.com/channel/" + youtubeID;
+        } else {
+            return "";
+        }
     }
-   //           setters 
+   //           setters
     public void setJoined(Date joined) {
-        this.joined = joined;
+        this.joined = joined.getTime();
     }
     public void setSubscribers(String value){
         this.subscribers=value;
     }
     public void setLastsync(Date lastsync) {
-        this.lastsync = lastsync;
+        this.lastsync = lastsync.getTime();
     }
     public void setUrl(String value){
         if (value.indexOf("youtube.com")>0 && youtubeID.isEmpty()){
@@ -172,12 +176,12 @@ class Channel implements Serializable{
                 String[] segments = value.split("/");
                 youtubeID = segments[segments.length - 1];
             }
-            urls.add(value);
+            url=(value);
         }
         if (value.indexOf("bitchute.com")>0 && bitchuteID.isEmpty()){
             String[] segments = value.split("/");
             bitchuteID = segments[segments.length - 1];
-            urls.add(value);
+            url = value;
         }
     }
     public void setTitle(String value){
@@ -192,15 +196,56 @@ class Channel implements Serializable{
     public void setDescription(String value) {
         this.description = value;
     }
-    public void setID(String value){
-        this.ID = value;
+    public void setSourceID(String value){
+        this.sourceID = value;
     }
-    
+
+    public String getThumbnailurl() {
+        return thumbnailurl;
+    }
+
+    public void setThumbnailurl(String thumbnailurl) {
+        this.thumbnailurl = thumbnailurl;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
+
+    public String getBitchuteID() {
+        return bitchuteID;
+    }
+
+    public void setBitchuteID(String bitchuteID) {
+        this.bitchuteID = bitchuteID;
+    }
+
+    public String getYoutubeID() {
+        return youtubeID;
+    }
+
+    public void setYoutubeID(String youtubeID) {
+        this.youtubeID = youtubeID;
+    }
+
+    public void setJoined(long joined) {
+        this.joined = joined;
+    }
+
+    public void setLastsync(long lastsync) {
+        this.lastsync = lastsync;
+    }
+
     //          OTher bits
+    /*
     public void addVideo(Video vid){
         boolean unique=true;
         for (Video match : videos) {
-            if (match.getID().equals(vid.getID())) {
+            if (match.getSourceID().equals(vid.getSourceID())) {
                 unique = false;
                 break;
             }
@@ -212,19 +257,19 @@ class Channel implements Serializable{
             }
         }
     }
+    */
     public String toString(){
         return("title:"+this.title+"\n"+
-                "ID:"+this.ID+"\n"+
+                "sourceID:"+this.sourceID +"\n"+
                 "youtube id:"+youtubeID+"\n"+
                 "bitchute id:"+bitchuteID+"\n"+
                 "url:"+url+"\n"+
-                "url count"+urls.size()+"\n"+
                 "thumbnail:"+this.thumbnailurl+"\n"+
                 "author:"+this.author+"\n"+
                 "profile image"+this.profileImage+"\n"+
                 "Subscribers:"+this.subscribers+"\n"+
-                "date joined"+this.joined+"\n"+
-                "Last Sync"+this.lastsync+"\n"+
+                "date joined"+new Date(this.joined)+"\n"+
+                "Last Sync"+new Date(lastsync)+"\n"+
                 "description:"+this.description+"\n");
 
 
@@ -239,5 +284,13 @@ class Channel implements Serializable{
     public boolean matches(String value){
       //  System.out.println("trying to match:"+value);
         return youtubeID.equals(value) || bitchuteID.equals(value);
+    }
+
+    public long getID() {
+        return ID;
+    }
+
+    public void setID(long ID) {
+        this.ID = ID;
     }
 }

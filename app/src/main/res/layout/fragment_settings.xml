@@ -138,6 +138,14 @@
                 android:layout_marginBottom="8dp"
                 android:text="load bitchute subscriptions" />
 
+            <EditText
+                android:id="@+id/feedage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="how many days of feed to keeo" />
+
         </LinearLayout>
     </ScrollView>
 

@@ -12,6 +12,7 @@ import android.widget.MediaController;
 import android.widget.VideoView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -31,7 +32,7 @@ public class fragment_videoplayer extends Fragment  {
     // TODO: Rename and change types of parameters
     private String url;
     private Video video;
-
+    private List<Comment> allComments = new ArrayList<Comment>();
     private OnFragmentInteractionListener mListener;
 
     public fragment_videoplayer() {
@@ -82,15 +83,14 @@ public class fragment_videoplayer extends Fragment  {
         View v = inflater.inflate(R.layout.fragment_videoplayer, container, false);
         WebView comments=v.findViewById(R.id.commentsdetails);
         String description=video.getDescription();
-
-        if (!(null == video.getComments())) {
-            System.out.println("this many comments should be showing up >>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+video.getComments().size());
-            for (Comment c : video.getComments()) {
+        allComments = MainActivity.masterData.getCommentDao().getCommentsByFeedId(video.getID());
+        if (!(null == allComments)) {
+            System.out.println("this many comments should be showing up >>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+allComments.size());
+            for (Comment c : allComments) {
                 description = description + c.toHtml();
             }
         }
         System.out.println(description);
-        System.out.println("this many comments should be showing up >>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+video.getComments().size());
         comments.loadData(description,"text/html","utf-8");
         VideoView simpleVideoView = (VideoView) v.findViewById(R.id.videoview); // initiate a video view
         uri = Uri.parse(url);

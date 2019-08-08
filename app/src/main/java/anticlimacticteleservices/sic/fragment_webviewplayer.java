@@ -14,6 +14,8 @@ import android.widget.Button;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
+import java.util.ArrayList;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,7 +34,7 @@ public class fragment_webviewplayer extends Fragment  {
     // TODO: Rename and change types of parameters
     private String url;
     private Video video;
-
+    private ArrayList<Comment> allComments;
     private OnFragmentInteractionListener mListener;
 
     public fragment_webviewplayer() {
@@ -83,14 +85,14 @@ public class fragment_webviewplayer extends Fragment  {
         View v = inflater.inflate(R.layout.fragment_webviewplayer, container, false);
         WebView comments=v.findViewById(R.id.webviewcomments);
         String description=video.getDescription();
-        if (!(video.getComments().isEmpty())) {
+        allComments = (ArrayList<Comment>)MainActivity.masterData.getCommentDao().getCommentsByFeedId(video.getID());
+        if (!(allComments.isEmpty())) {
             description =description+"<p><p><h2>comments</h2><p>";
-            for (Comment c : video.getComments()) {
+            for (Comment c : allComments) {
                 description = description + c.toHtml();
             }
         }
         System.out.println(description);
-        System.out.println("this many comments should be showing up >>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+video.getComments().size());
         comments.loadData(description,"text/html","utf-8");
 
 

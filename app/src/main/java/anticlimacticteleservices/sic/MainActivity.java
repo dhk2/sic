@@ -51,8 +51,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import dao.FeedItemDAO;
-
 import static android.app.PendingIntent.getActivity;
 
 
@@ -88,7 +86,8 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
                     case R.id.navigation_home:
                         //setTitle("Video Feed");
                         getSupportActionBar().hide();
-                        new ChannelUpdate().execute();
+                        masterData.setVideos(masterData.getVideoDao().getVideos());
+                        //new ChannelUpdate().execute();
                         fragment = new VideoFragment();
                         ((VideoFragment) fragment).setVideos(masterData.getVideos());
                         manager = getSupportFragmentManager();
@@ -100,8 +99,8 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
                     case R.id.navigation_history:
                         getSupportActionBar().show();
                         setTitle("Not implemented yet");
-
-                        Uri uri;
+                        new ChannelUpdate().execute();
+                  /*      Uri uri;
                         int vlcRequestCode = 42;
                         String path;
                         String subtitles="";
@@ -125,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
                         vlcIntent.putExtra("subtitles_location"	, subtitles);
                         vlcIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         System.out.println("trying to play vlc "+vlcIntent.toString());
-                        getApplication().startActivity(vlcIntent);
+                        getApplication().startActivity(vlcIntent);*/
                         return true;
                     case R.id.navigation_channels:
                         getSupportActionBar().hide();
@@ -177,47 +176,25 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
     protected void onCreate(Bundle savedInstanceState) {
         System.out.println("started oncreate");
         super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_main);
-        System.out.println("set the content view");
-        navView = findViewById(R.id.nav_view);
-
-        navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        getSupportActionBar().show();
-        setTitle("Loading video feed");
-
-
-
-        preferences = getSharedPreferences( getPackageName() + "_preferences", MODE_PRIVATE);
-        masterData = new UserData(getApplicationContext());
-        SicDatabase database = Room.databaseBuilder(this, SicDatabase.class, "mydb")
-                .allowMainThreadQueries()
-                .fallbackToDestructiveMigration()
-                .build();
-        System.out.println(database.toString());
-        masterData.setDB(database);
-        FeedItemDAO feeditemDAO = masterData.getDB().getFeedItemDAO();
-        List<FeedItem> items;
-        items = feeditemDAO.getFeedItems();
-        Video v;
-        for (FeedItem f : items){
-            v= (Video) Util.makeVideo(f);
-            System.out.println(v.getTitle());
+        if (masterData == null) {
+            preferences = getSharedPreferences( getPackageName() + "_preferences", MODE_PRIVATE);
+            masterData = new UserData(getApplicationContext());
+        } else{
+            System.out.println("performing soft restart, probably a rotation or off pause");
         }
-
-
+        setContentView(R.layout.activity_main);
+        navView = findViewById(R.id.nav_view);
+        navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         fragment = new SettingsFragment();
         manager = getSupportFragmentManager();
         masterData.setFragmentManager(manager);
         if (masterData.getVideos().isEmpty()){
             System.out.println("no videos");
             if (masterData.getChannels().isEmpty()) {
+                System.out.println("No channels");
                 for (String feed : masterData.getFeedLinks()) {
                     new ChannelInit().execute(feed);
                 }
-            }
-            else {
-                new ChannelUpdate().execute();
             }
             if (masterData.getVideos().isEmpty()) {
                 final Dialog dialog = new Dialog(this);
@@ -246,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
             }
         }
         else {
-            new ChannelUpdate().execute();
+          //  new ChannelUpdate().execute();
             getSupportActionBar().hide();
             fragment = new VideoFragment();
             ((VideoFragment) fragment).setVideos(masterData.getVideos());
@@ -276,15 +253,22 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
     public void onPause() {
         //need to add a dirty data switch to skip saving if unneeded
         super.onPause();
-        if (MainActivity.masterData.getDirtydata()>0) {
-            MainActivity.masterData.saveUserData();
-        }
+
         for (Video v : MainActivity.masterData.getVideos()){
             if (v.getMp4().isEmpty() && v.getUpCount().isEmpty()){
                 new VideoScrape().execute(v);
             }
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        masterData.sicDatabase.close();
+        masterData.channelDatabase.close();
+        masterData.commentDatabase.close();
+    }
+
     public void setMainTitle(String t){
         getSupportActionBar().show();
         setTitle(t);
@@ -297,4 +281,6 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
     public void onFragmentInteraction(Uri uri) {
 
     }
+
+
 }

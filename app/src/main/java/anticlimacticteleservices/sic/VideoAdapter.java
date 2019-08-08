@@ -35,7 +35,7 @@ import static android.app.PendingIntent.getActivity;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHolder> {
    private List<Video> videos = new ArrayList<>();
-
+   private List<Comment> comments = new ArrayList<>();
     public class CustomViewHolder extends RecyclerView.ViewHolder {
         private TextView name;
         private ImageView image;
@@ -69,13 +69,14 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         if (video.getMp4().isEmpty() && video.getUpCount().isEmpty()){
             new VideoScrape().execute(video);
         }
-        if (video.getComments().size()>0){
-            holder.name.setText(video.getTitle()+" ("+video.getComments().size()+")");
+        comments = MainActivity.masterData.getCommentDao().getCommentsByFeedId(video.getID());
+        if (comments.size()>0){
+            holder.name.setText(video.getTitle()+" ("+comments.size()+")");
         }
         else {
             holder.name.setText(video.getTitle());
         }
-        holder.name.setText(video.getTitle());
+
 
         if (video.isBitchute()) {
             System.out.println("setting video bitchute icon");
@@ -86,37 +87,13 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
            hold.serviceIcon.setImageResource(R.drawable.youtubeicon);
         }
         Picasso.get().load(video.getThumbnail()).into(hold.image);
-        Long diff = new Date().getTime()- video.getDate().getTime();
-        int minutes = (int) ((diff / (1000*60)) % 60);
-        int hours   = (int) ((diff / (1000*60*60)) % 24);
-        int days = (int) ((diff / (1000*60*60*24)));
-        String timehack="";
-        if (minutes ==1) {
-             timehack= "1 minute ago";
-        }
-        if (minutes>1){
-             timehack = minutes + " minutes ago";
-        }
-        if (hours==1){
-            timehack="1 hour,"+timehack;
-        }
-        if (hours>1){
-            timehack= hours +" hours,"+timehack;
-        }
-        if (days==1){
-            timehack="1 day,"+timehack;
-        }
-        if (days>1){
-            timehack= days +" days,"+timehack;
-        }
-        hold.author.setText(video.getAuthor()+ "  "+timehack );
+        hold.author.setText(video.getAuthor()+ " \n "+Util.getHowLongAgo(video.getDate()) );
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 Video vid = videos.get(position);
-                VideoScrape scrapper = new VideoScrape();
-                scrapper.execute(vid);
+                new VideoScrape().execute(vid);
                 System.out.println(vid.toString());
                 final Dialog dialog = new Dialog(view.getContext());
                 dialog.setContentView(R.layout.videoprop);
@@ -124,7 +101,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                 TextView textView = dialog.findViewById(R.id.channelDetails);
                 Spanned spanned = HtmlCompat.fromHtml(vid.getDescription(), HtmlCompat.FROM_HTML_MODE_COMPACT);
                 String description=vid.getDescription()+"<p>";
-                for (Comment c : vid.getComments()) {
+                for (Comment c : comments) {
                     description = description + c.toHtml();
                 }
                 textView.setText(Html.fromHtml(description));

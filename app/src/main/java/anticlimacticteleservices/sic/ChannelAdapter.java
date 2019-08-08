@@ -11,7 +11,6 @@ import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,8 +18,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 
-import org.w3c.dom.Text;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -95,7 +93,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
         System.out.println(channel);
         status="Subscribe";
         for (Channel c : MainActivity.masterData.getChannels()){
-            if (c.matches(channel.getID())){
+            if (c.matches(channel.getSourceID())){
                 status="Unsubscribe";
             }
         }
@@ -107,7 +105,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
                 status=(String)sub.getText();
                 if(status.equals("Unsubscribe")){
                     status="Subscribe";
-                    MainActivity.masterData.removeChannel(channel.getID());
+                    MainActivity.masterData.removeChannel(channel.getSourceID());
                     sub.setText(status );
                 }
                 else {
@@ -138,9 +136,8 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
                 description.append(System.getProperty("line.separator"));
                 description.append("Subscribers:"+chan.getSubscribers()+System.getProperty("line.separator"));
                 description.append("last synch:"+chan.getLastsync()+System.getProperty("line.separator"));
-                for (String h : chan.getUrls()) {
-                    description.append("source url:"+h+System.getProperty("line.separator"));
-                }
+                description.append("source url:"+chan.getUrl()+System.getProperty("line.separator"));
+
                 //description.append("youtube:"+chan.getSubscribers()+System.getProperty("line.separator"));
 
                 ImageView image = dialog.findViewById(R.id.thumbNailView);
@@ -153,7 +150,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
                 name.setText(chan.getTitle());
                 status="Subscribe";
                 for (Channel c : MainActivity.masterData.getChannels()){
-                    if (c.matches(channel.getID())){
+                    if (c.matches(channel.getSourceID())){
                         status="Unsubscribe";
                     }
                 }
@@ -169,7 +166,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
                     @Override
                     public void onClick(View v) {
                         if(status.equals("Unsubscribe")){
-                            MainActivity.masterData.removeChannel(channel.getID());
+                            MainActivity.masterData.removeChannel(channel.getSourceID());
                             status = "Subscribe" ;
                             sub.setText(status);
                         }
@@ -194,13 +191,19 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
                     @Override
                     public void run() {
                         Channel chan =channels.get(position);
-                        if (!chan.getVideos().isEmpty()) {
+                        ArrayList <Video> channelVideos=new ArrayList<Video>();
+                        for (Video v : MainActivity.masterData.getVideos()){
+                            if(v.getAuthorID() == (chan.getID())){
+                                channelVideos.add(v);
+                            }
+                        }
+                        if (!channelVideos.isEmpty()) {
                             Fragment fragment = new VideoFragment();
-                            ((VideoFragment) fragment).setVideos(chan.getVideos());
+                            ((VideoFragment) fragment).setVideos(channelVideos);
                             FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
                             transaction.replace(R.id.fragment, fragment);
                             transaction.addToBackStack(null);
-                            transaction.commit();
+                            transaction.commitAllowingStateLoss();
                         }
                     }
                 } );

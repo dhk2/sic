@@ -6,21 +6,46 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.os.Environment;
 
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Util {
+    public static String getHowLongAgo(Long pointInTime){
+        Long diff = new Date().getTime()- pointInTime;
+        int minutes = (int) ((diff / (1000*60)) % 60);
+        int hours   = (int) ((diff / (1000*60*60)) % 24);
+        int days = (int) ((diff / (1000*60*60*24)));
+        String timehack="";
+        if (minutes ==1) {
+            timehack= "1 minute ago";
+        }
+        if (minutes>1){
+            timehack = minutes + " minutes ago";
+        }
+        if (hours==1){
+            timehack="1 hour,"+timehack;
+        }
+        if (hours>1){
+            timehack= hours +" hours,"+timehack;
+        }
+        if (days==1){
+            timehack="1 day,"+timehack;
+        }
+        if (days>1){
+            timehack= days +" days,"+timehack;
+        }
+        return timehack;
+    }
+
 
     public static void scheduleJob(Context context) {
         ComponentName serviceComponent = new ComponentName(context, SicSync.class);
         JobInfo.Builder builder = new JobInfo.Builder(0, serviceComponent);
-        builder.setMinimumLatency(5 * 60 * 1000); // Wait at least 5m
-        builder.setOverrideDeadline(60 * 60 * 1000); // Maximum delay 60m
+        builder.setMinimumLatency(30 * 1000); // Wait at least 5m
+        builder.setOverrideDeadline( 60 * 1000); // Maximum delay 60m
         System.out.println("scheduling sync service job");
         JobScheduler jobScheduler = (JobScheduler)context.getSystemService(context.JOB_SCHEDULER_SERVICE);
         jobScheduler.schedule(builder.build());
@@ -39,7 +64,7 @@ public class Util {
             e.printStackTrace();
         }
         PrintWriter printWriter = new PrintWriter(fileWriter);
-        for (Comment c : video.getComments()){
+        for (Comment c : MainActivity.masterData.getCommentDao().getCommentsByFeedId(video.getID())){
             String text = c.getText();
             String left=text;
             while (!text.isEmpty()){
@@ -64,33 +89,5 @@ public class Util {
         printWriter.close();
     return output;
     }
-    public static FeedItem makeFeedItem(Video v){
-        FeedItem newItem=new FeedItem();
-        newItem.setMp4(v.getMp4());
-        newItem.setDescription(v.getDescription());
-        newItem.setTitle(v.getTitle());
-        newItem.setDate(v.getDate().getTime());
-        newItem.setAuthor(v.getAuthor());
-     //   newItem.setAnnotation(v.getAnnotation());
-     //   newItem.setCategory(v.getCategory());
-    //    newItem.setMagnet(v.getMagnet());
-        newItem.setThumbnailurl(v.getThumbnail());
-        newItem.setUrl(v.getUrl());
-        newItem.setSourceID(v.getID());
 
-
-        return newItem;
-    }
-    public static Video makeVideo(FeedItem f){
-        Video v = new Video(f.getUrl());
-        v.setAuthor(f.getAuthor());
-        v.setDate(new Date(f.getDate()));
-        v.setDescription(f.getDescription());
-        v.setMp4(f.getMp4());
-        v.setTitle(f.getTitle());
-        v.setThumbnail(f.getThumbnailurl());
-        v.setHashtags(f.getHashtags());
-        v.setUpCount(f.getUpCount());
-        return v;
-    }
 }
