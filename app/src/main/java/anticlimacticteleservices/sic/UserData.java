@@ -23,20 +23,14 @@ import java.util.List;
 import java.util.Set;
 
 
-// import  dao.FeedItemDAO.getFeedItems;
-
 public class UserData {
+   //Database data
     public SicDatabase sicDatabase;
     public ChannelDatabase channelDatabase;
     public CommentDatabase commentDatabase;
-    public long feedAge;
-    public long getFeedAge() {
-        return feedAge;
-    }
-    public void setFeedAge(long feedAge) {
-        this.feedAge = feedAge;
-    }
     private CommentDao commentDao;
+    private VideoDao videoDao;
+    private ChannelDao channelDao;
     public CommentDao getCommentDao() {
         System.out.println("getting comment dao");
         return commentDao;
@@ -45,16 +39,13 @@ public class UserData {
         System.out.println("setting comment dao in masterdata"+value.toString());
         this.commentDao = value;
     }
-    private VideoDao videoDao;
-    public VideoDao getVideoDao() {
-        System.out.println("getting video dao");
-        return videoDao;
-    }
     public void setVideoDao(VideoDao value) {
         System.out.println("setting video dao in masterdata"+value.toString());
         this.videoDao = value;
     }
-    private ChannelDao channelDao;
+    public VideoDao getVideoDao(){
+        return videoDao;
+    }
     public ChannelDao getChannelDao() {
         System.out.println("getting Channel dao");
         return channelDao;
@@ -63,52 +54,41 @@ public class UserData {
         System.out.println("setting video dao in masterdata"+value.toString());
         this.channelDao = value;
     }
-    final SimpleDateFormat bdf = new SimpleDateFormat("EEE','  dd MMM yyyy HH:mm:SSZZZZ");
-    final SimpleDateFormat ydf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-    public List<Channel> getChannels() {
-        return channels;
-    }
-    public void setChannels(ArrayList<Channel> value) {
-        this.channels = value;
-    }
-    private List<Channel> sChannels = new ArrayList<Channel>();
-    private List<Channel> channels = new ArrayList<Channel>();
-    public Context context;
-    private List<Video>videos = new ArrayList<Video>();
-    public List<Video> getVideos() {
-        return videos;
-    }
-    public void setVideos(List<Video> value) {this.videos = value;}
-    private List<Video>sVideos = new ArrayList<Video>();
-    public VideoAdapter searchVideoAdapter= new VideoAdapter(sVideos);
-    private Set<String> feedLinks =new HashSet<String>();
-    private Boolean useYoutube=true;
-    private SharedPreferences.Editor editor;
-    private int youtubePlayerChoice;
-    private int bitchutePlayerChoice;
+
+    //fragment manager management hooks.
     FragmentManager fragmentManager;
     Fragment fragment;
-    private FragmentTransaction transaction;
+    FragmentTransaction transaction;
+    public Fragment getFragment() {
+        return fragment;
+    }
+    public void setFragment(Fragment fragment) {
+        this.fragment = fragment;
+    }
+    public FragmentTransaction getTransaction() {
+        return transaction;
+    }
+    public void setTransaction(FragmentTransaction transaction) {
+        this.transaction = transaction;
+    }
+    public FragmentManager getFragmentManager() {
+        return fragmentManager;
+    }
+    public void setFragmentManager(FragmentManager fragmentManager) {
+        this.fragmentManager = fragmentManager;
+    }
+
     public Activity activity;
-    private boolean forceRefresh;
+    public Context context;
+
+    //gui management data
+
+    //handle to webview so it can be shut down while working in background
     public WebView webPlayer;
-    public int dirtyData =0;
-    public List<Channel> getsChannels() {
-        return sChannels;
-    }
-    public void setsChannels(ArrayList<Channel> value) {
-        this.sChannels = value;
-    }
-    public void addsChannel(Channel value){
-        boolean unique = true;
-        for (Channel test : sChannels) {
-            if (test.matches(value.getSourceID())){
-                unique=false;
-            }
-        }
-        if (unique==true) {
-            sChannels.add(value);
-        }
+
+    private List<Channel> channels = new ArrayList<Channel>();
+    public List<Channel> getChannels() {
+        return channels;
     }
     public void addChannel(Channel value){
         boolean unique = true;
@@ -122,26 +102,26 @@ public class UserData {
             feedLinks.add(value.getUrl());
             getChannelDao().insert(value);
         }
-        this.dirtyData++;
     }
     public void removeChannel(String ID){
 
         for (int i=0;i<channels.size();i++){
             if (channels.get(i).matches(ID)){
                 channels.remove(i);
-                dirtyData++;
                 break;
             }
         }
     }
+
+    private List<Video>videos = new ArrayList<Video>();
     public void sortVideos(){
         Collections.sort(videos);
         System.out.println("sorted videos");
     }
-    public void sortsVideos(){
-        Collections.sort(sVideos);
-        System.out.println("sorted search videos");
+    public List<Video> getVideos() {
+        return videos;
     }
+    public void setVideos(List<Video> value) {this.videos = value;}
     public void addVideo(Video value) {
 
         boolean unique=true;
@@ -155,8 +135,15 @@ public class UserData {
         if (unique){
             System.out.println("trying to add"+value);
             videos.add(value);
-            getVideoDao().insert(value);
+            videoDao.insert(value);
         }
+    }
+
+    private List<Video>sVideos = new ArrayList<Video>();
+    public VideoAdapter searchVideoAdapter= new VideoAdapter(sVideos);
+    public void sortsVideos(){
+        Collections.sort(sVideos);
+        System.out.println("sorted search videos");
     }
     public List<Video> getsVideos() {
         return sVideos;
@@ -167,6 +154,38 @@ public class UserData {
     public void addsVideos(Video value){
         this.sVideos.add(value);
     }
+
+
+    private List<Channel> sChannels = new ArrayList<Channel>();
+    public void addsChannel(Channel value){
+        boolean unique = true;
+        for (Channel test : sChannels) {
+            if (test.matches(value.getSourceID())){
+                unique=false;
+            }
+        }
+        if (unique==true) {
+            sChannels.add(value);
+        }
+    }
+
+
+    public List<Channel> getsChannels() {
+        return sChannels;
+    }
+    public void setsChannels(ArrayList<Channel> value) {
+        this.sChannels = value;
+    }
+
+
+    //Preference data
+    private SharedPreferences.Editor editor;
+
+    //user data
+
+    private int youtubePlayerChoice;
+    private int bitchutePlayerChoice;
+
     public boolean youtubeUseWebView() {
         return youtubePlayerChoice == 4;
     }
@@ -194,24 +213,94 @@ public class UserData {
     public void setBitchutePlayerChoice(int playerChoice) {
         this.bitchutePlayerChoice = playerChoice;
     }
-    public FragmentManager getFragmentManager() {
-        return fragmentManager;
+
+    public long feedAge;
+    public long getFeedAge() {
+        return feedAge;
     }
-    public void setFragmentManager(FragmentManager fragmentManager) {
-        this.fragmentManager = fragmentManager;
+    public void setFeedAge(long feedAge) {
+        this.feedAge = feedAge;
     }
-    public Fragment getFragment() {
-        return fragment;
+
+    private Set<String> feedLinks =new HashSet<String>();
+    public void removeFeedLink(String deadLink){
+        HashSet tempSub = new HashSet();
+
+        for (String s : feedLinks){
+            if (!s.equals(deadLink)){
+                tempSub.add(s);
+            }
+            else{
+                System.out.println("removing feedlink:"+deadLink);
+            }
+        }
+        feedLinks = tempSub;
+        editor = MainActivity.preferences.edit();
+        editor.putStringSet("channelUrls", feedLinks);
+        editor.commit();
     }
-    public void setFragment(Fragment fragment) {
-        this.fragment = fragment;
+    public void addFeedLinks(Set<String> newLinks) {
+        for (String newLink : newLinks) {
+            try {
+                boolean unique = true;
+                for (String g : feedLinks) {
+                    if (g.equals(newLink)) {
+                        unique = false;
+                        System.out.println("rejecting duplicate feed" + g);
+                    }
+                }
+                if (unique) {
+                    feedLinks.add(newLink);
+                }
+                System.out.println("count of feeds:" + feedLinks.size());
+                editor = MainActivity.preferences.edit();
+                editor.putStringSet("channelUrls", feedLinks);
+                editor.commit();
+            }
+            catch(NullPointerException e) {
+                System.out.println("null pointer error adding feed links");
+                e.printStackTrace();
+            }
+        }
     }
-    public FragmentTransaction getTransaction() {
-        return transaction;
+    public void addFeedLink(String newLink) {
+        boolean unique=true;
+        if ((null != newLink ) && (!"".equals(newLink))) {
+            for (String g : feedLinks) {
+                if (g.equals(newLink)) {
+                    unique = false;
+                }
+            }
+            if (unique) {
+                feedLinks.add(newLink);
+                editor = MainActivity.preferences.edit();
+                editor.putStringSet("channelUrls", feedLinks);
+                editor.commit();
+            }
+        }
     }
-    public void setTransaction(FragmentTransaction transaction) {
-        this.transaction = transaction;
+    public void setFeedLinks(Set<String> links){
+        feedLinks.clear();
+        feedLinks.addAll(links);
+
+        editor = MainActivity.preferences.edit();
+        editor.putStringSet("channelUrls", feedLinks);
+        editor.commit();
     }
+    public Set<String> getFeedLinks(){
+        //      editor = MainActivity.preferences.edit();
+        //      Set<String> feeds = MainActivity.preferences.getStringSet("channelUrls",null);
+        return feedLinks;
+    }
+
+    //Other stuff
+    final SimpleDateFormat bdf = new SimpleDateFormat("EEE','  dd MMM yyyy HH:mm:SSZZZZ");
+    final SimpleDateFormat ydf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+
+
+
+
+
     public UserData(Context con) {
         context=con;
         //TODO rationalize the preferences betwixt userdata and mainactivity.
@@ -233,7 +322,7 @@ public class UserData {
                 .build();
         channelDao = channelDatabase.ChannelDao();
         if (null != channelDao){
-            setChannels((ArrayList<Channel>) channelDao.getChannels());
+            channels = ((ArrayList<Channel>) channelDao.getChannels());
         }
         else{
             System.out.println("ChannelDAO failed to load channels");
@@ -264,85 +353,6 @@ public class UserData {
         editor.putStringSet("feedlinks",getFeedLinks());
         editor.commit();
         return true;
-    }
-    public void setForceRefresh(boolean forceRefresh) {
-        this.forceRefresh = forceRefresh;
-    }
-    public boolean getForceRefresh(){
-        return forceRefresh;
-    }
-    public Set<String> getFeedLinks(){
-  //      editor = MainActivity.preferences.edit();
-  //      Set<String> feeds = MainActivity.preferences.getStringSet("channelUrls",null);
-        return feedLinks;
-    }
-    public void removeFeedLink(String deadLink){
-        HashSet tempSub = new HashSet();
-
-        for (String s : feedLinks){
-            if (!s.equals(deadLink)){
-                    tempSub.add(s);
-            }
-            else{
-                System.out.println("removing feedlink:"+deadLink);
-            }
-        }
-        feedLinks = tempSub;
-        editor = MainActivity.preferences.edit();
-        editor.putStringSet("channelUrls", feedLinks);
-        editor.commit();
-        forceRefresh=true;
-    }
-    public void addFeedLinks(Set<String> newLinks) {
-        for (String newLink : newLinks) {
-            try {
-                boolean unique = true;
-                for (String g : feedLinks) {
-                    if (g.equals(newLink)) {
-                        unique = false;
-                        System.out.println("rejecting duplicate feed" + g);
-                    }
-                }
-                if (unique) {
-                    feedLinks.add(newLink);
-                }
-                System.out.println("count of feeds:" + feedLinks.size());
-                editor = MainActivity.preferences.edit();
-                editor.putStringSet("channelUrls", feedLinks);
-                editor.commit();
-                forceRefresh = true;
-            }
-            catch(NullPointerException e) {
-                System.out.println("null pointer error adding feed links");
-                e.printStackTrace();
-            }
-        }
-    }
-    public void addFeedLink(String newLink) {
-        boolean unique=true;
-        if ((null != newLink ) && (!"".equals(newLink))) {
-            for (String g : feedLinks) {
-                if (g.equals(newLink)) {
-                    unique = false;
-                }
-            }
-            if (unique) {
-                feedLinks.add(newLink);
-                editor = MainActivity.preferences.edit();
-                editor.putStringSet("channelUrls", feedLinks);
-                editor.commit();
-                forceRefresh = true;
-            }
-        }
-    }
-    public void setFeedLinks(Set<String> links){
-        feedLinks.clear();
-        feedLinks.addAll(links);
-
-        editor = MainActivity.preferences.edit();
-        editor.putStringSet("channelUrls", feedLinks);
-        editor.commit();
-        forceRefresh=true;
     }
 }
    

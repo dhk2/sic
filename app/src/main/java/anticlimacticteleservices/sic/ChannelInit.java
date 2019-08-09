@@ -23,7 +23,7 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
     private int newChannelCount=0;
     @Override
     protected Integer doInBackground(String[] params) {
-        System.out.println("channel count"+MainActivity.masterData.getChannels().size());
+    //    System.out.println("channel count"+MainActivity.masterData.getChannels().size());
 //        System.out.println("Starting to init channel"+params[0]);
 
 

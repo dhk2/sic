@@ -64,9 +64,12 @@ public class fragment_videoplayer extends Fragment  {
             url = getArguments().getString(PassedUrl);
             video = (Video) getArguments().getSerializable(PassedVideo);
             if (null == video){
+                System.out.println(("getting video from provided url :"+url));
                 video=new Video(url);
             }
             if ((null == url) || (url.isEmpty())){
+                System.out.println(("getting url from provided :"+video));
+
                 url=video.getMp4();
             }
 
