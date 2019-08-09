@@ -25,6 +25,8 @@ public interface VideoDao {
     @Query("SELECT * FROM feed_item WHERE ID = :id")
     public Video getvideoById(Long id);
 
+    @Query("SELECT * FROM feed_item WHERE author_id = :id")
+    List<Video> getvideoByAuthorId(Long id);
 
     @Query("SELECT COUNT(*) from feed_item")
     int countVideos();

@@ -1,7 +1,10 @@
 package anticlimacticteleservices.sic;
+import android.app.ActivityManager;
+import android.app.Application;
 import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -26,15 +29,53 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
     private ArrayList<Channel> allChannels;
     private static Context context;
     private static Long feedAge;
-    private VideoDao videoDao;
-    SicDatabase database;
+    private static ChannelDao channelDao;
+    private static VideoDao videoDao;
+    private static CommentDao commentDao;
+    SicDatabase sicDatabase;
+    ChannelDatabase channelDatabase;
+    CommentDatabase commentDatabase;
     @Override
     protected void onPreExecute() {
         // load these settings into static variables in case Mainactivity closes and the background app is still running.
         super.onPreExecute();
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> am i actually visiable <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        System.out.println(videoDao);
         if (null==context) {
-            this.context = MainActivity.masterData.context;
-            this.feedAge = MainActivity.masterData.getFeedAge();
+            if (null == MainActivity.masterData) {
+                context = SicSync.context;
+            }
+            else{
+                context=MainActivity.masterData.context;
+            }
+        }
+        System.out.println("context"+context);
+        if (null == videoDao){
+            if (null == MainActivity.masterData){
+                channelDatabase = Room.databaseBuilder(context , ChannelDatabase.class, "channel")
+                        .allowMainThreadQueries()
+                        .fallbackToDestructiveMigration()
+                        .build();
+                channelDao = channelDatabase.ChannelDao();
+                sicDatabase = Room.databaseBuilder(context, SicDatabase.class, "mydb")
+                        .allowMainThreadQueries()
+                        .fallbackToDestructiveMigration()
+                        .build();
+                videoDao = sicDatabase.videoDao();
+                commentDatabase = Room.databaseBuilder(context , CommentDatabase.class, "comment")
+                        .allowMainThreadQueries()
+                        .fallbackToDestructiveMigration()
+                        .build();
+                commentDao = commentDatabase.CommentDao();
+            }
+            else {
+                videoDao = MainActivity.masterData.getVideoDao();
+                channelDao = MainActivity.masterData.getChannelDao();
+                commentDao = MainActivity.masterData.getCommentDao();
+            }
+        }
+        if (null==feedAge){
+            feedAge=30l;
         }
     }
 
@@ -42,7 +83,7 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
     protected void onPostExecute(Boolean aBoolean) {
         super.onPostExecute(aBoolean);
         if (newcount>0) {
-            Toast.makeText(context, newcount + " new videos added", Toast.LENGTH_SHORT).show();
+         //   Toast.makeText(context, newcount + " new videos added", Toast.LENGTH_SHORT).show();
         }
         Util.scheduleJob(context);
 
@@ -50,12 +91,6 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
 
     @Override
     protected Boolean doInBackground(String... params) {
-        database = Room.databaseBuilder(context, SicDatabase.class, "mydb")
-                .allowMainThreadQueries()
-                .fallbackToDestructiveMigration()
-                .build();
-        System.out.println(database.toString());
-        videoDao = database.videoDao();
         if (null != videoDao){
             allVideos =(ArrayList)videoDao.getVideos();
             System.out.println("loaded videos from database"+allVideos.size());
@@ -63,12 +98,6 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
         else {
             System.out.println("error trying to access databse from background asynctask");
         }
-        ChannelDatabase channelDatabase = Room.databaseBuilder(context , ChannelDatabase.class, "channel")
-                .allowMainThreadQueries()
-                .fallbackToDestructiveMigration()
-                .build();
-        System.out.println(database.toString());
-        ChannelDao channelDao = channelDatabase.ChannelDao();
         if (null != channelDao){
             System.out.println("loading channels from sql");
             allChannels = (ArrayList<Channel>) channelDao.getChannels();
@@ -168,8 +197,8 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
 
             }
         }
-        database.close();
-        channelDatabase.close();
+  //      database.close();
+ //       channelDatabase.close();
         System.out.println(dupecount+ "duplicate videos discarded from RSS feeds, "+newcount+" new videos added");
         return true;
     }

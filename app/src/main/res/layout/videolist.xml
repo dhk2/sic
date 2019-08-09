@@ -35,13 +35,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/thumbnail"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
+            android:layout_marginStart="0dp"
             android:layout_marginLeft="12dp"
+            android:layout_marginTop="-55dp"
+            android:layout_marginEnd="0dp"
+            android:background="#80000000"
             android:elevation="200dp"
             android:maxLines="3"
             android:padding="8dp"
+            android:paddingLeft="24dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-            android:textColor="#444"
+            android:textColor="#FFFFFFFF"
             android:textSize="18dp"
             android:textStyle="bold" />
 
@@ -52,6 +59,7 @@
             android:background="#80E9460C"
             android:elevation="200dp"
             android:ems="10"
+            android:paddingLeft="16dp"
             android:text=""
             android:textColor="#FFEB3B"
             android:textStyle="bold" />
@@ -63,7 +71,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginStart="4dp"
-            android:layout_marginTop="128dp"
+            android:layout_marginTop="83dp"
             android:elevation="200dp"
             android:visibility="visible" />
 

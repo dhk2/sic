@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
         if (masterData == null) {
             preferences = getSharedPreferences( getPackageName() + "_preferences", MODE_PRIVATE);
             masterData = new UserData(getApplicationContext());
-        } else{
+                    } else{
             System.out.println("performing soft restart, probably a rotation or off pause");
         }
         setContentView(R.layout.activity_main);

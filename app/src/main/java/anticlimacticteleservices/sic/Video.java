@@ -51,6 +51,8 @@ class Video implements Serializable,Comparable<Video>
     private String hashtags;
     @ColumnInfo(name = "category")
     private String category;
+ //   @ColumnInfo(name = "local_Path")
+
     public Video()
     {
         this.title = "";

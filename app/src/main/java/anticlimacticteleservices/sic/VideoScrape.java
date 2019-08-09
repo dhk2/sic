@@ -24,6 +24,7 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
 
     @Override
     protected Video doInBackground(Video... videos) {
+
         Video vid = videos[0];
         System.out.println(videos.length+" videos passed to scrape");
         System.out.println(vid);

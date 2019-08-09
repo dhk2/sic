@@ -197,6 +197,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
                                 channelVideos.add(v);
                             }
                         }
+                        channelVideos = (ArrayList<Video>) MainActivity.masterData.getVideoDao().getvideoByAuthorId(chan.getID());
                         if (!channelVideos.isEmpty()) {
                             Fragment fragment = new VideoFragment();
                             ((VideoFragment) fragment).setVideos(channelVideos);
