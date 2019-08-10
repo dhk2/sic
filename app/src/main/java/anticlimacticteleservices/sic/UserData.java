@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -85,6 +86,10 @@ public class UserData {
 
     //handle to webview so it can be shut down while working in background
     public WebView webPlayer;
+    public WebViewClient webViewClient;
+    public fragment_webviewplayer wvf_handle;
+    public fragment_videoplayer vvf_handle;
+    public Video webPlayerVideo;
 
     private List<Channel> channels = new ArrayList<Channel>();
     public List<Channel> getChannels() {

@@ -5,7 +5,7 @@ import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
 
-@Database(entities = {Video.class}, version = 4, exportSchema = false)
+@Database(entities = {Video.class}, version = 5, exportSchema = false)
 public abstract class SicDatabase extends RoomDatabase {
     private static SicDatabase INSTANCE;
 

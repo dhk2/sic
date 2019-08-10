@@ -25,6 +25,9 @@ public class Util {
         if (minutes>1){
             timehack = minutes + " minutes ago";
         }
+        if (minutes==0) {
+            timehack = " ago";
+        }
         if (hours==1){
             timehack="1 hour,"+timehack;
         }
@@ -44,8 +47,22 @@ public class Util {
     public static void scheduleJob(Context context) {
         ComponentName serviceComponent = new ComponentName(context, SicSync.class);
         JobInfo.Builder builder = new JobInfo.Builder(0, serviceComponent);
-        builder.setMinimumLatency(30 * 1000); // Wait at least 5m
-        builder.setOverrideDeadline( 60 * 1000); // Maximum delay 60m
+        if (null==MainActivity.masterData){
+            //running in background.
+            builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED);
+            builder.setMinimumLatency(30 * 1000); // Wait at least 5m
+            builder.setOverrideDeadline(60 * 60 * 1000); // Maximum delay 60m
+            //TODO figure out repercussions of adding annotiation.
+            //builder.setRequiresBatteryNotLow(true);
+        }
+        else {
+            //running while app is running
+            builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
+            builder.setMinimumLatency(30 * 1000); // Wait at least 5m
+            builder.setOverrideDeadline(5 * 60 * 1000); // Maximum delay 60m
+        }
+        builder.setPersisted(true);
+
         System.out.println("scheduling sync service job");
         JobScheduler jobScheduler = (JobScheduler)context.getSystemService(context.JOB_SCHEDULER_SERVICE);
         jobScheduler.schedule(builder.build());

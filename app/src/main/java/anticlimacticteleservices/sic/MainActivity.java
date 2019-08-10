@@ -93,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
                         manager = getSupportFragmentManager();
                         transaction = manager.beginTransaction();
                         transaction.replace(R.id.fragment, fragment);
+                        transaction.addToBackStack(null);
                         transaction.commit();
 
                         return true;
@@ -135,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
                         manager = getSupportFragmentManager();
                         transaction = manager.beginTransaction();
                         transaction.replace(R.id.fragment, fragment);
+                        transaction.addToBackStack(null);
                         transaction.commit();
 
                         ((ChannelFragment) fragment).setChannels(masterData.getChannels());
@@ -162,6 +164,7 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
                         manager = getSupportFragmentManager();
                         transaction = manager.beginTransaction();
                         transaction.replace(R.id.fragment, fragment);
+                        transaction.addToBackStack(null);
                         transaction.commit();
                         System.out.println("done transacting");
                         return true;
@@ -181,6 +184,17 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
             masterData = new UserData(getApplicationContext());
                     } else{
             System.out.println("performing soft restart, probably a rotation or off pause");
+            if (null != masterData.wvf_handle) {
+                manager = MainActivity.masterData.getFragmentManager();
+                transaction = manager.beginTransaction();
+                transaction.replace(R.id.fragment, masterData.wvf_handle);
+                transaction.addToBackStack(null);
+                transaction.commitAllowingStateLoss();
+            }
+            else {
+                System.out.println("no webfragment");
+
+            }
         }
         setContentView(R.layout.activity_main);
         navView = findViewById(R.id.nav_view);
@@ -188,50 +202,64 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
         fragment = new SettingsFragment();
         manager = getSupportFragmentManager();
         masterData.setFragmentManager(manager);
-        if (masterData.getVideos().isEmpty()){
-            System.out.println("no videos");
-            if (masterData.getChannels().isEmpty()) {
-                System.out.println("No channels");
-                for (String feed : masterData.getFeedLinks()) {
-                    new ChannelInit().execute(feed);
-                }
-            }
-            if (masterData.getVideos().isEmpty()) {
-                final Dialog dialog = new Dialog(this);
-                dialog.setContentView(R.layout.videoprop);
-                dialog.setTitle("new user");
 
-                TextView message = dialog.findViewById(R.id.channelDetails);
+        if (null != masterData.webPlayer){
+            System.out.println("there is a link to the webplayer though");
 
-                message.setText("Looks like this is your first time\n You can use the search feature to find channels,\n or import channels from the settings page");
-                //  message.loadData(,"html","utf-8");
-                ImageView image = dialog.findViewById(R.id.thumbNailView);
-                image.setImageResource(R.mipmap.sic_round);
-                Button dialogButton = dialog.findViewById(R.id.closeButton);
-                dialogButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-                dialog.show();
-                getSupportActionBar().show();
-                setTitle("settings");
-                transaction = manager.beginTransaction();
-                transaction.replace(R.id.fragment, fragment);
-                transaction.commit();
-            }
+            /*fragment_webviewplayer wfragment = fragment_webviewplayer.newInstance("",masterData.webPlayerVideo);
+            manager = MainActivity.masterData.getFragmentManager();
+            transaction = manager.beginTransaction();
+            transaction.replace(R.id.fragment, wfragment);
+            transaction.addToBackStack(null);
+            transaction.commitAllowingStateLoss();*/
         }
         else {
-            new ChannelUpdate().execute();
-            getSupportActionBar().hide();
-            fragment = new VideoFragment();
-            ((VideoFragment) fragment).setVideos(masterData.getVideos());
-            manager = getSupportFragmentManager();
+            if (masterData.getVideos().isEmpty()) {
+                System.out.println("no videos");
+                if (masterData.getChannels().isEmpty()) {
+                    System.out.println("No channels");
+                    for (String feed : masterData.getFeedLinks()) {
+                        new ChannelInit().execute(feed);
+                    }
+                }
+                if (masterData.getVideos().isEmpty()) {
+                    final Dialog dialog = new Dialog(this);
+                    dialog.setContentView(R.layout.videoprop);
+                    dialog.setTitle("new user");
 
-            transaction = manager.beginTransaction();
-            transaction.replace(R.id.fragment, fragment);
-            transaction.commit();
+                    TextView message = dialog.findViewById(R.id.channelDetails);
+
+                    message.setText("Looks like this is your first time\n You can use the search feature to find channels,\n or import channels from the settings page");
+                    //  message.loadData(,"html","utf-8");
+                    ImageView image = dialog.findViewById(R.id.thumbNailView);
+                    image.setImageResource(R.mipmap.sic_round);
+                    Button dialogButton = dialog.findViewById(R.id.closeButton);
+                    dialogButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+                    dialog.show();
+                    getSupportActionBar().show();
+                    setTitle("settings");
+                    transaction = manager.beginTransaction();
+                    transaction.replace(R.id.fragment, fragment);
+                    transaction.addToBackStack(null);
+                    transaction.commit();
+                }
+            } else {
+                new ChannelUpdate().execute();
+                getSupportActionBar().hide();
+                fragment = new VideoFragment();
+                ((VideoFragment) fragment).setVideos(masterData.getVideos());
+                manager = getSupportFragmentManager();
+
+                transaction = manager.beginTransaction();
+                transaction.replace(R.id.fragment, fragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
         }
         getSupportActionBar().hide();
 

@@ -74,6 +74,7 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
                 commentDao = MainActivity.masterData.getCommentDao();
             }
         }
+        //TODO get this out of preferences or something.
         if (null==feedAge){
             feedAge=30l;
         }
@@ -106,14 +107,14 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
             System.out.println("failed to load channel list from sql");
         }
 
-        for (Channel chan :allChannels){
+channelloop:for (Channel chan :allChannels){
             Long diff = new Date().getTime()- chan.getLastsync();
             int minutes = (int) ((diff / (1000*60)) % 60);
             int hours   = (int) ((diff / (1000*60*60)) % 24);
             int days = (int) ((diff / (1000*60*60*24)));
             System.out.println(chan.getTitle()+"synched days:"+days+" hours:"+hours+" minutes:"+minutes);
             //TODO implement variable refresh rate by channel here
-            if (hours>0 ){
+            if (minutes>5 ){
                 chan.setLastsync(new Date());
                 channelDao.update(chan);
                 if (chan.isYoutube()){
@@ -125,10 +126,12 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
                     Elements videos = doc.getElementsByTag("entry");
         youtubeLoop:for (Element entry : videos) {
                         Video nv = new Video(entry.getElementsByTag("link").first().attr("href"));
+                        //TODO use sql query on source id to find duplicate instead of iterating.
                         for (Video match : allVideos) {
-                            if (match.getSourceID().equals(nv.getSourceID())) {
+                            if (match.getSourceID().equals(nv.getSourceID()) && match.isYoutube()) {
                                 dupecount++;
-                                continue youtubeLoop;
+                                System.out.println("video duped "+match.getAuthor()+ " "+nv.getSourceID());
+                                continue channelloop;
                             }
                         }
                         Date pd = new Date(1);
@@ -162,13 +165,19 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    if (null==doc){
+                        System.out.println("this is where network failure shows up");
+                        return false;
+                    }
                     Elements videos = doc.getElementsByTag("item");
        bitchuteLoop:for (Element video : videos) {
                         Video nv = new Video(video.getElementsByTag("link").first().text());
                         for (Video match : allVideos) {
-                            if (match.getSourceID().equals(nv.getSourceID())) {
+                            if (match.getSourceID().equals(nv.getSourceID())&& match.isBitchute()) {
+                                System.out.println("video duped "+nv.getSourceID()+"\n"+match.toDebugString());
+
                                 dupecount++;
-                                continue bitchuteLoop;
+                                continue channelloop;
                             }
                         }
                         Date pd=new Date(1);

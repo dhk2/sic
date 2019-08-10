@@ -1,5 +1,6 @@
 package anticlimacticteleservices.sic;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -186,18 +188,20 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
             @Override
             public boolean onLongClick(final View v) {
                 System.out.println("need to make a new view that works properly with context ");
-
+                int videoCount=0;
                 Thread thread = new Thread(new Runnable() {
                     @Override
                     public void run() {
+
                         Channel chan =channels.get(position);
+                        System.out.println(chan);
                         ArrayList <Video> channelVideos=new ArrayList<Video>();
                         for (Video v : MainActivity.masterData.getVideos()){
                             if(v.getAuthorID() == (chan.getID())){
                                 channelVideos.add(v);
                             }
                         }
-                        channelVideos = (ArrayList<Video>) MainActivity.masterData.getVideoDao().getvideoByAuthorId(chan.getID());
+                        channelVideos = (ArrayList<Video>) MainActivity.masterData.getVideoDao().getVideosByAuthorId(chan.getID());
                         if (!channelVideos.isEmpty()) {
                             Fragment fragment = new VideoFragment();
                             ((VideoFragment) fragment).setVideos(channelVideos);
@@ -206,9 +210,13 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
                             transaction.addToBackStack(null);
                             transaction.commitAllowingStateLoss();
                         }
+
                     }
                 } );
                 thread.start();
+                if (videoCount==0){
+                    Toast.makeText(MainActivity.masterData.context,  "no videos for channel in feed currently", Toast.LENGTH_SHORT).show();
+                }
             return true;
             }
         });

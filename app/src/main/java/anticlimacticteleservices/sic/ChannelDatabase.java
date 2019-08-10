@@ -6,7 +6,7 @@ import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
 
-@Database(entities = {Channel.class}, version = 1, exportSchema = false)
+@Database(entities = {Channel.class}, version = 2, exportSchema = false)
 public abstract class ChannelDatabase extends RoomDatabase {
     private static anticlimacticteleservices.sic.ChannelDatabase INSTANCE;
 

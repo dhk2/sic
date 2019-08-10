@@ -45,10 +45,10 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         private ImageView serviceIcon;
         CustomViewHolder(View view) {
             super(view);
-            name = view.findViewById(R.id.movieName);
-            image = view.findViewById(R.id.thumbnail);
-            author = view.findViewById(R.id.author);
-            serviceIcon = view.findViewById(R.id.videoserviceicon);
+            name = view.findViewById(R.id.movieName2);
+            image = view.findViewById(R.id.thumbnail2);
+            author = view.findViewById(R.id.author2);
+            serviceIcon = view.findViewById(R.id.videoserviceicon2);
         }
     }
     public VideoAdapter(){
@@ -59,7 +59,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
     @Override
     public CustomViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.videolist, parent, false);
+                .inflate(R.layout.smallvideolist, parent, false);
         return new CustomViewHolder(itemView);
     }
     @Override
@@ -86,15 +86,16 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
             System.out.println("setting video youtube icon");
            hold.serviceIcon.setImageResource(R.drawable.youtubeicon);
         }
-        Picasso.get().load(video.getThumbnail()).into(hold.image);
+        Picasso.get().load(video.getThumbnail()).fit().into(hold.image);
         hold.author.setText(video.getAuthor()+ " \n "+Util.getHowLongAgo(video.getDate()) );
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 Video vid = videos.get(position);
+               // System.out.println(vid.toDebugString());
                 new VideoScrape().execute(vid);
-                System.out.println(vid.toString());
+                //System.out.println(vid.toString());
                 final Dialog dialog = new Dialog(view.getContext());
                 dialog.setContentView(R.layout.videoprop);
                 dialog.setTitle(vid.getTitle());

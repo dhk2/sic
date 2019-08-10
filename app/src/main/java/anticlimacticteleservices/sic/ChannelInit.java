@@ -31,14 +31,15 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
         Document channelRss;
         channels:for (String g : params) {
             chan = new Channel(g);
+            System.out.println("attempting to add channel "+g);
 
            for (Channel c : MainActivity.masterData.getChannels()){
-                if (chan.matches(c.getSourceID())) {
-                    System.out.println("channel already exists");
-                    dupeCount++;
-                    continue channels;
-                }
-            }
+               if (((chan.getYoutubeID() == c.getYoutubeID()) && chan.isYoutube() )|| ( chan.isBitchute() &&(chan.getBitchuteID() == c.getBitchuteID()))){
+                   dupeCount++;
+                   System.out.println("channel already exists");
+                   continue channels;
+               }
+           }
            try {
                 //chan.setUrl(g);
                 chan = new Channel(g);
@@ -119,14 +120,18 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
 
                            // System.out.println(nv);
                             nv.setThumbnail(video.getElementsByTag("enclosure").first().attr("url"));
+                            Date pd=new Date(1);
                             try {
-                                Date pd = bdf.parse(video.getElementsByTag("pubDate").first().text());
+                                pd = bdf.parse(video.getElementsByTag("pubDate").first().text());
                                 nv.setDate(pd);
                             } catch (ParseException ex) {
                                 Log.v("Exception", ex.getLocalizedMessage());
                             }
-                            // Document hackDoc = Jsoup.connect(nv.getUrl()).get();
-                            //  nv.setMp4(hackDoc.getElementsByTag("Source").first().attr("src"));
+                            //TODO put in exception for archived channels here when implemented
+                            if (pd.getTime()+(MainActivity.masterData.getFeedAge()*24*60*60*1000)<new Date().getTime()) {
+                                System.out.println("out of feed range for " + chan.getTitle());
+                                break;
+                            }
                             nv.setAuthor(channelRss.title());
                             nv.setAuthorID(chan.getID());
                             //System.out.println(nv);

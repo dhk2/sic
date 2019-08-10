@@ -260,6 +260,7 @@ class Channel implements Serializable{
     */
     public String toString(){
         return("title:"+this.title+"\n"+
+                "author id:"+ID+"\n"+
                 "sourceID:"+this.sourceID +"\n"+
                 "youtube id:"+youtubeID+"\n"+
                 "bitchute id:"+bitchuteID+"\n"+
@@ -275,11 +276,11 @@ class Channel implements Serializable{
 
     }
     public boolean isBitchute(){
-        return this.url.indexOf("bitchute.com") > 0;
+        return !bitchuteID.isEmpty();
     }
 
     public boolean isYoutube(){
-        return this.url.indexOf("youtube.com") > 0;
+        return !youtubeID.isEmpty();
     }
     public boolean matches(String value){
       //  System.out.println("trying to match:"+value);

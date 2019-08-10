@@ -26,10 +26,13 @@ public interface VideoDao {
     public Video getvideoById(Long id);
 
     @Query("SELECT * FROM feed_item WHERE author_id = :id")
-    List<Video> getvideoByAuthorId(Long id);
+    List<Video> getVideosByAuthorId(Long id);
 
     @Query("SELECT COUNT(*) from feed_item")
     int countVideos();
+
+    @Query("Select * FROM feed_item WHERE source_id = :id")
+    List<Video> getVideosBySourceID(String id);
 
     @Insert
     void insertAll(Video... feed_item);

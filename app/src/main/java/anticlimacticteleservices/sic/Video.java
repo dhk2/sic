@@ -51,8 +51,10 @@ class Video implements Serializable,Comparable<Video>
     private String hashtags;
     @ColumnInfo(name = "category")
     private String category;
- //   @ColumnInfo(name = "local_Path")
-
+    @ColumnInfo(name = "local_Path")
+    private String localPath;
+    @ColumnInfo(name = "duration")
+    private Long duration;
     public Video()
     {
         this.title = "";
@@ -262,6 +264,7 @@ class Video implements Serializable,Comparable<Video>
                 "url:" + url + "\n" +
                 "thumbnail:" + thumbnailurl + "\n" +
                 "author:" + author + "\n" +
+                "authorID:"+authorID +"\n" +
 //			"watched:" + watched.toString() + "\n" +
                 "uploaded:" + new Date(date).toString() + "\n" +
                 "magnet link:" + magnet + "\n" +
@@ -274,7 +277,9 @@ class Video implements Serializable,Comparable<Video>
                 "sourceID:" + sourceID + "\n" +
                 "Comments:" + commentCount + "\n" +
                 "Hash tags:" + hashtags  + "\n" +
+                "Duration:" + duration +"\n"+
                 "Category:" + category+ "\n");
+
     }
 
     public String toString() {
@@ -353,19 +358,19 @@ class Video implements Serializable,Comparable<Video>
         return category;
     }
 
-    public void addComment(Comment com){
-        //comments disabled
-        /*
-        Boolean unique=true;
-        for (int i=1;i<comments.size();i++) {
-            Comment match = (Comment) comments.get(i);
-            if (match.getSourceID().equals(com.getSourceID())) {
-                unique = false;
-            }
-        }
-        if (unique){
-            comments.add(com);
-        }
-        */
+    public String getLocalPath() {
+        return localPath;
+    }
+
+    public void setLocalPath(String localPath) {
+        this.localPath = localPath;
+    }
+
+    public Long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Long duration) {
+        this.duration = duration;
     }
 }

@@ -80,8 +80,6 @@ public class fragment_webviewplayer extends Fragment  {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-
         View v = inflater.inflate(R.layout.fragment_webviewplayer, container, false);
         WebView comments=v.findViewById(R.id.webviewcomments);
         String description=video.getDescription();
@@ -94,13 +92,21 @@ public class fragment_webviewplayer extends Fragment  {
         }
         System.out.println(description);
         comments.loadData(description,"text/html","utf-8");
+        //TODO actually get rotation to return to existing webview
+       if (!(null == MainActivity.masterData.webPlayer)){
+            MainActivity.masterData.webPlayer.destroy();
+        }
+        WebView webView = v.findViewById(R.id.webviewplayer);
 
-
-        final WebView webView =v.findViewById(R.id.webviewplayer);
-        webView.setWebViewClient(new WebViewClient());
+        WebViewClient webViewClient= new WebViewClient();
+        MainActivity.masterData.webViewClient=webViewClient;
+        webView.setWebViewClient(webViewClient);
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webView.loadUrl(video.getEmbeddedUrl());
+        MainActivity.masterData.webPlayer = webView;
+        MainActivity.masterData.webPlayerVideo=video;
+
         return v;
     }
 
