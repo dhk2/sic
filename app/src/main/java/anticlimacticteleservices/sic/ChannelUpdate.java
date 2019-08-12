@@ -1,12 +1,25 @@
 package anticlimacticteleservices.sic;
 import android.app.ActivityManager;
 import android.app.Application;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.arch.persistence.room.Room;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -18,6 +31,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
+import static android.content.Context.NOTIFICATION_SERVICE;
 
 class ChannelUpdate extends AsyncTask<String, String, Boolean> {
     private final SimpleDateFormat bdf = new SimpleDateFormat("EEE', 'dd MMM yyyy HH:mm:SS' 'ZZZZ");
@@ -88,6 +103,7 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
         }
         Util.scheduleJob(context);
 
+
     }
 
     @Override
@@ -122,6 +138,8 @@ channelloop:for (Channel chan :allChannels){
                         doc = Jsoup.connect(chan.getYoutubeRssFeedUrl()).get();
                     } catch (IOException e) {
                         e.printStackTrace();
+                        System.out.println("network failure tying to get rss feeds in background, aborting this run");
+                        break channelloop;
                     }
                     Elements videos = doc.getElementsByTag("entry");
         youtubeLoop:for (Element entry : videos) {
@@ -157,6 +175,23 @@ channelloop:for (Channel chan :allChannels){
                         videoDao.insert(nv);
                        // MainActivity.masterData.setDirtydata(1);
                         System.out.println("adding video "+nv.getTitle()+ " published on:"+nv.getDate());
+                        //TODO put in the check for if the channel has notifications enabled
+                        if (chan.isNotify());{
+
+
+
+                            Notification notificationBuilder =
+                                    new NotificationCompat.Builder(context, "anticlimacticteleservices.sic")
+                                            .setSmallIcon(R.mipmap.sic_round)
+                                            .setContentTitle(nv.getAuthor())
+                                            .setContentText(nv.getTitle())
+                                            .setPriority(Notification.PRIORITY_MAX)
+                                            .setAutoCancel(true)
+                                            .build();
+                            NotificationManager notificationManager = context.getSystemService(
+                                    NotificationManager.class);
+                            notificationManager.notify(1, notificationBuilder);
+                        }
                     }
                 }
                 if (chan.isBitchute()) {
@@ -200,6 +235,21 @@ channelloop:for (Channel chan :allChannels){
                         videoDao.insert(nv);
                         newcount++;
                         System.out.println("adding video " + nv.getTitle() + " published on:" + nv.getDate());
+                       //TODO put in the check for if the channel has notifications enabled
+                        if (chan.isNotify()){
+                           Notification notificationBuilder =
+                                   new NotificationCompat.Builder(context, "anticlimacticteleservices.sic")
+                                           .setSmallIcon(R.mipmap.sic_round)
+                                           .setContentTitle(nv.getAuthor())
+                                           .setContentText(nv.getTitle())
+                                           .setPriority(Notification.PRIORITY_MAX)
+                                           .setAutoCancel(true)
+                                           .build();
+                           NotificationManager notificationManager = context.getSystemService(
+                                   NotificationManager.class);
+
+                           notificationManager.notify(1, notificationBuilder);
+                       }
 
                     }
                 }

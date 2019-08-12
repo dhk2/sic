@@ -1,6 +1,7 @@
 package anticlimacticteleservices.sic;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,6 +17,7 @@ public class VideoFragment extends Fragment {
     private List<Video> vfVideos = new ArrayList<>();
     private VideoAdapter vAdapter = new VideoAdapter();
     private RecyclerView videoRecyclerView;
+
     public VideoFragment() {
 
     }
@@ -29,7 +31,7 @@ public class VideoFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    System.out.println("video fragment created");
+    //System.out.println("video fragment created");
 
     }
 
@@ -40,11 +42,12 @@ public class VideoFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_video, container, false);
         videoRecyclerView =v.findViewById(R.id.vrv);
         vAdapter = new VideoAdapter(vfVideos);
+        System.out.println("creating new video adaptor with "+vfVideos.size()+" videos");
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         videoRecyclerView.setLayoutManager(mLayoutManager);
         videoRecyclerView.setItemAnimator(new DefaultItemAnimator());
         videoRecyclerView.setAdapter(vAdapter);
-        System.out.println("created view for video fragment");
+       // System.out.println("created view for video fragment");
         return v;
     }
 
@@ -52,7 +55,7 @@ public class VideoFragment extends Fragment {
         vfVideos.clear();
         vfVideos.addAll((videos));
         vAdapter.notifyDataSetChanged();
-    System.out.println("videos set");
+    System.out.println("videos set"+vfVideos.size());
     }
     /*
     public void addVideos(List<Video> videos) {

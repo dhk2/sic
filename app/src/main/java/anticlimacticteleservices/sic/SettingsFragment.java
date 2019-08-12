@@ -291,6 +291,7 @@ public class SettingsFragment extends Fragment {
                 System.out.println(subscriptions.size()+" channels listed");
                 for (Element s : subscriptions) {
                    new ChannelInit().execute("https://www.bitchute.com"+s.getElementsByTag("a").first().attr("href"));
+                   System.out.println("channels:"+MainActivity.masterData.getChannels().size()+" Videos:"+MainActivity.masterData.getVideos().size());
                 }
 //                webviewHandle.destroy();
                 dialogHandle.dismiss();
@@ -317,6 +318,7 @@ public class SettingsFragment extends Fragment {
     public void onPause() {
         super.onPause();
         MainActivity.masterData.setFeedAge(Long.parseLong( feedAge.getText().toString()));
+
         MainActivity.masterData.saveUserData();
     }
 }

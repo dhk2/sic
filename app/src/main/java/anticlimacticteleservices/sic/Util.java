@@ -4,13 +4,22 @@ import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Environment;
+import android.util.Log;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import static android.support.constraint.Constraints.TAG;
 
 public class Util {
     public static String getHowLongAgo(Long pointInTime){
@@ -68,20 +77,24 @@ public class Util {
         jobScheduler.schedule(builder.build());
     }
     public static String writeSubtitles(Context context, Video video) {
-        String sdf = "HH:mm:ss.SS";
+        String sdf = "HH:mm:ss,SS";
         System.out.println("starting to print subtitles for "+video.getTitle());
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sdf);
         long t = 8 * 60 * 60 * 1000;
         Date time = new Date(t);
         FileWriter fileWriter = null;
-        String output = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + video.getTitle() + ".srt";
+        String fileName = video.getMp4().substring(video.getMp4().lastIndexOf("/"));
+        fileName=fileName.substring(0,fileName.indexOf("."));
+        String output = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) +"/"+fileName;
         try {
             fileWriter = new FileWriter(output);
         } catch (IOException e) {
             e.printStackTrace();
         }
         PrintWriter printWriter = new PrintWriter(fileWriter);
+        int z =0;
         for (Comment c : MainActivity.masterData.getCommentDao().getCommentsByFeedId(video.getID())){
+
             String text = c.getText();
             String left=text;
             while (!text.isEmpty()){
@@ -96,9 +109,12 @@ public class Util {
                 time.setTime(t += (10 * 1000));
                 String time2 = simpleDateFormat.format(time);
                 time.setTime(t += 10);
-                printWriter.println(time1 + "-->" + time2);
+                z++;
+                printWriter.println(z);
+                printWriter.println(time1 + " --> " + time2);
                 printWriter.println(c.getAuthor()+":");
                 printWriter.println(text);
+                printWriter.println("");
                 text=left;
             }
 
@@ -107,4 +123,76 @@ public class Util {
     return output;
     }
 
+    public static String writeHtml(String html) {
+
+        FileWriter fileWriter = null;
+        String output = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "webtorrent.html";
+        try {
+            fileWriter = new FileWriter(output);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        PrintWriter printWriter = new PrintWriter(fileWriter);
+            printWriter.print(html);
+        printWriter.close();
+        return output;
+    }
+
+    public static class DownloadVideo extends AsyncTask<String, String, String>
+    {
+
+        File downloadFolder = null;
+        File outputFile = null;
+
+        @Override
+        protected String doInBackground(String... strings) {
+
+            try {
+                java.net.URL url = new URL(strings[0]);//Create Download URl
+                HttpURLConnection c = (HttpURLConnection) url.openConnection();//Open Url Connection
+                c.setRequestMethod("GET");//Set Request Method to "GET" since we are grtting data
+                c.connect();//connect the URL Connection
+                if (c.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    Log.e(TAG, "Server returned HTTP " + c.getResponseCode()
+                            + " " + c.getResponseMessage());
+                }
+                downloadFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() );
+
+                if (!downloadFolder.exists()) {
+                    downloadFolder.mkdir();
+                    Log.e(TAG, "Directory Created.");
+                }
+                String fileName = strings[0].substring(strings[0].lastIndexOf("/"));
+                outputFile = new File(downloadFolder,fileName);
+
+                if (!outputFile.exists()) {
+                    outputFile.createNewFile();
+                    Log.e(TAG, "File Created");
+                }
+
+                FileOutputStream fos = new FileOutputStream(outputFile);//Get OutputStream for NewFile Location
+
+                InputStream is = c.getInputStream();//Get InputStream for connection
+
+                byte[] buffer = new byte[1024];//Set buffer type
+                int len1 = 0;//init length
+                while ((len1 = is.read(buffer)) != -1) {
+                    fos.write(buffer, 0, len1);//Write new file
+                }
+
+                //Close all connection after doing task
+                fos.close();
+                is.close();
+
+            } catch (Exception e) {
+
+                //Read exception if something went wrong
+                e.printStackTrace();
+                outputFile = null;
+                Log.e(TAG, "Download Error Exception " + e.getMessage());
+            }
+
+            return null;
+        }
+    }
 }

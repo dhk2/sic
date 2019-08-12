@@ -146,7 +146,7 @@ class Search {
                 FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
                 transaction.replace(R.id.search_subfragment, fragment);
                 transaction.addToBackStack(null);
-                transaction.commit();
+                transaction.commitAllowingStateLoss();
             } else {
                 System.out.println("Youtube search finished but searching isn't done yet");
             }
@@ -252,7 +252,7 @@ class Search {
                 FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
                 transaction.replace(R.id.search_subfragment, fragment);
                 transaction.addToBackStack(null);
-                transaction.commit();
+                transaction.commitAllowingStateLoss();
 
             } else {
                 System.out.println("Bitchute search finished but searching isn't done yet");
@@ -340,7 +340,7 @@ class Search {
                 FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
                 transaction.replace(R.id.search_subfragment, fragment);
                 transaction.addToBackStack(null);
-                transaction.commit();
+                transaction.commitAllowingStateLoss();
             } else {
                 System.out.println("Bitchute search finished but searching isn't done yet");
             }

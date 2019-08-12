@@ -138,9 +138,10 @@ public class UserData {
             }
         }
         if (unique){
-            System.out.println("trying to add"+value);
+            System.out.println(videos.size()+"trying to add"+value);
             videos.add(value);
             videoDao.insert(value);
+
         }
     }
 

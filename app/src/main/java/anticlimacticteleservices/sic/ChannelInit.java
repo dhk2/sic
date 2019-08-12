@@ -77,7 +77,7 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                         }
                         //TODO put in exception for archived channels here when implemented
                         if (pd.getTime()+(MainActivity.masterData.getFeedAge()*24*60*60*1000)<new Date().getTime()){
-                            System.out.println("out of feed range for "+chan.getTitle());
+                            System.out.println("out of feed range for "+chan.getTitle()+Long.toString(MainActivity.masterData.getFeedAge()));
                             break;
                         }
                         Video nv = new Video(entry.getElementsByTag("link").first().attr("href"));

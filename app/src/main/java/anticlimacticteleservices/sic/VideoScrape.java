@@ -1,6 +1,10 @@
 package anticlimacticteleservices.sic;
 
+import android.content.ComponentName;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.v4.content.ContextCompat;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -8,10 +12,12 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 
 public class VideoScrape extends AsyncTask<Video,Video,Video> {
     static CommentDao commentDao;
     static VideoDao videoDao;
+    Video vid;
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
@@ -19,15 +25,18 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
 
     @Override
     protected void onPostExecute(Video video) {
+
+
+
         super.onPostExecute(video);
     }
 
     @Override
     protected Video doInBackground(Video... videos) {
 
-        Video vid = videos[0];
-        System.out.println(videos.length+" videos passed to scrape=========================");
-        System.out.println(vid);
+        vid = videos[0];
+      //  System.out.println(videos.length+" videos passed to scrape=========================");
+       // System.out.println(vid);
         if (null == commentDao){
             commentDao=MainActivity.masterData.getCommentDao();
         }
@@ -36,6 +45,7 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
         }
         if (vid.isBitchute()){
             Document doc = null;
+            int commentcounter=0;
             try {
                 doc = Jsoup.connect(vid.getBitchuteUrl()).get();
                 System.out.println(doc.getElementsByClass("video-statistics").toString()+"<<<<<<<<<<<<<<<<<<<<<");
@@ -49,26 +59,45 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
 
                 String dissent = "https://dissenter.com/discussion/begin?url="+vid.getBitchuteUrl()+"/&cpp=69";
                 doc = Jsoup.connect(dissent).get();
-               // System.out.println(dissent);
                 Elements posts = doc.getElementsByClass("comment-container");
-             //   System.out.println(vid.getTitle()+"  "+posts.size()+"comments");
                 for (Element p : posts){
-                   // System.out.println(p);
                     Comment com = new Comment(p.attr("data-comment-id"));
                     com.setText(p.getElementsByClass("comment-body").text());
                     com.setThumbnail(p.getElementsByClass("profile-picture mr-3").attr("src"));
                     com.setAuthor(p.getElementsByClass("profile-name").text());
                     com.setFeedID(vid.getID());
+
                     Comment test = commentDao.dupeCheck(vid.getID(),com.getText(),com.getAuthor());
                     if (null == test){
                         commentDao.insert(com);
+                        commentcounter++;
                     }
-
-                    videoDao.update(vid);
-                 //   System.out.println(vid);
                 }
+               // System.out.println("added "+commentcounter+" from bitchute url");
+                doc = Jsoup.connect("https://dissenter.com/discussion/begin?url="+vid.getYoutubeUrl()+"&cpp=69").get();
+                posts = doc.getElementsByClass("comment-container");
+                for (Element p : posts){
+                    Comment com = new Comment(p.attr("data-comment-id"));
+                    com.setText(p.getElementsByClass("comment-body").text());
+                    com.setThumbnail(p.getElementsByClass("profile-picture mr-3").attr("src"));
+                    com.setAuthor(p.getElementsByClass("profile-name").text());
+                    com.setUpVote(p.getElementsByClass("stat-upvotes").text());
+                    com.setDownVote(p.getElementsByClass("stat-downvotes").text());
+
+                    com.setFeedID(vid.getID());
+                    Comment test = commentDao.dupeCheck(vid.getID(),com.getText(),com.getAuthor());
+                    if (null == test){
+                        commentDao.insert(com);
+                        System.out.println(com);
+                        commentcounter++;
+                    }
+                }
+               // System.out.println("added "+commentcounter+" videos after youtube url");
+                videoDao.update(vid);
             } catch (IOException e) {
                 e.printStackTrace();
+                System.out.println("network failure in background video updater. aborting this run");
+                return null;
             } catch (NullPointerException e){
                 e.printStackTrace();
             }
@@ -98,6 +127,7 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                 //System.out.println(MainActivity.masterData.getVideos().size()+")"+vid.getTitle()+"  "+posts.size()+"comments");
                 //System.out.println(posts.first().toString());
                 for (Element p : posts){
+                    System.out.println(p);
                     Comment com = new Comment(p.attr("data-comment-id"));
                     com.setText(p.getElementsByClass("comment-body").text());
                     com.setThumbnail(p.getElementsByClass("profile-picture mr-3").attr("src"));
@@ -112,11 +142,13 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                // System.out.println(vid);
             } catch (IOException e) {
                 e.printStackTrace();
+                System.out.println("network failure in background video updater. aborting this run");
+                return null;
             } catch (NullPointerException e){
                 e.printStackTrace();
             }
         }
-        System.out.println(vid.toDebugString());
+       // System.out.println(vid.toDebugString());
 
         return null;
     }

@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +22,7 @@ import com.squareup.picasso.Picasso;
 
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -92,7 +94,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
 
         hold.name.setText(channel.getTitle());
         hold.description.setText(channel.getDescription());
-        System.out.println(channel);
+        //System.out.println(channel);
         status="Subscribe";
         for (Channel c : MainActivity.masterData.getChannels()){
             if (c.matches(channel.getSourceID())){
@@ -137,9 +139,9 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
                 description.setText(spanned);
                 description.append(System.getProperty("line.separator"));
                 description.append("Subscribers:"+chan.getSubscribers()+System.getProperty("line.separator"));
-                description.append("last synch:"+chan.getLastsync()+System.getProperty("line.separator"));
+                description.append("last synch:"+new Date(chan.getLastsync())+System.getProperty("line.separator"));
                 description.append("source url:"+chan.getUrl()+System.getProperty("line.separator"));
-
+                description.append("Started:"+new Date(chan.getJoined())+System.getProperty("line.separator"));
                 //description.append("youtube:"+chan.getSubscribers()+System.getProperty("line.separator"));
 
                 ImageView image = dialog.findViewById(R.id.thumbNailView);
@@ -150,6 +152,10 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
                 subscribeButton =dialog.findViewById(R.id.subscribe_button);
                 TextView name = dialog.findViewById(R.id.channel_name);
                 name.setText(chan.getTitle());
+                CheckBox archive =dialog.findViewById(R.id.channel_archive);
+                archive.setChecked(chan.isArchive());
+                CheckBox notify = dialog.findViewById(R.id.channel_notify);
+                notify.setChecked(chan.isNotify());
                 status="Subscribe";
                 for (Channel c : MainActivity.masterData.getChannels()){
                     if (c.matches(channel.getSourceID())){
@@ -161,6 +167,9 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
                 dialogButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        chan.setNotify(notify.isChecked());
+                        chan.setArchive(archive.isChecked());
+                        MainActivity.masterData.getChannelDao().update(chan);
                         dialog.dismiss();
                     }
                 });
@@ -194,13 +203,8 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
                     public void run() {
 
                         Channel chan =channels.get(position);
-                        System.out.println(chan);
+                        //System.out.println(chan);
                         ArrayList <Video> channelVideos=new ArrayList<Video>();
-                        for (Video v : MainActivity.masterData.getVideos()){
-                            if(v.getAuthorID() == (chan.getID())){
-                                channelVideos.add(v);
-                            }
-                        }
                         channelVideos = (ArrayList<Video>) MainActivity.masterData.getVideoDao().getVideosByAuthorId(chan.getID());
                         if (!channelVideos.isEmpty()) {
                             Fragment fragment = new VideoFragment();
@@ -210,13 +214,13 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
                             transaction.addToBackStack(null);
                             transaction.commitAllowingStateLoss();
                         }
+                        else {
+                         //   Toast.makeText(MainActivity.masterData.context,  "no videos for channel in feed currently", Toast.LENGTH_SHORT).show();
+                        }
 
                     }
                 } );
                 thread.start();
-                if (videoCount==0){
-                    Toast.makeText(MainActivity.masterData.context,  "no videos for channel in feed currently", Toast.LENGTH_SHORT).show();
-                }
             return true;
             }
         });

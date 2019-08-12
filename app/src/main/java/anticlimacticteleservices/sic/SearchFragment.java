@@ -97,7 +97,7 @@ public class SearchFragment extends Fragment {
                     FragmentManager supervisor =getChildFragmentManager();
 
                     MainActivity.masterData.fragmentManager=supervisor;
-                    supervisor.beginTransaction().replace(R.id.search_subfragment, subFragment).commit();
+                    supervisor.beginTransaction().replace(R.id.search_subfragment, subFragment).commitAllowingStateLoss();
                     return true;
                 }
                 return false;
@@ -113,7 +113,7 @@ public class SearchFragment extends Fragment {
                 ((VideoFragment) subFragment).setVideos(MainActivity.masterData.getsVideos());
                 FragmentManager supervisor =getChildFragmentManager();
                 MainActivity.masterData.fragmentManager=supervisor;
-                supervisor.beginTransaction().replace(R.id.search_subfragment, subFragment).commit();
+                supervisor.beginTransaction().replace(R.id.search_subfragment, subFragment).commitAllowingStateLoss();
 
            }
         });
@@ -126,13 +126,13 @@ public class SearchFragment extends Fragment {
             transaction.addToBackStack(null);
             transaction.commitAllowingStateLoss();
         }
-        else if (MainActivity.masterData.getsChannels().size()>0) {
+        else if (MainActivity.masterData.getsVideos().size()>0) {
             VideoFragment fragment = new VideoFragment();
             fragment.setVideos(MainActivity.masterData.getsVideos());
             FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
             transaction.replace(R.id.search_subfragment, fragment);
             transaction.addToBackStack(null);
-            transaction.commit();
+            transaction.commitAllowingStateLoss();
         }
     }
     @Override

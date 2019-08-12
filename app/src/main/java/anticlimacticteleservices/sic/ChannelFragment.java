@@ -50,7 +50,7 @@ public class ChannelFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        System.out.println("cf created");
+       // System.out.println("cf created");
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -63,13 +63,13 @@ public class ChannelFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_channel, container, false);
         channelRecyclerView =v.findViewById(R.id.crv);
 
-        System.out.println("about to set cAdaptor");
+   //     System.out.println("about to set cAdaptor");
         cAdapter = new ChannelAdapter(cfChannels);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         channelRecyclerView.setLayoutManager(mLayoutManager);
         channelRecyclerView.setItemAnimator(new DefaultItemAnimator());
         channelRecyclerView.setAdapter(cAdapter);
-        System.out.println("created view for channel fragment");
+     //   System.out.println("created view for channel fragment");
         return v;
     }
     public void setChannels(List<Channel> channels) {
@@ -85,6 +85,6 @@ public class ChannelFragment extends Fragment {
     }
     public void clearChannels() {
         cfChannels.clear();
-        System.out.println("Channels cleared");
+     //   System.out.println("Channels cleared");
     }
 }

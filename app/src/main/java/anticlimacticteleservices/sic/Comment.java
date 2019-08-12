@@ -135,7 +135,7 @@ public class Comment implements Serializable {
     @Override
     public String toString() {
 
-        return this.author+": "+this.text;
+        return timestamp+"  "+author+"\n"+text+"\n up:"+upVote+" down:"+downVote;
     }
     public String toHtml() {
         String html = "<img src=\""+thumbnail+"\" height=\"30\" width=\"30\" style=\"float:left\">"+

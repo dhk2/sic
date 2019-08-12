@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -36,6 +37,7 @@ import static android.app.PendingIntent.getActivity;
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHolder> {
    private List<Video> videos = new ArrayList<>();
    private List<Comment> comments = new ArrayList<>();
+   private int pos;
     public class CustomViewHolder extends RecyclerView.ViewHolder {
         private TextView name;
         private ImageView image;
@@ -43,12 +45,14 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         private ImageView youtubeIcon;
         private ImageView bitchuteIcon;
         private ImageView serviceIcon;
+        private FloatingActionButton floatingActionButton;
         CustomViewHolder(View view) {
             super(view);
             name = view.findViewById(R.id.movieName2);
             image = view.findViewById(R.id.thumbnail2);
             author = view.findViewById(R.id.author2);
             serviceIcon = view.findViewById(R.id.videoserviceicon2);
+        //    floatingActionButton = view.findViewById(R.id.floatingActionButton);
         }
     }
     public VideoAdapter(){
@@ -58,15 +62,18 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
     }
     @Override
     public CustomViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        //System.out.println("this is the view type dude"+ viewType);
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.smallvideolist, parent, false);
         return new CustomViewHolder(itemView);
     }
     @Override
     public void onBindViewHolder(CustomViewHolder hold, final int position) {
+       // System.out.println("building video card for "+position+" video of "+videos.size());
         Video video = videos.get(position);
         final CustomViewHolder holder = hold;
         if (video.getMp4().isEmpty() && video.getUpCount().isEmpty()){
+            System.out.println("getting extra info for video"+video.getTitle());
             new VideoScrape().execute(video);
         }
         comments = MainActivity.masterData.getCommentDao().getCommentsByFeedId(video.getID());
@@ -185,4 +192,14 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         return videos.size();
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        if ( videos.get(position).isYoutube()) {
+         //   return super.getItemViewType(position);
+            return 1;
+        }
+        else{
+            return 2;
+        }
+    }
 }

@@ -2,14 +2,19 @@ package anticlimacticteleservices.sic;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.arch.persistence.room.Room;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -42,6 +47,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -87,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
                         //setTitle("Video Feed");
                         getSupportActionBar().hide();
                         masterData.setVideos(masterData.getVideoDao().getVideos());
+                        System.out.println("size of video database:"+masterData.getVideos().size());
                         //new ChannelUpdate().execute();
                         fragment = new VideoFragment();
                         ((VideoFragment) fragment).setVideos(masterData.getVideos());
@@ -94,51 +101,160 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
                         transaction = manager.beginTransaction();
                         transaction.replace(R.id.fragment, fragment);
                         transaction.addToBackStack(null);
-                        transaction.commit();
+                        transaction.commitAllowingStateLoss();
 
                         return true;
                     case R.id.navigation_history:
                         getSupportActionBar().show();
                         setTitle("Not implemented yet");
+
+
+
                        // new ChannelUpdate().execute();
-                  /*      Uri uri;
+                        Uri uri;
                         int vlcRequestCode = 42;
                         String path;
                         String subtitles="";
                         Intent vlcIntent = new Intent(Intent.ACTION_VIEW);
                         Video foo=new Video();
                         for (Video v: masterData.getVideos()){
-                            if (v.getComments().size()>5 && v.isBitchute()){
+                            if (MainActivity.masterData.getCommentDao().getCommentsByFeedId(v.getID()).size()>5 && v.isBitchute()){
                                 subtitles = Util.writeSubtitles(MainActivity.masterData.context,v);
                                 foo=v;
                                 break;
                             }
                         }
                         vlcIntent.setPackage("org.videolan.vlc");
-                        if (foo.isBitchute()) {
-                            path = foo.getMp4();
-                        } else {
-                            path = foo.getYoutubeUrl();
-                        }
-                        uri = Uri.parse(path);
+
+                        path = foo.getMp4();
+                        new Util.DownloadVideo().execute(path);
+                        uri = Uri.parse(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/video.mp4");
                         vlcIntent.setDataAndTypeAndNormalize(uri, "video/*");
                         vlcIntent.putExtra("subtitles_location"	, subtitles);
                         vlcIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        System.out.println("video:"+path+ "   subtitles"+subtitles);
                         System.out.println("trying to play vlc "+vlcIntent.toString());
-                        getApplication().startActivity(vlcIntent);*/
+                        getApplication().startActivity(vlcIntent);
+
+/*
+                        Video vid=masterData.getVideos().get(1);
+                        if (!vid.getMagnet().isEmpty()){
+                            String header="<!doctype html>\n" +
+                                    "<html>\n" +
+                                    "  <body>\n" +
+                                    "    <h1>Download files using the WebTorrent protocol (BitTorrent over WebRTC).</h1>\n" +
+                                    "\n" +
+                                    "    <form>\n" +
+                                    "      <label for=\"torrentId\">Download from a magnet link: </label>\n" +
+                                    "      <input name=\"torrentId\", placeholder=\"magnet:\" value=\"";
+                            String footer="\">\n" +
+                                    "      <button type=\"submit\">Download</button>\n" +
+                                    "    </form>\n" +
+                                    "\n" +
+                                    "    <h2>Log</h2>\n" +
+                                    "    <div class=\"log\"></div>\n" +
+                                    "\n" +
+                                    "    <!-- Include the latest version of WebTorrent -->\n" +
+                                    "    <script src=\"https://cdn.jsdelivr.net/webtorrent/latest/webtorrent.min.js\"></script>\n" +
+                                    "\n" +
+                                    "    <script>\n" +
+                                    "      var client = new WebTorrent()\n" +
+                                    "\n" +
+                                    "      client.on('error', function (err) {\n" +
+                                    "        console.error('ERROR: ' + err.message)\n" +
+                                    "      })\n" +
+                                    "\n" +
+                                    "      document.querySelector('form').addEventListener('submit', function (e) {\n" +
+                                    "        e.preventDefault() // Prevent page refresh\n" +
+                                    "\n" +
+                                    "        var torrentId = document.querySelector('form input[name=torrentId]').value\n" +
+                                    "        log('Adding ' + torrentId)\n" +
+                                    "        client.add(torrentId, onTorrent)\n" +
+                                    "      })\n" +
+                                    "\n" +
+                                    "      function onTorrent (torrent) {\n" +
+                                    "        log('Got torrent metadata!')\n" +
+                                    "        log(\n" +
+                                    "          'Torrent info hash: ' + torrent.infoHash + ' ' +\n" +
+                                    "          '<a href=\"' + torrent.magnetURI + '\" target=\"_blank\">[Magnet URI]</a> ' +\n" +
+                                    "          '<a href=\"' + torrent.torrentFileBlobURL + '\" target=\"_blank\" download=\"' + torrent.name + '.torrent\">[Download .torrent]</a>'\n" +
+                                    "        )\n" +
+                                    "\n" +
+                                    "        // Print out progress every 5 seconds\n" +
+                                    "        var interval = setInterval(function () {\n" +
+                                    "          log('Progress: ' + (torrent.progress * 100).toFixed(1) + '%')\n" +
+                                    "        }, 5000)\n" +
+                                    "\n" +
+                                    "        torrent.on('done', function () {\n" +
+                                    "          log('Progress: 100%')\n" +
+                                    "          clearInterval(interval)\n" +
+                                    "        })\n" +
+                                    "\n" +
+                                    "        // Render all files into to the page\n" +
+                                    "        torrent.files.forEach(function (file) {\n" +
+                                    "          file.appendTo('.log')\n" +
+                                    "          log('(Blob URLs only work if the file is loaded from a server. \"http//localhost\" works. \"file://\" does not.)')\n" +
+                                    "          file.getBlobURL(function (err, url) {\n" +
+                                    "            if (err) return log(err.message)\n" +
+                                    "            log('File done.')\n" +
+                                    "            log('<a href=\"' + url + '\">Download full file: ' + file.name + '</a>')\n" +
+                                    "          })\n" +
+                                    "        })\n" +
+                                    "      }\n" +
+                                    "\n" +
+                                    "      function log (str) {\n" +
+                                    "        var p = document.createElement('p')\n" +
+                                    "        p.innerHTML = str\n" +
+                                    "        document.querySelector('.log').appendChild(p)\n" +
+                                    "      }\n" +
+                                    "    </script>\n" +
+                                    "  </body>\n" +
+                                    "</html>";
+                            String foo=header+vid.getMagnet()+footer;
+
+                            Intent i = new Intent();
+                            //i.setComponent(new ComponentName("com.brave.browser","com.brave.browser"));
+                            i.setAction(Intent.ACTION_VIEW);
+                            i.setData(Uri.parse(Util.writeHtml(foo)));
+                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                            startActivity(i);
+
+                            Dialog dialog = new Dialog(MainActivity.this);
+                            dialog.setContentView(R.layout.importdialog);
+                            WebView webView = dialog.findViewById(R.id.idplayer_window);
+                            WebSettings webSettings = webView.getSettings();
+                            webSettings.setJavaScriptEnabled(true);
+                            webSettings.setAllowUniversalAccessFromFileURLs(true);
+                            webSettings.setAllowContentAccess(true);
+                            webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+
+                            //webView.loadUrl("https://www.youtube.com/subscription_manager");
+                            Button closeButton = dialog.findViewById(R.id.idclosebutton);
+                            closeButton.setText("close");
+                            closeButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    webView.destroy();
+                                    dialog.dismiss();
+                                }
+                            });
+
+
+                            dialog.show();
+                        }
+                        */
                         return true;
                     case R.id.navigation_channels:
                         getSupportActionBar().hide();
                         masterData.getChannels();
-                        System.out.println(masterData.getChannels().size()+"  "+ masterData.getChannels().size());
+                        //System.out.println(masterData.getChannels().size()+"  "+ masterData.getChannels().size());
                         fragment = new ChannelFragment();
                         ((ChannelFragment) fragment).setChannels(masterData.getChannels());
                         manager = getSupportFragmentManager();
                         transaction = manager.beginTransaction();
                         transaction.replace(R.id.fragment, fragment);
                         transaction.addToBackStack(null);
-                        transaction.commit();
-
+                        transaction.commitAllowingStateLoss();
                         ((ChannelFragment) fragment).setChannels(masterData.getChannels());
                         return true;
 
@@ -154,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
                         transaction = manager.beginTransaction();
                         transaction.replace(R.id.fragment, fragment);
                         transaction.addToBackStack(null);
-                        transaction.commit();
+                        transaction.commitAllowingStateLoss();
                         return true;
 
                     case R.id.navigation_settings:
@@ -165,8 +281,8 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
                         transaction = manager.beginTransaction();
                         transaction.replace(R.id.fragment, fragment);
                         transaction.addToBackStack(null);
-                        transaction.commit();
-                        System.out.println("done transacting");
+                        transaction.commitAllowingStateLoss();
+                      //  System.out.println("done transacting");
                         return true;
                 }
                 return false;
@@ -196,6 +312,20 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
 
             }
         }
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "sic";
+            String description = "video site manager";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("anticlimacticteleservices.sic", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+
         setContentView(R.layout.activity_main);
         navView = findViewById(R.id.nav_view);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -246,7 +376,7 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
                     transaction = manager.beginTransaction();
                     transaction.replace(R.id.fragment, fragment);
                     transaction.addToBackStack(null);
-                    transaction.commit();
+                    transaction.commitAllowingStateLoss();
                 }
             } else {
                 new ChannelUpdate().execute();
@@ -258,7 +388,7 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
                 transaction = manager.beginTransaction();
                 transaction.replace(R.id.fragment, fragment);
                 transaction.addToBackStack(null);
-                transaction.commit();
+                transaction.commitAllowingStateLoss();
             }
         }
         getSupportActionBar().hide();

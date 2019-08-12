@@ -37,6 +37,10 @@ class Channel implements Serializable{
     private long joined;
     @ColumnInfo(name = "last_sync")
     private long lastsync;
+    @ColumnInfo (name = "notify")
+    private boolean notify;
+    @ColumnInfo (name = "archive")
+    private boolean archive;
 
 /*
 
@@ -61,6 +65,8 @@ class Channel implements Serializable{
         this.lastsync=new Date().getTime();
         this.joined=lastsync;
         this.subscribers="";
+        this.notify = false;
+        this.archive = false;
     }
     public Channel(String url) {
         this.url = url;
@@ -91,6 +97,8 @@ class Channel implements Serializable{
         }
         lastsync = new Date().getTime();
         joined = lastsync;
+        this.notify = false;
+        this.archive = false;
        // videos=new ArrayList<Video>();
         toString();
     }
@@ -293,5 +301,21 @@ class Channel implements Serializable{
 
     public void setID(long ID) {
         this.ID = ID;
+    }
+
+    public boolean isNotify() {
+        return notify;
+    }
+
+    public void setNotify(boolean notify) {
+        this.notify = notify;
+    }
+
+    public boolean isArchive() {
+        return archive;
+    }
+
+    public void setArchive(boolean archive) {
+        this.archive = archive;
     }
 }
