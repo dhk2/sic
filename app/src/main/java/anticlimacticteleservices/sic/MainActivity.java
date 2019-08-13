@@ -60,7 +60,8 @@ import java.util.Set;
 import static android.app.PendingIntent.getActivity;
 
 
-public class MainActivity extends AppCompatActivity implements fragment_exoplayer.OnFragmentInteractionListener, fragment_videoplayer.OnFragmentInteractionListener, fragment_webviewplayer.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements fragment_exoplayer.OnFragmentInteractionListener,
+        fragment_videoplayer.OnFragmentInteractionListener, fragment_webviewplayer.OnFragmentInteractionListener,fragment_channel_properties.OnFragmentInteractionListener {
     public Context dirtyHack = this;
 
     FragmentManager manager;
