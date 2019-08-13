@@ -10,6 +10,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -90,6 +93,24 @@ public class UserData {
     public fragment_webviewplayer wvf_handle;
     public fragment_videoplayer vvf_handle;
     public Video webPlayerVideo;
+    public SimpleExoPlayer player;
+    public Long playerVideoID;
+
+    public Long getPlayerVideoID() {
+        return playerVideoID;
+    }
+
+    public void setPlayerVideoID(Long playerVideoID) {
+        this.playerVideoID = playerVideoID;
+    }
+
+    public SimpleExoPlayer getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(SimpleExoPlayer player) {
+        this.player = player;
+    }
 
     private List<Channel> channels = new ArrayList<Channel>();
     public List<Channel> getChannels() {
@@ -191,7 +212,9 @@ public class UserData {
 
     private int youtubePlayerChoice;
     private int bitchutePlayerChoice;
-
+    public boolean youtubeUseExoView() {
+        return youtubePlayerChoice == 8;
+    }
     public boolean youtubeUseWebView() {
         return youtubePlayerChoice == 4;
     }
@@ -207,6 +230,7 @@ public class UserData {
     }
     public boolean bitchuteUseDefault() {return bitchutePlayerChoice ==2; }
     public boolean bitchuteUseNative() {return bitchutePlayerChoice ==8; }
+    public boolean bitchuteUseExo() {return bitchutePlayerChoice ==16; }
     public int getYoutubePlayerChoice() {
         return youtubePlayerChoice;
     }

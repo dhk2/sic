@@ -60,7 +60,7 @@ import java.util.Set;
 import static android.app.PendingIntent.getActivity;
 
 
-public class MainActivity extends AppCompatActivity implements fragment_videoplayer.OnFragmentInteractionListener, fragment_webviewplayer.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements fragment_exoplayer.OnFragmentInteractionListener, fragment_videoplayer.OnFragmentInteractionListener, fragment_webviewplayer.OnFragmentInteractionListener {
     public Context dirtyHack = this;
 
     FragmentManager manager;
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
                         setTitle("Not implemented yet");
 
 
-
+/*
                        // new ChannelUpdate().execute();
                         Uri uri;
                         int vlcRequestCode = 42;
@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
                         System.out.println("trying to play vlc "+vlcIntent.toString());
                         getApplication().startActivity(vlcIntent);
 
-/*
+
                         Video vid=masterData.getVideos().get(1);
                         if (!vid.getMagnet().isEmpty()){
                             String header="<!doctype html>\n" +
@@ -298,17 +298,26 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
         if (masterData == null) {
             preferences = getSharedPreferences( getPackageName() + "_preferences", MODE_PRIVATE);
             masterData = new UserData(getApplicationContext());
-                    } else{
+            fragment = new VideoFragment();
+            ((VideoFragment) fragment).setVideos(masterData.getVideos());
+            manager = getSupportFragmentManager();
+            transaction = manager.beginTransaction();
+            transaction.replace(R.id.fragment, fragment);
+            transaction.addToBackStack(null);
+            transaction.commitAllowingStateLoss();
+        }
+        else{
             System.out.println("performing soft restart, probably a rotation or off pause");
-            if (null != masterData.wvf_handle) {
+            if (null != masterData.getPlayer()) {
+                fragment_exoplayer efragment = fragment_exoplayer.newInstance("", masterData.getVideoDao().getvideoById(masterData.getPlayerVideoID()));
                 manager = MainActivity.masterData.getFragmentManager();
                 transaction = manager.beginTransaction();
-                transaction.replace(R.id.fragment, masterData.wvf_handle);
+                transaction.replace(R.id.fragment, efragment);
                 transaction.addToBackStack(null);
                 transaction.commitAllowingStateLoss();
             }
             else {
-                System.out.println("no webfragment");
+                System.out.println("no exo fragment");
 
             }
         }
@@ -333,15 +342,10 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
         manager = getSupportFragmentManager();
         masterData.setFragmentManager(manager);
 
-        if (null != masterData.webPlayer){
-            System.out.println("there is a link to the webplayer though");
+        if (null != masterData.getPlayer()){
+            System.out.println("there is a link to the exo player though");
 
-            /*fragment_webviewplayer wfragment = fragment_webviewplayer.newInstance("",masterData.webPlayerVideo);
-            manager = MainActivity.masterData.getFragmentManager();
-            transaction = manager.beginTransaction();
-            transaction.replace(R.id.fragment, wfragment);
-            transaction.addToBackStack(null);
-            transaction.commitAllowingStateLoss();*/
+
         }
         else {
             if (masterData.getVideos().isEmpty()) {
@@ -384,7 +388,6 @@ public class MainActivity extends AppCompatActivity implements fragment_videopla
                 fragment = new VideoFragment();
                 ((VideoFragment) fragment).setVideos(masterData.getVideos());
                 manager = getSupportFragmentManager();
-
                 transaction = manager.beginTransaction();
                 transaction.replace(R.id.fragment, fragment);
                 transaction.addToBackStack(null);

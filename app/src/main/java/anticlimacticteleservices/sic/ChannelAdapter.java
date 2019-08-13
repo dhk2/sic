@@ -79,7 +79,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
 
         //holder.name.setText(channel.getTitle());
         if (!channel.getThumbnail().isEmpty()){
-            Picasso.get().load(channel.getThumbnail()).into(hold.image);
+            Picasso.get().load(channel.getThumbnail()).resize(160,120).centerInside().into(hold.image);
         }
         else {
             System.out.println("no thumbnail set for channel");
@@ -146,7 +146,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
 
                 ImageView image = dialog.findViewById(R.id.thumbNailView);
                 if (!chan.getThumbnail().isEmpty()){
-                    Picasso.get().load(chan.getThumbnail()).into(image);
+                    Picasso.get().load(chan.getThumbnail()).fit().into(image);
                 }
                 dialogButton = dialog.findViewById(R.id.closeButton);
                 subscribeButton =dialog.findViewById(R.id.subscribe_button);

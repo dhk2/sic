@@ -75,6 +75,7 @@ class Video implements Serializable,Comparable<Video>
         this.commentCount = "0";
         this.hashtags = "";
         this.category = "";
+        this.currentPosition=0l;
     }
 
     public Video(String location)
@@ -106,6 +107,7 @@ class Video implements Serializable,Comparable<Video>
         this.commentCount = "";
         this.hashtags = "";
         this.category = "";
+        this.currentPosition=0l;
     }
 
 //  	     Getters

@@ -256,6 +256,11 @@ channelloop:for (Channel chan :allChannels){
 
             }
         }
+        for (Video v : allVideos){
+            if (v.getMp4().isEmpty() && v.getUpCount().isEmpty()){
+                new VideoScrape().execute(v);
+            }
+        }
   //      database.close();
  //       channelDatabase.close();
         System.out.println(dupecount+ "duplicate videos discarded from RSS feeds, "+newcount+" new videos added");

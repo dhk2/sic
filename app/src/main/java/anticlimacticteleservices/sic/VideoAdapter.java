@@ -183,6 +183,14 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                         transaction.addToBackStack(null);
                         transaction.commitAllowingStateLoss();
                         break;
+                    case 16:
+                        fragment_exoplayer efragment = fragment_exoplayer.newInstance("",vid);
+                        manager = MainActivity.masterData.getFragmentManager();
+                        transaction = manager.beginTransaction();
+                        transaction.replace(R.id.fragment, efragment);
+                        transaction.addToBackStack(null);
+                        transaction.commitAllowingStateLoss();
+                        break;
                 }
             }
         });

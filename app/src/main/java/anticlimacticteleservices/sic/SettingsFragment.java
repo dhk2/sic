@@ -186,12 +186,15 @@ public class SettingsFragment extends Fragment {
         RadioButton youtubeUseVlc =view.findViewById(R.id.youtubeuse_vlc);
         RadioButton youtubeUseDefault =view.findViewById(R.id.youtubeuse_default);
         RadioButton youtubeUseWebview =view.findViewById(R.id.youtubeuse_webview);
+        RadioButton youtubeUseExoview = view.findViewById(R.id.youtubeuse_exo);
 
         RadioGroup bitchuteRadioGroup = view.findViewById(R.id.bitchuteplayerradioGroup);
         RadioButton bitchuteUseVlc =view.findViewById(R.id.bitchuteuse_vlc);
         RadioButton bitchuteUseDefault =view.findViewById(R.id.bitchuteuse_default);
         RadioButton bitchuteUseWebview =view.findViewById(R.id.bitchuteuse_webview);
         RadioButton bitchuteUseNative = view.findViewById(R.id.bitchuteuse_native);
+        RadioButton bitchuteUseExo = view.findViewById(R.id.bitchuteuse_exo);
+
         System.out.println("player choice:"+MainActivity.masterData.getYoutubePlayerChoice()+"  "+MainActivity.masterData.getBitchutePlayerChoice());
         switch(MainActivity.masterData.getYoutubePlayerChoice()){
             case 1:
@@ -203,6 +206,8 @@ public class SettingsFragment extends Fragment {
             case 4:
                 youtubeUseWebview.setChecked(true);
                 break;
+            case 8:
+                youtubeUseExoview.setChecked(true);
         }
         youtubeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
@@ -221,10 +226,17 @@ public class SettingsFragment extends Fragment {
                     case R.id.youtubeuse_webview:
                         MainActivity.masterData.setYoutubePlayerChoice(4);
                         System.out.println(("setting webview"));
+                        break;
+                    case R.id.youtubeuse_exo:
+                        MainActivity.masterData.setYoutubePlayerChoice(8);
+                        System.out.println(("setting exoview"));
+                        break;
                 }
                 System.out.println("use yt vlc:"+MainActivity.masterData.youtubeUseVlc());
                 System.out.println("use yt default:"+MainActivity.masterData.youtubeUseDefault());
                 System.out.println("use yt webview:"+MainActivity.masterData.youtubeUseWebView());
+                System.out.println("use yt exoview:"+MainActivity.masterData.youtubeUseExoView());
+
             }
         });
         switch(MainActivity.masterData.getBitchutePlayerChoice()){
@@ -241,6 +253,9 @@ public class SettingsFragment extends Fragment {
                 break;
             case 8:
                 bitchuteUseNative.setChecked(true);
+                break;
+            case 16:
+                bitchuteUseExo.setChecked(true);
                 break;
         }
         bitchuteRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
@@ -261,13 +276,16 @@ public class SettingsFragment extends Fragment {
                     case R.id.bitchuteuse_native:
                         MainActivity.masterData.setBitchutePlayerChoice(8);
                         break;
+                    case R.id.bitchuteuse_exo:
+                        MainActivity.masterData.setBitchutePlayerChoice(16);
+                        break;
                 }
                 System.out.println("playersetting "+MainActivity.masterData.getBitchutePlayerChoice());
                 System.out.println("use bitchute vlc:"+MainActivity.masterData.bitchuteUseVlc());
                 System.out.println("use bitchute default:"+MainActivity.masterData.bitchuteUseDefault());
                 System.out.println("use bitchute webview:"+MainActivity.masterData.bitchuteUseWebView());
                 System.out.println("use bitchute built in player:"+MainActivity.masterData.bitchuteUseNative());
-
+                System.out.println("use bitchute exoplayer:"+MainActivity.masterData.bitchuteUseExo());
             }
         });
     }

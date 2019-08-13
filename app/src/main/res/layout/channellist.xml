@@ -11,31 +11,35 @@
 
     <RelativeLayout
         android:id="@+id/ChannelRecView"
-        android:layout_width="422dp"
-        android:layout_height="130dp"
+        android:layout_width="match_parent"
+        android:layout_height="144dp"
         android:background="#609C27B0">
 
         <ImageView
             android:id="@+id/channelthumbnail"
-            android:layout_width="98dp"
-            android:layout_height="97dp"
+            android:layout_width="160dp"
+            android:layout_height="120dp"
             android:layout_alignEnd="@id/channel_description"
             android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="false"
             android:layout_marginStart="0dp"
             android:layout_marginTop="0dp"
-            android:layout_marginEnd="291dp"
-            android:layout_marginBottom="33dp"
+            android:layout_marginEnd="240dp"
+            android:layout_marginBottom="24dp"
             android:background="#659C27B0"
-            android:scaleType="centerCrop" />
+            android:scaleType="fitXY" />
 
         <TextView
             android:id="@+id/channelName"
-            android:layout_width="190dp"
-            android:layout_height="wrap_content"
+            android:layout_width="210dp"
+            android:layout_height="37dp"
             android:layout_alignTop="@+id/channel_description"
-            android:layout_marginStart="1dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="-4dp"
             android:layout_marginLeft="12dp"
-            android:layout_marginTop="91dp"
+            android:layout_marginTop="107dp"
+            android:layout_marginBottom="0dp"
             android:layout_toEndOf="@+id/channelserviceicon"
             android:maxLines="3"
             android:padding="8dp"
@@ -46,24 +50,28 @@
 
         <Button
             android:id="@+id/button"
-            android:layout_width="147dp"
-            android:layout_height="wrap_content"
+            android:layout_width="163dp"
+            android:layout_height="35dp"
             android:layout_alignEnd="@+id/channel_description"
             android:layout_alignBottom="@+id/channelName"
             android:layout_alignParentTop="true"
-            android:layout_marginTop="83dp"
-            android:layout_marginEnd="2dp"
-            android:layout_marginBottom="0dp"
+            android:layout_marginStart="-1dp"
+            android:layout_marginTop="104dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toEndOf="@+id/channelName"
             android:text="Unsubscribe" />
 
         <TextView
             android:id="@+id/channel_description"
-            android:layout_width="280dp"
-            android:layout_height="89dp"
+            android:layout_width="273dp"
+            android:layout_height="112dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_marginStart="128dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="131dp"
             android:layout_marginTop="0dp"
+            android:layout_marginBottom="32dp"
             android:autoLink="web|email"
             android:textAlignment="gravity" />
 
