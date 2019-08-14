@@ -27,6 +27,9 @@ public interface ChannelDao {
     @Query("SELECT * FROM channel WHERE ID = :id")
     public Channel getChannelById(Long id);
 
+    @Query("SELECT * FROM channel WHERE source_id = :id")
+    List<Channel> getChannelsBySourceID(String id);
+
 
     @Query("SELECT COUNT(*) from channel")
     int countChannels();

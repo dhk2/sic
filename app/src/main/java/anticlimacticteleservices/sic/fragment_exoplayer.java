@@ -64,6 +64,7 @@ public class fragment_exoplayer extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        System.out.println("starting to create view");
         // figure out if landscape or portait to determine how to arrange video
         int orientation = getResources().getConfiguration().orientation;
         View v=null;
@@ -94,6 +95,7 @@ public class fragment_exoplayer extends Fragment {
         DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(),"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36");
         MediaSource mediaSource = new ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
         if (null != MainActivity.masterData.getPlayer()){
+            System.out.println("existing player instance for video "+MainActivity.masterData.getPlayerVideoID());
             if (MainActivity.masterData.getPlayerVideoID()==video.getID()) {
                 player = MainActivity.masterData.getPlayer();
             }

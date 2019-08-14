@@ -39,15 +39,17 @@ public class VideoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View v = inflater.inflate(R.layout.fragment_video, container, false);
-        videoRecyclerView =v.findViewById(R.id.vrv);
+        videoRecyclerView = v.findViewById(R.id.vrv);
         vAdapter = new VideoAdapter(vfVideos);
-        System.out.println("creating new video adaptor with "+vfVideos.size()+" videos");
+        System.out.println("creating new video adaptor with " + vfVideos.size() + " videos");
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         videoRecyclerView.setLayoutManager(mLayoutManager);
         videoRecyclerView.setItemAnimator(new DefaultItemAnimator());
         videoRecyclerView.setAdapter(vAdapter);
-       // System.out.println("created view for video fragment");
+        // System.out.println("created view for video fragment");
+
         return v;
     }
 

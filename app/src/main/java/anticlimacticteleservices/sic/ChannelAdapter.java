@@ -1,10 +1,10 @@
 package anticlimacticteleservices.sic;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.text.HtmlCompat;
 import android.support.v7.widget.RecyclerView;
@@ -125,107 +125,35 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
             @Override
             public void onClick(View view) {
                 Channel chan =channels.get(position);
-
-                final Dialog dialog = new Dialog(view.getContext());
-                dialog.setContentView(R.layout.channelprop);
-                dialog.setTitle(chan.getTitle());
-
-                // set the custom dialog components - text, image and button
- /*               WebView webView = (WebView) dialog.findViewById(R.id.channelDetails);
-                webView.loadData(chan.getDescription(), "text/html", "UTF-8");
- */
-                TextView description = dialog.findViewById(R.id.channel_description);
-                Spanned spanned = HtmlCompat.fromHtml(chan.getDescription(), HtmlCompat.FROM_HTML_MODE_COMPACT);
-                description.setText(spanned);
-                description.append(System.getProperty("line.separator"));
-                description.append("Subscribers:"+chan.getSubscribers()+System.getProperty("line.separator"));
-                description.append("last synch:"+new Date(chan.getLastsync())+System.getProperty("line.separator"));
-                description.append("source url:"+chan.getUrl()+System.getProperty("line.separator"));
-                description.append("Started:"+new Date(chan.getJoined())+System.getProperty("line.separator"));
-                //description.append("youtube:"+chan.getSubscribers()+System.getProperty("line.separator"));
-
-                ImageView image = dialog.findViewById(R.id.thumbNailView);
-                if (!chan.getThumbnail().isEmpty()){
-                    Picasso.get().load(chan.getThumbnail()).fit().into(image);
-                }
-                dialogButton = dialog.findViewById(R.id.closeButton);
-                subscribeButton =dialog.findViewById(R.id.subscribe_button);
-                TextView name = dialog.findViewById(R.id.channel_name);
-                name.setText(chan.getTitle());
-                CheckBox archive =dialog.findViewById(R.id.channel_archive);
-                archive.setChecked(chan.isArchive());
-                CheckBox notify = dialog.findViewById(R.id.channel_notify);
-                notify.setChecked(chan.isNotify());
-                status="Subscribe";
-                for (Channel c : MainActivity.masterData.getChannels()){
-                    if (c.matches(channel.getSourceID())){
-                        status="Unsubscribe";
-                    }
-                }
-                subscribeButton.setText(status);
- //               System.out.println(chan);
-                dialogButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        chan.setNotify(notify.isChecked());
-                        chan.setArchive(archive.isChecked());
-                        MainActivity.masterData.getChannelDao().update(chan);
-                        dialog.dismiss();
-                    }
-                });
-                subscribeButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(status.equals("Unsubscribe")){
-                            MainActivity.masterData.removeChannel(channel.getSourceID());
-                            status = "Subscribe" ;
-                            sub.setText(status);
-                        }
-                        else {
-                          //  MainActivity.masterData.addFeedLink(channel.getUrl());
-                            System.out.println("trying to add channel"+channel.getUrl());
-                            new ChannelInit().execute(channel.getUrl());
-                            status="Unsubscribe";
-                            sub.setText(status);
-                         }
-                    }
-                });
-                dialog.show();
+                fragment_channel_properties cpfragment = fragment_channel_properties.newInstance(chan,"");
+                FragmentManager manager = MainActivity.masterData.getFragmentManager();
+                FragmentTransaction transaction = manager.beginTransaction();
+                transaction.replace(R.id.fragment, cpfragment);
+                transaction.addToBackStack(null);
+                transaction.commitAllowingStateLoss();
             }
         });
         hold.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(final View v) {
-                System.out.println("need to make a new view that works properly with context ");
-                int videoCount=0;
-                Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        Channel chan =channels.get(position);
-                        //System.out.println(chan);
-                        ArrayList <Video> channelVideos=new ArrayList<Video>();
-                        channelVideos = (ArrayList<Video>) MainActivity.masterData.getVideoDao().getVideosByAuthorId(chan.getID());
-                        if (!channelVideos.isEmpty()) {
-                            Fragment fragment = new VideoFragment();
-                            ((VideoFragment) fragment).setVideos(channelVideos);
-                            FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
-                            transaction.replace(R.id.fragment, fragment);
-                            transaction.addToBackStack(null);
-                            transaction.commitAllowingStateLoss();
-                        }
-                        else {
-                         //   Toast.makeText(MainActivity.masterData.context,  "no videos for channel in feed currently", Toast.LENGTH_SHORT).show();
-                        }
-
-                    }
-                } );
-                thread.start();
-            return true;
+                Channel chan = channels.get(position);
+                //System.out.println(chan);
+                ArrayList<Video> channelVideos = new ArrayList<Video>();
+                channelVideos = (ArrayList<Video>) MainActivity.masterData.getVideoDao().getVideosByAuthorId(chan.getID());
+                if (!channelVideos.isEmpty()) {
+                    Fragment fragment = new VideoFragment();
+                    ((VideoFragment) fragment).setVideos(channelVideos);
+                    FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
+                    transaction.replace(R.id.fragment, fragment);
+                    transaction.addToBackStack(null);
+                    transaction.commitAllowingStateLoss();
+                } else {
+                    Toast.makeText(MainActivity.masterData.context,  "no videos for channel in feed currently", Toast.LENGTH_SHORT).show();
+                }
+                return true;
             }
         });
     }
-    @Override
     public int getItemCount() {
         return channels.size();
     }

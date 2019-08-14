@@ -15,7 +15,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="24dp"
+            android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:orientation="vertical">
 
@@ -23,10 +23,8 @@
                 android:id="@+id/textView2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                android:layout_marginRight="16dp"
                 android:layout_marginBottom="8dp"
                 android:autoLink="web"
                 android:paddingTop="16dp"
@@ -59,7 +57,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:text="load youtube subscriptions" />
+                android:text="load youtube subscriptions landscaope" />
 
             <RadioGroup
                 android:id="@+id/youtubeplayerradioGroup"
@@ -172,7 +170,6 @@
                     android:layout_width="208dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_weight="1"
                     android:fontFamily="serif"
                     android:text="days to keep"
                     android:textSize="18sp"

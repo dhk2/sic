@@ -128,7 +128,7 @@ channelloop:for (Channel chan :allChannels){
             int minutes = (int) ((diff / (1000*60)) % 60);
             int hours   = (int) ((diff / (1000*60*60)) % 24);
             int days = (int) ((diff / (1000*60*60*24)));
-            System.out.println(chan.getTitle()+"synched days:"+days+" hours:"+hours+" minutes:"+minutes);
+            //System.out.println(chan.getTitle()+"synched days:"+days+" hours:"+hours+" minutes:"+minutes);
             //TODO implement variable refresh rate by channel here
             if (minutes>5 ){
                 chan.setLastsync(new Date());
@@ -174,7 +174,7 @@ channelloop:for (Channel chan :allChannels){
                         nv.setViewCount(entry.getElementsByTag("media:statistics").first().attr("views"));
                         videoDao.insert(nv);
                        // MainActivity.masterData.setDirtydata(1);
-                        System.out.println("adding video "+nv.getTitle()+ " published on:"+nv.getDate());
+                       // System.out.println("adding video "+nv.getTitle()+ " published on:"+nv.getDate());
                         //TODO put in the check for if the channel has notifications enabled
                         if (chan.isNotify());{
 
@@ -234,7 +234,7 @@ channelloop:for (Channel chan :allChannels){
                         nv.setAuthor(chan.getTitle());
                         videoDao.insert(nv);
                         newcount++;
-                        System.out.println("adding video " + nv.getTitle() + " published on:" + nv.getDate());
+                        //System.out.println("adding video " + nv.getTitle() + " published on:" + nv.getDate());
                        //TODO put in the check for if the channel has notifications enabled
                         if (chan.isNotify()){
                            Notification notificationBuilder =

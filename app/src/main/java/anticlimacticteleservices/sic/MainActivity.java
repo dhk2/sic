@@ -102,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
                         transaction = manager.beginTransaction();
                         transaction.replace(R.id.fragment, fragment);
                         transaction.addToBackStack(null);
+                        System.out.println("creating video list fragment from navigation"+masterData.getVideos().size());
                         transaction.commitAllowingStateLoss();
 
                         return true;
@@ -302,20 +303,24 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
             fragment = new VideoFragment();
             ((VideoFragment) fragment).setVideos(masterData.getVideos());
             manager = getSupportFragmentManager();
+            masterData.setFragmentManager(manager);
             transaction = manager.beginTransaction();
             transaction.replace(R.id.fragment, fragment);
             transaction.addToBackStack(null);
+            System.out.println("creating new video page at start with "+masterData.getVideos().size());
             transaction.commitAllowingStateLoss();
         }
         else{
             System.out.println("performing soft restart, probably a rotation or off pause");
             if (null != masterData.getPlayer()) {
+                System.out.println("trying to create exo player fragment for video "+masterData.getPlayerVideoID());
                 fragment_exoplayer efragment = fragment_exoplayer.newInstance("", masterData.getVideoDao().getvideoById(masterData.getPlayerVideoID()));
                 manager = MainActivity.masterData.getFragmentManager();
                 transaction = manager.beginTransaction();
                 transaction.replace(R.id.fragment, efragment);
                 transaction.addToBackStack(null);
                 transaction.commitAllowingStateLoss();
+                System.out.println("program still flowing after transaction commit to exoplayer");
             }
             else {
                 System.out.println("no exo fragment");
@@ -339,14 +344,10 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
         setContentView(R.layout.activity_main);
         navView = findViewById(R.id.nav_view);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        fragment = new SettingsFragment();
-        manager = getSupportFragmentManager();
-        masterData.setFragmentManager(manager);
+
 
         if (null != masterData.getPlayer()){
             System.out.println("there is a link to the exo player though");
-
-
         }
         else {
             if (masterData.getVideos().isEmpty()) {
@@ -378,21 +379,27 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
                     dialog.show();
                     getSupportActionBar().show();
                     setTitle("settings");
+                    fragment = new SettingsFragment();
                     transaction = manager.beginTransaction();
                     transaction.replace(R.id.fragment, fragment);
                     transaction.addToBackStack(null);
+                    System.out.println("creating settings fragment");
                     transaction.commitAllowingStateLoss();
                 }
-            } else {
-                new ChannelUpdate().execute();
-                getSupportActionBar().hide();
-                fragment = new VideoFragment();
-                ((VideoFragment) fragment).setVideos(masterData.getVideos());
-                manager = getSupportFragmentManager();
-                transaction = manager.beginTransaction();
-                transaction.replace(R.id.fragment, fragment);
-                transaction.addToBackStack(null);
-                transaction.commitAllowingStateLoss();
+                else {
+                    new ChannelUpdate().execute();
+                    getSupportActionBar().hide();
+                    fragment = new VideoFragment();
+                    masterData.setVideos(masterData.getVideoDao().getVideos());
+                    System.out.println("should be first viddeo list creation " + masterData.getVideos().size());
+                    ((VideoFragment) fragment).setVideos(masterData.getVideos());
+                    manager = getSupportFragmentManager();
+                    transaction = manager.beginTransaction();
+                    transaction.replace(R.id.fragment, fragment);
+                    transaction.addToBackStack(null);
+                    System.out.println("committing video fragment");
+                    transaction.commitAllowingStateLoss();
+                }
             }
         }
         getSupportActionBar().hide();
