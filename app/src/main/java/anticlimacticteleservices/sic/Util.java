@@ -72,13 +72,13 @@ public class Util {
         }
         builder.setPersisted(true);
 
-        System.out.println("scheduling sync service job");
+        Log.v("Util-Schedule","scheduling sync service job");
         JobScheduler jobScheduler = (JobScheduler)context.getSystemService(context.JOB_SCHEDULER_SERVICE);
         jobScheduler.schedule(builder.build());
     }
     public static String writeSubtitles(Context context, Video video) {
         String sdf = "HH:mm:ss,SS";
-        System.out.println("starting to print subtitles for "+video.getTitle());
+        Log.v("Util.subtitles","starting to print subtitles for "+video.getTitle());
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sdf);
         long t = 8 * 60 * 60 * 1000;
         Date time = new Date(t);

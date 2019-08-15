@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,52 +65,39 @@ public class fragment_videoplayer extends Fragment  {
             url = getArguments().getString(PassedUrl);
             video = (Video) getArguments().getSerializable(PassedVideo);
             if (null == video){
-                System.out.println(("getting video from provided url :"+url));
+                Log.v("VideoPlayer","getting video from provided url :"+url);
                 video=new Video(url);
             }
             if ((null == url) || (url.isEmpty())){
-                System.out.println(("getting url from provided :"+video));
-
+                Log.v("VideoPlayer","getting url from provided :"+video);
                 url=video.getMp4();
             }
-
         }
-        System.out.println(url);
-        System.out.println(video);
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-
         View v = inflater.inflate(R.layout.fragment_videoplayer, container, false);
         WebView comments=v.findViewById(R.id.commentsdetails);
         String description=video.getDescription();
         allComments = MainActivity.masterData.getCommentDao().getCommentsByFeedId(video.getID());
         if (!(null == allComments)) {
-            System.out.println("this many comments should be showing up >>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+allComments.size());
+            Log.v("Videoplayer","this many comments should be showing up"+allComments.size());
             for (Comment c : allComments) {
                 description = description + c.toHtml();
             }
         }
-        System.out.println(description);
         comments.loadData(description,"text/html","utf-8");
         VideoView simpleVideoView = (VideoView) v.findViewById(R.id.videoview); // initiate a video view
         uri = Uri.parse(url);
-        System.out.println(uri);
-        System.out.println(simpleVideoView.getId());
         simpleVideoView.setVideoURI(uri);
         MediaController mediaController = new
                 MediaController(v.getContext());
         mediaController.setAnchorView(simpleVideoView);
         simpleVideoView.setMediaController(mediaController);
-
         simpleVideoView.start();
         return v;
     }
-
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);

@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.text.HtmlCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spanned;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,7 +83,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
             Picasso.get().load(channel.getThumbnail()).resize(160,120).centerInside().into(hold.image);
         }
         else {
-            System.out.println("no thumbnail set for channel");
+            Log.w("ChannelAdaptor","no thumbnail set for channel");
         }
 
         if (channel.isBitchute()) {
@@ -94,7 +95,6 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
 
         hold.name.setText(channel.getTitle());
         hold.description.setText(channel.getDescription());
-        //System.out.println(channel);
         status="Subscribe";
         for (Channel c : MainActivity.masterData.getChannels()){
             if (c.matches(channel.getSourceID())){
@@ -109,11 +109,12 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
                 status=(String)sub.getText();
                 if(status.equals("Unsubscribe")){
                     status="Subscribe";
+                    //TODO make sure channel removal works properly
                     MainActivity.masterData.removeChannel(channel.getSourceID());
                     sub.setText(status );
                 }
                 else {
-                    System.out.println("trying to add channel"+channel.getUrl());
+                    Log.v("Channel Adapter","Subscribing to"+channel.getUrl());
                     new ChannelInit().execute(channel.getUrl());
                     status="Unsubscribe";
                     sub.setText(status);
@@ -126,8 +127,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
             public void onClick(View view) {
                 Channel chan =channels.get(position);
                 fragment_channel_properties cpfragment = fragment_channel_properties.newInstance(chan,"");
-                FragmentManager manager = MainActivity.masterData.getFragmentManager();
-                FragmentTransaction transaction = manager.beginTransaction();
+                FragmentTransaction transaction = MainActivity.masterData.getFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment, cpfragment);
                 transaction.addToBackStack(null);
                 transaction.commitAllowingStateLoss();

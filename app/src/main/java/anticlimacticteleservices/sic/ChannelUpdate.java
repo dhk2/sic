@@ -50,6 +50,7 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
     SicDatabase sicDatabase;
     ChannelDatabase channelDatabase;
     CommentDatabase commentDatabase;
+    String updateError="";
     @Override
     protected void onPreExecute() {
         // load these settings into static variables in case Mainactivity closes and the background app is still running.
@@ -99,7 +100,10 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
     protected void onPostExecute(Boolean aBoolean) {
         super.onPostExecute(aBoolean);
         if (newcount>0) {
-         //   Toast.makeText(context, newcount + " new videos added", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, newcount + " new videos added", Toast.LENGTH_SHORT).show();
+        }
+        if (updateError !=""){
+            Toast.makeText(context, newcount + " new videos added", Toast.LENGTH_LONG).show();
         }
         Util.scheduleJob(context);
 
@@ -139,6 +143,7 @@ channelloop:for (Channel chan :allChannels){
                     } catch (IOException e) {
                         e.printStackTrace();
                         System.out.println("network failure tying to get rss feeds in background, aborting this run");
+                        updateError=e.toString();
                         break channelloop;
                     }
                     Elements videos = doc.getElementsByTag("entry");
@@ -199,6 +204,9 @@ channelloop:for (Channel chan :allChannels){
                         doc = Jsoup.connect(chan.getBitchuteRssFeedUrl()).get();
                     } catch (IOException e) {
                         e.printStackTrace();
+                        System.out.println("network failure tying to get rss feeds in background, aborting this run");
+                        updateError=e.toString();
+                        break channelloop;
                     }
                     if (null==doc){
                         System.out.println("this is where network failure shows up");

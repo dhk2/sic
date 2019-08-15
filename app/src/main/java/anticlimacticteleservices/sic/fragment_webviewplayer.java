@@ -66,7 +66,6 @@ public class fragment_webviewplayer extends Fragment  {
                 description = description + c.toHtml();
             }
         }
-        System.out.println(description);
         comments.loadData(description,"text/html","utf-8");
         //TODO actually get rotation to return to existing webview
        if (!(null == MainActivity.masterData.webPlayer)){

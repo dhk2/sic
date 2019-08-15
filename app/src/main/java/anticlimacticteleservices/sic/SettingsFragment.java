@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -195,7 +196,6 @@ public class SettingsFragment extends Fragment {
         RadioButton bitchuteUseNative = view.findViewById(R.id.bitchuteuse_native);
         RadioButton bitchuteUseExo = view.findViewById(R.id.bitchuteuse_exo);
 
-        System.out.println("player choice:"+MainActivity.masterData.getYoutubePlayerChoice()+"  "+MainActivity.masterData.getBitchutePlayerChoice());
         switch(MainActivity.masterData.getYoutubePlayerChoice()){
             case 1:
                 youtubeUseVlc.setChecked(true);
@@ -213,40 +213,28 @@ public class SettingsFragment extends Fragment {
         {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 // checkedId is the RadioButton selected
-                System.out.println(checkedId);
                 switch(checkedId) {
                     case R.id.youtubeuse_vlc:
                         MainActivity.masterData.setYoutubePlayerChoice(1);
-                        System.out.println(("setting vlc"));
                         break;
                     case R.id.youtubeuse_default:
                         MainActivity.masterData.setYoutubePlayerChoice(2);
-                        System.out.println(("setting default"));
                         break;
                     case R.id.youtubeuse_webview:
                         MainActivity.masterData.setYoutubePlayerChoice(4);
-                        System.out.println(("setting webview"));
                         break;
                     case R.id.youtubeuse_exo:
                         MainActivity.masterData.setYoutubePlayerChoice(8);
-                        System.out.println(("setting exoview"));
                         break;
                 }
-                System.out.println("use yt vlc:"+MainActivity.masterData.youtubeUseVlc());
-                System.out.println("use yt default:"+MainActivity.masterData.youtubeUseDefault());
-                System.out.println("use yt webview:"+MainActivity.masterData.youtubeUseWebView());
-                System.out.println("use yt exoview:"+MainActivity.masterData.youtubeUseExoView());
-
             }
         });
         switch(MainActivity.masterData.getBitchutePlayerChoice()){
             case 1:
                 bitchuteUseVlc.setChecked(true);
-                System.out.println(("setting vlc"));
                 break;
             case 2:
                 bitchuteUseDefault.setChecked(true);
-                System.out.println(("setting default"));
                 break;
             case 4:
                 bitchuteUseWebview.setChecked(true);
@@ -261,8 +249,6 @@ public class SettingsFragment extends Fragment {
         bitchuteRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                // checkedId is the RadioButton selected
-
                 switch(checkedId) {
                     case R.id.bitchuteuse_vlc:
                         MainActivity.masterData.setBitchutePlayerChoice(1);
@@ -280,12 +266,6 @@ public class SettingsFragment extends Fragment {
                         MainActivity.masterData.setBitchutePlayerChoice(16);
                         break;
                 }
-                System.out.println("playersetting "+MainActivity.masterData.getBitchutePlayerChoice());
-                System.out.println("use bitchute vlc:"+MainActivity.masterData.bitchuteUseVlc());
-                System.out.println("use bitchute default:"+MainActivity.masterData.bitchuteUseDefault());
-                System.out.println("use bitchute webview:"+MainActivity.masterData.bitchuteUseWebView());
-                System.out.println("use bitchute built in player:"+MainActivity.masterData.bitchuteUseNative());
-                System.out.println("use bitchute exoplayer:"+MainActivity.masterData.bitchuteUseExo());
             }
         });
     }
@@ -293,7 +273,6 @@ public class SettingsFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
     }
-
     @Override
     public void onDetach() {
         super.onDetach();
@@ -302,22 +281,17 @@ public class SettingsFragment extends Fragment {
         @JavascriptInterface
         public void handleHtml(String html) {
             Document doc = Jsoup.parse(html);
-            System.out.println("["+doc.title()+"]");
+            Log.v("Settings-Import","["+doc.title()+"]");
             if (doc.title().equals("Subscriptions - BitChute")) {
-                System.out.println("made into if bock");
                 Elements subscriptions = doc.getElementsByClass("subscription-container");
-                System.out.println(subscriptions.size()+" channels listed");
                 for (Element s : subscriptions) {
                    new ChannelInit().execute("https://www.bitchute.com"+s.getElementsByTag("a").first().attr("href"));
-                   System.out.println("channels:"+MainActivity.masterData.getChannels().size()+" Videos:"+MainActivity.masterData.getVideos().size());
                 }
-//                webviewHandle.destroy();
                 dialogHandle.dismiss();
                 Toast.makeText(MainActivity.masterData.context,"adding "+subscriptions.size()+ " channels from bitchute.",Toast.LENGTH_SHORT).show();
             }
             if (doc.title().equals("Subscription manager - YouTube")) {
                 Elements channels = doc.getElementsByClass("guide-item yt-uix-sessionlink yt-valign spf-link    ");
-                System.out.println(channels.size()+channels.first().toString());
                 String url;
                 for (Element c : channels){
                   url = "https://www.youtube.com"+c.attr("href");
@@ -325,13 +299,11 @@ public class SettingsFragment extends Fragment {
                         new ChannelInit().execute(url);
                     }
                 }
-  //              webviewHandle.destroy();
                 dialogHandle.dismiss();
                 Toast.makeText(MainActivity.masterData.context,"adding "+channels.size()+ " channels from youtube.",Toast.LENGTH_SHORT).show();
             }
         }
     }
-
     @Override
     public void onPause() {
         super.onPause();

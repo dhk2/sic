@@ -62,33 +62,21 @@ import static android.app.PendingIntent.getActivity;
 
 public class MainActivity extends AppCompatActivity implements fragment_exoplayer.OnFragmentInteractionListener,
         fragment_videoplayer.OnFragmentInteractionListener, fragment_webviewplayer.OnFragmentInteractionListener,fragment_channel_properties.OnFragmentInteractionListener {
-    public Context dirtyHack = this;
-
     FragmentManager manager;
     Fragment fragment;
     FragmentTransaction transaction;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener;
     public static UserData masterData;
-
     private BottomNavigationView navView;
-    //hack needed to work with androids hack of a joke of a permission system
+    //needed for permissions
     private static final int PERMISSION_REQUEST_CODE = 1;
-    int feedLinkCount=0;
-
-    public List<Video> videoFeed = new ArrayList<>();
     final SimpleDateFormat bdf = new SimpleDateFormat("MMM dd, yyyy");
     final SimpleDateFormat ydf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
     public static SharedPreferences preferences;
- //   Fragment vfragment = new VideoFragment();
- //   Fragment cfragment = new ChannelFragment();
- //   Fragment sfragment = new SearchFragment();
-
     {
         mOnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-  //              FragmentManager fragrentManager;
                 switch (item.getItemId()) {
                     case R.id.navigation_home:
                         //setTitle("Video Feed");
@@ -96,207 +84,60 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
                         getSupportActionBar().hide();
                         //TODO remove masterdata and use direct DAO
                         masterData.setVideos(masterData.getVideoDao().getVideos());
-
                         Log.v("Main-Navigation-Home","size of video database:"+masterData.getVideos().size());
                         fragment = new VideoFragment();
-                        ((VideoFragment) fragment).setVideos(masterData.getVideoDao().getVideos());
+                        VideoFragment vfragment = new VideoFragment();
+                        vfragment.setVideos(masterData.getVideoDao().getVideos());
                         transaction = masterData.getFragmentManager().beginTransaction();
-                        transaction.replace(R.id.fragment, fragment);
+                        transaction.replace(R.id.fragment, vfragment);
                         transaction.addToBackStack(null);
-                        Log.v("Main-Navigation-home","creating video list fragment from navigation"+masterData.getVideos().size());
+                        Log.v("Main-Navigation-home","commiting video list fragment from navigation"+masterData.getVideos().size());
                         transaction.commitAllowingStateLoss();
 
                         return true;
                     case R.id.navigation_history:
                         getSupportActionBar().show();
                         setTitle("Not implemented yet");
-
-
-/*
-                       // new ChannelUpdate().execute();
-                        Uri uri;
-                        int vlcRequestCode = 42;
-                        String path;
-                        String subtitles="";
-                        Intent vlcIntent = new Intent(Intent.ACTION_VIEW);
-                        Video foo=new Video();
-                        for (Video v: masterData.getVideos()){
-                            if (MainActivity.masterData.getCommentDao().getCommentsByFeedId(v.getID()).size()>5 && v.isBitchute()){
-                                subtitles = Util.writeSubtitles(MainActivity.masterData.context,v);
-                                foo=v;
-                                break;
-                            }
-                        }
-                        vlcIntent.setPackage("org.videolan.vlc");
-
-                        path = foo.getMp4();
-                        new Util.DownloadVideo().execute(path);
-                        uri = Uri.parse(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/video.mp4");
-                        vlcIntent.setDataAndTypeAndNormalize(uri, "video/*");
-                        vlcIntent.putExtra("subtitles_location"	, subtitles);
-                        vlcIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        System.out.println("video:"+path+ "   subtitles"+subtitles);
-                        System.out.println("trying to play vlc "+vlcIntent.toString());
-                        getApplication().startActivity(vlcIntent);
-
-
-                        Video vid=masterData.getVideos().get(1);
-                        if (!vid.getMagnet().isEmpty()){
-                            String header="<!doctype html>\n" +
-                                    "<html>\n" +
-                                    "  <body>\n" +
-                                    "    <h1>Download files using the WebTorrent protocol (BitTorrent over WebRTC).</h1>\n" +
-                                    "\n" +
-                                    "    <form>\n" +
-                                    "      <label for=\"torrentId\">Download from a magnet link: </label>\n" +
-                                    "      <input name=\"torrentId\", placeholder=\"magnet:\" value=\"";
-                            String footer="\">\n" +
-                                    "      <button type=\"submit\">Download</button>\n" +
-                                    "    </form>\n" +
-                                    "\n" +
-                                    "    <h2>Log</h2>\n" +
-                                    "    <div class=\"log\"></div>\n" +
-                                    "\n" +
-                                    "    <!-- Include the latest version of WebTorrent -->\n" +
-                                    "    <script src=\"https://cdn.jsdelivr.net/webtorrent/latest/webtorrent.min.js\"></script>\n" +
-                                    "\n" +
-                                    "    <script>\n" +
-                                    "      var client = new WebTorrent()\n" +
-                                    "\n" +
-                                    "      client.on('error', function (err) {\n" +
-                                    "        console.error('ERROR: ' + err.message)\n" +
-                                    "      })\n" +
-                                    "\n" +
-                                    "      document.querySelector('form').addEventListener('submit', function (e) {\n" +
-                                    "        e.preventDefault() // Prevent page refresh\n" +
-                                    "\n" +
-                                    "        var torrentId = document.querySelector('form input[name=torrentId]').value\n" +
-                                    "        log('Adding ' + torrentId)\n" +
-                                    "        client.add(torrentId, onTorrent)\n" +
-                                    "      })\n" +
-                                    "\n" +
-                                    "      function onTorrent (torrent) {\n" +
-                                    "        log('Got torrent metadata!')\n" +
-                                    "        log(\n" +
-                                    "          'Torrent info hash: ' + torrent.infoHash + ' ' +\n" +
-                                    "          '<a href=\"' + torrent.magnetURI + '\" target=\"_blank\">[Magnet URI]</a> ' +\n" +
-                                    "          '<a href=\"' + torrent.torrentFileBlobURL + '\" target=\"_blank\" download=\"' + torrent.name + '.torrent\">[Download .torrent]</a>'\n" +
-                                    "        )\n" +
-                                    "\n" +
-                                    "        // Print out progress every 5 seconds\n" +
-                                    "        var interval = setInterval(function () {\n" +
-                                    "          log('Progress: ' + (torrent.progress * 100).toFixed(1) + '%')\n" +
-                                    "        }, 5000)\n" +
-                                    "\n" +
-                                    "        torrent.on('done', function () {\n" +
-                                    "          log('Progress: 100%')\n" +
-                                    "          clearInterval(interval)\n" +
-                                    "        })\n" +
-                                    "\n" +
-                                    "        // Render all files into to the page\n" +
-                                    "        torrent.files.forEach(function (file) {\n" +
-                                    "          file.appendTo('.log')\n" +
-                                    "          log('(Blob URLs only work if the file is loaded from a server. \"http//localhost\" works. \"file://\" does not.)')\n" +
-                                    "          file.getBlobURL(function (err, url) {\n" +
-                                    "            if (err) return log(err.message)\n" +
-                                    "            log('File done.')\n" +
-                                    "            log('<a href=\"' + url + '\">Download full file: ' + file.name + '</a>')\n" +
-                                    "          })\n" +
-                                    "        })\n" +
-                                    "      }\n" +
-                                    "\n" +
-                                    "      function log (str) {\n" +
-                                    "        var p = document.createElement('p')\n" +
-                                    "        p.innerHTML = str\n" +
-                                    "        document.querySelector('.log').appendChild(p)\n" +
-                                    "      }\n" +
-                                    "    </script>\n" +
-                                    "  </body>\n" +
-                                    "</html>";
-                            String foo=header+vid.getMagnet()+footer;
-
-                            Intent i = new Intent();
-                            //i.setComponent(new ComponentName("com.brave.browser","com.brave.browser"));
-                            i.setAction(Intent.ACTION_VIEW);
-                            i.setData(Uri.parse(Util.writeHtml(foo)));
-                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                            startActivity(i);
-
-                            Dialog dialog = new Dialog(MainActivity.this);
-                            dialog.setContentView(R.layout.importdialog);
-                            WebView webView = dialog.findViewById(R.id.idplayer_window);
-                            WebSettings webSettings = webView.getSettings();
-                            webSettings.setJavaScriptEnabled(true);
-                            webSettings.setAllowUniversalAccessFromFileURLs(true);
-                            webSettings.setAllowContentAccess(true);
-                            webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-
-                            //webView.loadUrl("https://www.youtube.com/subscription_manager");
-                            Button closeButton = dialog.findViewById(R.id.idclosebutton);
-                            closeButton.setText("close");
-                            closeButton.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    webView.destroy();
-                                    dialog.dismiss();
-                                }
-                            });
-
-
-                            dialog.show();
-                        }
-                        */
-                        return true;
+           return true;
                     case R.id.navigation_channels:
                         getSupportActionBar().hide();
                         masterData.getChannels();
                         Log.v("Main-Navigation-Channel",masterData.getChannels().size()+"  "+ masterData.getChannels().size());
-                        fragment = new ChannelFragment();
-                        ((ChannelFragment) fragment).setChannels(masterData.getChannels());
-                        manager = getSupportFragmentManager();
-                        transaction = manager.beginTransaction();
-                        transaction.replace(R.id.fragment, fragment);
+                        ChannelFragment cfragment = new ChannelFragment();
+                        ((ChannelFragment) cfragment).setChannels(masterData.getChannels());
+                        transaction = masterData.getFragmentManager().beginTransaction();
+                        transaction.replace(R.id.fragment, cfragment);
                         transaction.addToBackStack(null);
                         transaction.commitAllowingStateLoss();
-                        ((ChannelFragment) fragment).setChannels(masterData.getChannels());
+                        Log.v("Main-Navigation-Channel","creating channel fragment"+masterData.getChannels().size());
+                        ((ChannelFragment) cfragment).setChannels(masterData.getChannels());
                         return true;
-
-
                     case R.id.navigation_discover:
                         getSupportActionBar().hide();
                         setTitle("under construction");
-
-                        fragment = new SearchFragment();
-//                        ((SearchFragment) fragment).setChannels(channels);
-                        MainActivity.masterData.fragment=fragment;
-                        manager = getSupportFragmentManager();
-                        transaction = manager.beginTransaction();
-                        transaction.replace(R.id.fragment, fragment);
+                        SearchFragment sfragment = new SearchFragment();
+                        MainActivity.masterData.fragment=sfragment;
+                        transaction = masterData.getFragmentManager().beginTransaction();
+                        transaction.replace(R.id.fragment, sfragment);
                         transaction.addToBackStack(null);
                         transaction.commitAllowingStateLoss();
                         return true;
-
                     case R.id.navigation_settings:
                         getSupportActionBar().hide();
-                        //setTitle("settings");
-                        fragment = new SettingsFragment();
-                        manager = getSupportFragmentManager();
-                        transaction = manager.beginTransaction();
-                        transaction.replace(R.id.fragment, fragment);
+                        SettingsFragment settingsfragment = new SettingsFragment();
+                        transaction = masterData.getFragmentManager().beginTransaction();
+                        transaction.replace(R.id.fragment, settingsfragment);
                         transaction.addToBackStack(null);
                         transaction.commitAllowingStateLoss();
-                      //  System.out.println("done transacting");
                         return true;
                 }
                 return false;
             }
         };
     }
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        System.out.println("started oncreate");
+        Log.v("Main-OC","started oncreate");
         super.onCreate(savedInstanceState);
         if (masterData == null) {
             Log.v("Main-OC","masterData is null");
@@ -312,18 +153,19 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
             transaction.addToBackStack(null);
             Log.v("Main-OC","commiting video fragment "+masterData.getVideos().size());
             transaction.commitAllowingStateLoss();
+            new ChannelUpdate().execute();
         }
         else{
             Log.v("Main-OC","performing soft restart, probably a rotation or off pause");
             if (null != masterData.getPlayer()) {
                 Log.v("Main-OC","Exo player exists for "+masterData.getPlayerVideoID());
                 fragment_exoplayer efragment = fragment_exoplayer.newInstance("", masterData.getVideoDao().getvideoById(masterData.getPlayerVideoID()));
-                manager = MainActivity.masterData.getFragmentManager();
-                transaction = manager.beginTransaction();
+                transaction = MainActivity.masterData.getFragmentManager().beginTransaction();
                 transaction.replace(R.id.fragment, efragment);
                 transaction.addToBackStack(null);
                 Log.v("Main-OC", "committing exo fragment");
                 transaction.commitAllowingStateLoss();
+
             }
             else {
                 Log.v("Main-OC","No existing player detected ");
@@ -400,18 +242,17 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
                 else {
                     //TODO put in inital scrape to make sure top videos are playable.
                     Log.v("Main-OC", "launcing initial background update");
-                    new ChannelUpdate().execute();
                     getSupportActionBar().hide();
                     fragment = new VideoFragment();
                     masterData.setVideos(masterData.getVideoDao().getVideos());
                     Log.v("Main-OC","viddeo fragment creation " + masterData.getVideos().size());
                     ((VideoFragment) fragment).setVideos(masterData.getVideos());
-                    manager = getSupportFragmentManager();
-                    transaction = manager.beginTransaction();
+                    transaction = MainActivity.masterData.getFragmentManager().beginTransaction();
                     transaction.replace(R.id.fragment, fragment);
                     transaction.addToBackStack(null);
                     Log.v("Main-OC","committing video fragment");
                     transaction.commitAllowingStateLoss();
+
                 }
             }
         }
@@ -433,9 +274,9 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
     }
     @Override
     public void onPause() {
-        //need to add a dirty data switch to skip saving if unneeded
+        Log.v("Main-op","on pause started");
         super.onPause();
-
+// not sure if this is the best
         for (Video v : MainActivity.masterData.getVideos()){
             if (v.getMp4().isEmpty() && v.getUpCount().isEmpty()){
                 new VideoScrape().execute(v);
@@ -445,6 +286,7 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
 
     @Override
     protected void onDestroy() {
+        Log.v("Main-op","on destroy started");
         super.onDestroy();
       /*  masterData.sicDatabase.close();
         masterData.channelDatabase.close();
@@ -462,8 +304,42 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
 
     @Override
     public void onFragmentInteraction(Uri uri) {
-
+        Log.v("Main-OFI","on FragmentInteraction started");
     }
 
+    @Override
+    protected void onStart() {
+        Log.v("Main-OS","on start started");
+        masterData.setVideos(masterData.getVideoDao().getVideos());
+        masterData.setFragmentManager(getSupportFragmentManager());
+        super.onStart();
+    }
 
+    @Override
+    protected void onStop() {
+        Log.v("Main-OS","on stop started");
+        super.onStop();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.v("Main-OBP","on back press started");
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onResume() {
+        Log.v("Main-OR","on resume started");
+        super.onResume();
+    }
+
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        super.onAttachFragment(fragment);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+    }
 }

@@ -12,6 +12,7 @@ import android.support.v4.text.HtmlCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -133,7 +134,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-   //             System.out.println("attempting to play video"+videos.get(position).getUrl());
+                Log.v("Videoadapter","Attempting to play video at "+videos.get(position).getUrl());
                 int adapterPos = holder.getAdapterPosition();
                 Video vid = videos.get(position);
                 Uri uri;
@@ -147,10 +148,10 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                 if (vid.isBitchute()){
                     switcher = MainActivity.masterData.getBitchutePlayerChoice();
                 }
+                Log.v("videoadapter","switcher set to "+switcher);
                 // 1=vlc, 2=system default, 4=webview, 8=internal player
             //    if( vid.isBitchute())switcher=8;
-                FragmentManager manager = MainActivity.masterData.getFragmentManager();
-                FragmentTransaction transaction = manager.beginTransaction();
+                FragmentTransaction transaction; //= MainActivity.masterData.getFragmentManager().beginTransaction();
                 switch(switcher){
                     case 1:
                         //no break to prevent duplication of case 2 code
@@ -169,24 +170,22 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                         break;
                     case 4:
                         fragment_webviewplayer wfragment = fragment_webviewplayer.newInstance("",vid);
-                        manager = MainActivity.masterData.getFragmentManager();
-                        transaction = manager.beginTransaction();
+                        transaction = MainActivity.masterData.getFragmentManager().beginTransaction();
                         transaction.replace(R.id.fragment, wfragment);
                         transaction.addToBackStack(null);
+
                         transaction.commitAllowingStateLoss();
                         break;
                     case 8:
                         fragment_videoplayer vfragment = fragment_videoplayer.newInstance("",vid);
-                        manager = MainActivity.masterData.getFragmentManager();
-                        transaction = manager.beginTransaction();
+                        transaction = MainActivity.masterData.getFragmentManager().beginTransaction();
                         transaction.replace(R.id.fragment, vfragment);
                         transaction.addToBackStack(null);
                         transaction.commitAllowingStateLoss();
                         break;
                     case 16:
                         fragment_exoplayer efragment = fragment_exoplayer.newInstance("",vid);
-                        manager = MainActivity.masterData.getFragmentManager();
-                        transaction = manager.beginTransaction();
+                        transaction = MainActivity.masterData.getFragmentManager().beginTransaction();
                         transaction.replace(R.id.fragment, efragment);
                         transaction.addToBackStack(null);
                         transaction.commitAllowingStateLoss();

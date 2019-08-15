@@ -43,6 +43,9 @@ public class VideoFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_video, container, false);
         videoRecyclerView = v.findViewById(R.id.vrv);
         vAdapter = new VideoAdapter(vfVideos);
+        if (vfVideos.size()==0){
+            vfVideos = MainActivity.masterData.getVideoDao().getVideos();
+        }
         System.out.println("creating new video adaptor with " + vfVideos.size() + " videos");
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         videoRecyclerView.setLayoutManager(mLayoutManager);

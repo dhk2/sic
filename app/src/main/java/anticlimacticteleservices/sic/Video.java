@@ -60,7 +60,6 @@ class Video implements Serializable,Comparable<Video>
         this.title = "";
         this.author = "";
         this.url = "";
-    //    System.out.println("blank constructor url set to:" + this.url);
         this.watched = false;
         this.date = new Date().getTime();
         this.thumbnailurl = "";
@@ -83,7 +82,6 @@ class Video implements Serializable,Comparable<Video>
         this.title = "";
         this.author = "";
         this.url = location;
-        //System.out.println("new video created with" + this.url);
         if (location.indexOf("youtube") > 0)
         {
             sourceID = location.substring(location.lastIndexOf("?v=") + 3);
@@ -93,7 +91,6 @@ class Video implements Serializable,Comparable<Video>
             String[] segments = location.split("/");
             sourceID = segments[segments.length - 1];
         }
-       // System.out.println("got id "+sourceID+" from "+location);
         this.watched = false;
         this.date = 0;
         this.thumbnailurl = "";
