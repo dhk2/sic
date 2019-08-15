@@ -92,17 +92,18 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
                 switch (item.getItemId()) {
                     case R.id.navigation_home:
                         //setTitle("Video Feed");
+                        Log.v("Main-Navigation-Home","starting home navigation");
                         getSupportActionBar().hide();
+                        //TODO remove masterdata and use direct DAO
                         masterData.setVideos(masterData.getVideoDao().getVideos());
-                        System.out.println("size of video database:"+masterData.getVideos().size());
-                        //new ChannelUpdate().execute();
+
+                        Log.v("Main-Navigation-Home","size of video database:"+masterData.getVideos().size());
                         fragment = new VideoFragment();
-                        ((VideoFragment) fragment).setVideos(masterData.getVideos());
-                        manager = getSupportFragmentManager();
-                        transaction = manager.beginTransaction();
+                        ((VideoFragment) fragment).setVideos(masterData.getVideoDao().getVideos());
+                        transaction = masterData.getFragmentManager().beginTransaction();
                         transaction.replace(R.id.fragment, fragment);
                         transaction.addToBackStack(null);
-                        System.out.println("creating video list fragment from navigation"+masterData.getVideos().size());
+                        Log.v("Main-Navigation-home","creating video list fragment from navigation"+masterData.getVideos().size());
                         transaction.commitAllowingStateLoss();
 
                         return true;
@@ -249,7 +250,7 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
                     case R.id.navigation_channels:
                         getSupportActionBar().hide();
                         masterData.getChannels();
-                        //System.out.println(masterData.getChannels().size()+"  "+ masterData.getChannels().size());
+                        Log.v("Main-Navigation-Channel",masterData.getChannels().size()+"  "+ masterData.getChannels().size());
                         fragment = new ChannelFragment();
                         ((ChannelFragment) fragment).setChannels(masterData.getChannels());
                         manager = getSupportFragmentManager();
@@ -298,38 +299,40 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
         System.out.println("started oncreate");
         super.onCreate(savedInstanceState);
         if (masterData == null) {
+            Log.v("Main-OC","masterData is null");
             preferences = getSharedPreferences( getPackageName() + "_preferences", MODE_PRIVATE);
             masterData = new UserData(getApplicationContext());
             fragment = new VideoFragment();
+            Log.v("Main-OC","Should be first video fragment wtih "+masterData.getVideos().size());
             ((VideoFragment) fragment).setVideos(masterData.getVideos());
             manager = getSupportFragmentManager();
             masterData.setFragmentManager(manager);
             transaction = manager.beginTransaction();
             transaction.replace(R.id.fragment, fragment);
             transaction.addToBackStack(null);
-            System.out.println("creating new video page at start with "+masterData.getVideos().size());
+            Log.v("Main-OC","commiting video fragment "+masterData.getVideos().size());
             transaction.commitAllowingStateLoss();
         }
         else{
-            System.out.println("performing soft restart, probably a rotation or off pause");
+            Log.v("Main-OC","performing soft restart, probably a rotation or off pause");
             if (null != masterData.getPlayer()) {
-                System.out.println("trying to create exo player fragment for video "+masterData.getPlayerVideoID());
+                Log.v("Main-OC","Exo player exists for "+masterData.getPlayerVideoID());
                 fragment_exoplayer efragment = fragment_exoplayer.newInstance("", masterData.getVideoDao().getvideoById(masterData.getPlayerVideoID()));
                 manager = MainActivity.masterData.getFragmentManager();
                 transaction = manager.beginTransaction();
                 transaction.replace(R.id.fragment, efragment);
                 transaction.addToBackStack(null);
+                Log.v("Main-OC", "committing exo fragment");
                 transaction.commitAllowingStateLoss();
-                System.out.println("program still flowing after transaction commit to exoplayer");
             }
             else {
-                System.out.println("no exo fragment");
-
+                Log.v("Main-OC","No existing player detected ");
             }
         }
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Log.v("Main-OC", "high enough version to need the notification channel created");
             CharSequence name = "sic";
             String description = "video site manager";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
@@ -344,21 +347,27 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
         setContentView(R.layout.activity_main);
         navView = findViewById(R.id.nav_view);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
-
         if (null != masterData.getPlayer()){
-            System.out.println("there is a link to the exo player though");
+            Log.v("Main-OC", "Player still exists for "+masterData.getPlayerVideoID());
         }
         else {
+            Log.v("Main-OC", "No player exists");
             if (masterData.getVideos().isEmpty()) {
-                System.out.println("no videos");
+                Log.w("Main-OC","no videos found");
                 if (masterData.getChannels().isEmpty()) {
-                    System.out.println("No channels");
-                    for (String feed : masterData.getFeedLinks()) {
-                        new ChannelInit().execute(feed);
+                    Log.w("Main-OC","No channels found");
+                    if (!masterData.getFeedLinks().isEmpty()) {
+                        Log.v("Main-OC", "Rebuilding empty channel database from source link backup");
+                        for (String feed : masterData.getFeedLinks()) {
+                            new ChannelInit().execute(feed);
+                        }
+                    }
+                    else {
+                        Log.w("Main-OC","No back up links to regenerate channels from");
                     }
                 }
                 if (masterData.getVideos().isEmpty()) {
+                    Log.v("Main-OC", "No videos reported from channels"+masterData.getChannels().size());
                     final Dialog dialog = new Dialog(this);
                     dialog.setContentView(R.layout.videoprop);
                     dialog.setTitle("new user");
@@ -373,6 +382,7 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
                     dialogButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            //TODO check again for empty videos in case of slow background update initially.
                             dialog.dismiss();
                         }
                     });
@@ -383,21 +393,24 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
                     transaction = manager.beginTransaction();
                     transaction.replace(R.id.fragment, fragment);
                     transaction.addToBackStack(null);
-                    System.out.println("creating settings fragment");
+                    Log.v("Main-OC","commiting settings fragment");
+
                     transaction.commitAllowingStateLoss();
                 }
                 else {
+                    //TODO put in inital scrape to make sure top videos are playable.
+                    Log.v("Main-OC", "launcing initial background update");
                     new ChannelUpdate().execute();
                     getSupportActionBar().hide();
                     fragment = new VideoFragment();
                     masterData.setVideos(masterData.getVideoDao().getVideos());
-                    System.out.println("should be first viddeo list creation " + masterData.getVideos().size());
+                    Log.v("Main-OC","viddeo fragment creation " + masterData.getVideos().size());
                     ((VideoFragment) fragment).setVideos(masterData.getVideos());
                     manager = getSupportFragmentManager();
                     transaction = manager.beginTransaction();
                     transaction.replace(R.id.fragment, fragment);
                     transaction.addToBackStack(null);
-                    System.out.println("committing video fragment");
+                    Log.v("Main-OC","committing video fragment");
                     transaction.commitAllowingStateLoss();
                 }
             }
