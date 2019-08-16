@@ -12,7 +12,8 @@
         android:background="@color/colorPrimaryDark"
         android:clipChildren="true"
         android:clipToPadding="true"
-        android:paddingTop="32dp"
+        android:paddingTop="8dp"
+        android:orientation="horizontal"
         tools:layout_editor_absoluteX="-67dp"
         tools:layout_editor_absoluteY="270dp" />
 </FrameLayout>

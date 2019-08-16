@@ -1,5 +1,6 @@
 package anticlimacticteleservices.sic;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -42,12 +43,22 @@ public class VideoFragment extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_video, container, false);
         videoRecyclerView = v.findViewById(R.id.vrv);
-        vAdapter = new VideoAdapter(vfVideos);
         if (vfVideos.size()==0){
             vfVideos = MainActivity.masterData.getVideoDao().getVideos();
         }
+        vAdapter = new VideoAdapter(vfVideos);
         System.out.println("creating new video adaptor with " + vfVideos.size() + " videos");
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
+
+        RecyclerView.LayoutManager mLayoutManager =null;
+        int orientation = getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            mLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL,false);
+        }
+        else {
+            mLayoutManager = new LinearLayoutManager(getContext());
+        }
+
+
         videoRecyclerView.setLayoutManager(mLayoutManager);
         videoRecyclerView.setItemAnimator(new DefaultItemAnimator());
         videoRecyclerView.setAdapter(vAdapter);

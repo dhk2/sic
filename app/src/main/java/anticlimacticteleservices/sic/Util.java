@@ -44,10 +44,10 @@ public class Util {
             timehack= hours +" hours,"+timehack;
         }
         if (days==1){
-            timehack="1 day,"+timehack;
+            timehack="yesterday";
         }
         if (days>1){
-            timehack= days +" days,"+timehack;
+            timehack= days +" days ago";
         }
         return timehack;
     }

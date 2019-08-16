@@ -3,9 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="16dp"
-    android:layout_marginTop="24dp"
-    android:layout_marginRight="16dp"
+    android:layout_marginLeft="2dp"
+    android:layout_marginTop="2dp"
+    android:layout_marginRight="2dp"
     tools:context=".ChannelFragment">
 
     <android.support.v7.widget.RecyclerView
@@ -13,8 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorPrimaryDark"
-        android:paddingTop="22dp"
-        android:paddingBottom="20dp"
         tools:layout_editor_absoluteX="-67dp"
         tools:layout_editor_absoluteY="270dp" />
 

@@ -19,15 +19,6 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Date;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link fragment_channel_properties.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link fragment_channel_properties#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class fragment_channel_properties extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -41,7 +32,6 @@ public class fragment_channel_properties extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     public fragment_channel_properties() {
-        // Required empty public constructor
     }
 
     public static fragment_channel_properties newInstance(Channel param1, String param2) {
@@ -75,7 +65,9 @@ public class fragment_channel_properties extends Fragment {
             v = inflater.inflate(R.layout.fragment_channel_properties, container, false);
       //   }
         Channel chan = mPassedChannel;
-        TextView description = v.findViewById(R.id.channel_description);
+
+        TextView description = v.findViewById(R.id.channel_property_description);
+
         Spanned spanned = HtmlCompat.fromHtml(chan.getDescription(), HtmlCompat.FROM_HTML_MODE_COMPACT);
         description.setText(spanned);
         description.append(System.getProperty("line.separator"));

@@ -3,7 +3,6 @@
     xmlns:cardview="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="120dp"
-    android:layout_margin="5dp"
     cardview:cardCornerRadius="2dp"
     cardview:cardElevation="3dp"
     cardview:cardUseCompatPadding="true">

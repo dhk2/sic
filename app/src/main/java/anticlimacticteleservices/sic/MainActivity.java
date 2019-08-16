@@ -61,7 +61,8 @@ import static android.app.PendingIntent.getActivity;
 
 
 public class MainActivity extends AppCompatActivity implements fragment_exoplayer.OnFragmentInteractionListener,
-        fragment_videoplayer.OnFragmentInteractionListener, fragment_webviewplayer.OnFragmentInteractionListener,fragment_channel_properties.OnFragmentInteractionListener {
+        fragment_videoplayer.OnFragmentInteractionListener, fragment_webviewplayer.OnFragmentInteractionListener,fragment_channel_properties.OnFragmentInteractionListener,
+        fragment_video_properties.OnFragmentInteractionListener  {
     FragmentManager manager;
     Fragment fragment;
     FragmentTransaction transaction;
@@ -77,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
         mOnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Log.v("Main-Navigation","starting navigation with id "+item.getItemId());
                 switch (item.getItemId()) {
                     case R.id.navigation_home:
                         //setTitle("Video Feed");
@@ -157,19 +159,8 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
         }
         else{
             Log.v("Main-OC","performing soft restart, probably a rotation or off pause");
-            if (null != masterData.getPlayer()) {
-                Log.v("Main-OC","Exo player exists for "+masterData.getPlayerVideoID());
-                fragment_exoplayer efragment = fragment_exoplayer.newInstance("", masterData.getVideoDao().getvideoById(masterData.getPlayerVideoID()));
-                transaction = MainActivity.masterData.getFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment, efragment);
-                transaction.addToBackStack(null);
-                Log.v("Main-OC", "committing exo fragment");
-                transaction.commitAllowingStateLoss();
 
-            }
-            else {
-                Log.v("Main-OC","No existing player detected ");
-            }
+
         }
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
@@ -330,6 +321,16 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
     @Override
     protected void onResume() {
         Log.v("Main-OR","on resume started");
+        if (null != masterData.getPlayer()) {
+            Log.v("Main-OC","Exo player exists for "+masterData.getPlayerVideoID());
+            fragment_exoplayer efragment = fragment_exoplayer.newInstance("", masterData.getVideoDao().getvideoById(masterData.getPlayerVideoID()));
+            transaction = MainActivity.masterData.getFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment, efragment);
+            transaction.addToBackStack(null);
+            Log.v("Main-OC", "committing exo fragment");
+            transaction.commitAllowingStateLoss();
+
+        }
         super.onResume();
     }
 

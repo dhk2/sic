@@ -280,6 +280,29 @@ class Video implements Serializable,Comparable<Video>
                 "Category:" + category+ "\n");
 
     }
+    public String toHtmlString()  {
+        return ("title:" + title + "<p>" +
+                "url:" + url + "<p>" +
+                "thumbnail:" + thumbnailurl + "<p>" +
+                "author:" + author + "<p>" +
+                "authorID:"+authorID +"<p>" +
+//			"watched:" + watched.toString() + "<p>" +
+                "uploaded:" + new Date(date).toString() + "<p>" +
+                "magnet link:" + magnet + "<p>" +
+                "description:" + description + "<p>" +
+                "mp4 file" + mp4 + "<p>" +
+                "Rating:" + rating + "<p>" +
+                "Views:" + viewCount + "<p>" +
+                "Up votes:" + upCount + "<p>" +
+                "Down votes:" + downCount + "<p>" +
+                "sourceID:" + sourceID + "<p>" +
+                "Comments:" + commentCount + "<p>" +
+                "Hash tags:" + hashtags  + "<p>" +
+                "Duration:" + duration +"<p>"+
+                "Category:" + category+ "<p>");
+    }
+
+
 
     public String toString() {
         return (new Date(date).toString() + " " + title + "  by" + author);

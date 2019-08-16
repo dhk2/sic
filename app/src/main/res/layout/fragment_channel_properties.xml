@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="24dp">
+    android:layout_margin="4dp">
 
     <LinearLayout
         android:id="@+id/linearLayout1"
@@ -95,7 +95,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/channel_description"
+                    android:id="@+id/channel_property_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"

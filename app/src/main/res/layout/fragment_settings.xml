@@ -8,15 +8,15 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="-403dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="24dp"
-            android:layout_marginRight="16dp"
+            android:layout_marginLeft="1dp"
+            android:layout_marginRight="4dp"
             android:orientation="vertical">
 
             <TextView
@@ -87,11 +87,11 @@
 
                 <RadioButton
                     android:id="@+id/youtubeuse_webview"
-                    android:layout_width="56dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layoutDirection="ltr"
-                    android:text="Webview" />
+                    android:text="web view" />
 
                 <RadioButton
                     android:id="@+id/youtubeuse_default"
@@ -115,9 +115,6 @@
                 android:id="@+id/bitchuteplayerradioGroup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="2dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="2dp"
                 android:orientation="horizontal">
 
                 <RadioButton

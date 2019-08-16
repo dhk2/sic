@@ -54,7 +54,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
             name = view.findViewById(R.id.channelName);
             image = view.findViewById(R.id.channelthumbnail);
             subscribed = view.findViewById(R.id.button);
-            description= view.findViewById(R.id.channel_description);
+            description= view.findViewById(R.id.channel_property_description);
             serviceIcon= view.findViewById(R.id.channelserviceicon);
          }
     }
@@ -75,9 +75,9 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
 
     @Override
     public void onBindViewHolder(CustomViewHolder hold, final int position) {
-        final Channel channel = channels.get(position);
+        Channel channel = channels.get(position);
  //       final CustomViewHolder holder = hold;
-
+        Log.v("Channel-Adaptor","attempting to display a channel"+channel.toString() );
         //holder.name.setText(channel.getTitle());
         if (!channel.getThumbnail().isEmpty()){
             Picasso.get().load(channel.getThumbnail()).resize(160,120).centerInside().into(hold.image);
@@ -154,6 +154,8 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
             }
         });
     }
+
+
     public int getItemCount() {
         return channels.size();
     }

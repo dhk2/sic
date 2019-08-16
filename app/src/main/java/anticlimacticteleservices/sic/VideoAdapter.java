@@ -1,37 +1,20 @@
 package anticlimacticteleservices.sic;
 
-import android.app.Dialog;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.text.HtmlCompat;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
-import android.text.Spanned;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.VideoView;
 
 import com.squareup.picasso.Picasso;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import java.io.IOException;
-import java.net.MalformedURLException;
+
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import static android.app.PendingIntent.getActivity;
 
@@ -98,45 +81,36 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         hold.author.setText(video.getAuthor()+ " \n "+Util.getHowLongAgo(video.getDate()) );
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                Video vid = videos.get(position);
-               // System.out.println(vid.toDebugString());
-                new VideoScrape().execute(vid);
-                //System.out.println(vid.toString());
-                final Dialog dialog = new Dialog(view.getContext());
-                dialog.setContentView(R.layout.videoprop);
-                dialog.setTitle(vid.getTitle());
-                TextView textView = dialog.findViewById(R.id.channelDetails);
-                Spanned spanned = HtmlCompat.fromHtml(vid.getDescription(), HtmlCompat.FROM_HTML_MODE_COMPACT);
-                String description=vid.getDescription()+"<p>";
-                for (Comment c : comments) {
-                    description = description + c.toHtml();
+                @Override
+                public boolean onLongClick(View view) {
+                    Video video  =videos.get(position);
+                    fragment_video_properties vpfragment = fragment_video_properties.newInstance(video,"");
+                    FragmentTransaction transaction = MainActivity.masterData.getFragmentManager().beginTransaction();
+                    transaction.replace(R.id.fragment, vpfragment);
+                    transaction.addToBackStack(null);
+                    transaction.commitAllowingStateLoss();
+                    return false;
                 }
-                textView.setText(Html.fromHtml(description));
-                ImageView image = dialog.findViewById(R.id.thumbNailView);
-                Picasso.get().load(vid.getThumbnail()).into(image);
-                TextView title = dialog.findViewById(R.id.videoproptitle);
-                title.setText(vid.getTitle());
-                Button dialogButton = dialog.findViewById(R.id.closeButton);
-                dialogButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-                dialog.show();
-                return false;
-            }
-        });
+            });
 
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                Log.v("Videoadapter","Attempting to play video at "+videos.get(position).getUrl());
-                int adapterPos = holder.getAdapterPosition();
                 Video vid = videos.get(position);
+                Log.v("Videoadapter","Attempting to play video at "+vid.getUrl());
+                //Clear stored settings and save current position for actively playing EXO video
+                if ((null != MainActivity.masterData.getPlayer() ) && (vid.getID() != MainActivity.masterData.getPlayerVideoID())) {
+                    MainActivity.masterData.getPlayer().stop();
+                    Long spot = MainActivity.masterData.getPlayer().getCurrentPosition();
+                    Video tempVideo = MainActivity.masterData.getVideoDao().getvideoById(MainActivity.masterData.getPlayerVideoID());
+                    tempVideo.setCurrentPosition(spot);
+                    MainActivity.masterData.getVideoDao().update(tempVideo);
+                    MainActivity.masterData.getPlayer().release();
+                    MainActivity.masterData.setPlayer(null);
+                    MainActivity.masterData.setPlayerVideoID(0l);
+                }
+                int adapterPos = holder.getAdapterPosition();
                 Uri uri;
                 int vlcRequestCode = 42;
                 String path;

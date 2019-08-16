@@ -1,6 +1,7 @@
 package anticlimacticteleservices.sic;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -62,10 +63,20 @@ public class ChannelFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_channel, container, false);
         channelRecyclerView =v.findViewById(R.id.crv);
-
+        if (cfChannels.size()==0) {
+            cfChannels = MainActivity.masterData.getChannelDao().getChannels();
+        }
    //     System.out.println("about to set cAdaptor");
         cAdapter = new ChannelAdapter(cfChannels);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
+
+        RecyclerView.LayoutManager mLayoutManager =null;
+        int orientation = getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            mLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL,false);
+        }
+        else {
+            mLayoutManager = new LinearLayoutManager(getContext());
+        }
         channelRecyclerView.setLayoutManager(mLayoutManager);
         channelRecyclerView.setItemAnimator(new DefaultItemAnimator());
         channelRecyclerView.setAdapter(cAdapter);
