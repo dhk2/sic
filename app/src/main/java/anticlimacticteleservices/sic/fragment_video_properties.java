@@ -11,6 +11,8 @@ import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -82,7 +84,8 @@ public class fragment_video_properties extends Fragment {
         new VideoScrape().execute(vid);
         List<Comment> comments = new ArrayList<>();
         comments = MainActivity.masterData.getCommentDao().getCommentsByFeedId(vid.getID());
-        TextView textView = v.findViewById(R.id.video_description);
+
+
         Spanned spanned = HtmlCompat.fromHtml(vid.getDescription(), HtmlCompat.FROM_HTML_MODE_COMPACT);
         String description=vid.getDescription()+"<p>";
         description = description + vid.toHtmlString();
@@ -98,7 +101,12 @@ public class fragment_video_properties extends Fragment {
                 }
             }
         }
-        textView.setText(Html.fromHtml(description));
+        System.out.println(description);
+        WebView descriptionWebView = null;
+        descriptionWebView=v.findViewById(R.id.videopropertieswebview);
+        WebViewClient webViewClient= new WebViewClient();
+        descriptionWebView.setWebViewClient(webViewClient);
+        descriptionWebView.loadData(description,"text/html","utf-8");
         ImageView image = v.findViewById(R.id.thumbNailView);
         Picasso.get().load(vid.getThumbnail()).into(image);
         TextView title = v.findViewById(R.id.video_name);

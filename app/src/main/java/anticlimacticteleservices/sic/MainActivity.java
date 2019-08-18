@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
                     dialog.setContentView(R.layout.videoprop);
                     dialog.setTitle("new user");
 
-                    TextView message = dialog.findViewById(R.id.channelDetails);
+                    TextView message = dialog.findViewById(R.id.channel_property_description);
 
                     message.setText("Looks like this is your first time\n You can use the search feature to find channels,\n or import channels from the settings page");
                     //  message.loadData(,"html","utf-8");

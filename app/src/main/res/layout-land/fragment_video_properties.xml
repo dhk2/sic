@@ -12,13 +12,38 @@
         android:background="#FFFFFF">
 
 
-        <ImageView
-            android:id="@+id/thumbNailView"
+        <LinearLayout
             android:layout_width="240dp"
             android:layout_height="match_parent"
-            android:layout_marginBottom="2dp"
-            android:background="#FFFFFF"
-            tools:srcCompat="@tools:sample/avatars" />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/video_name"
+                android:layout_width="240dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="TextView"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/thumbNailView"
+                android:layout_width="240dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:background="#FFFFFF"
+                tools:srcCompat="@tools:sample/avatars" />
+
+            <Button
+                android:id="@+id/closeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="Close" />
+        </LinearLayout>
 
 
         <ScrollView
@@ -30,38 +55,11 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/video_name"
+                <WebView
+                    android:id="@+id/videopropertieswebview"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="TextView"
-                    android:textAlignment="center"
-                    android:textSize="24sp"
-                    android:textStyle="bold" />
+                    android:layout_height="match_parent" />
 
-                <TextView
-                    android:id="@+id/video_description"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginRight="16dp"
-                    android:autoLink="web|email"
-                    android:background="#FFFFFF"
-                    android:paddingLeft="4dp"
-                    android:textAlignment="textStart"
-                    android:textIsSelectable="true" />
-
-                <Button
-                    android:id="@+id/closeButton"
-                    android:layout_width="398dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:text="Close" />
             </LinearLayout>
         </ScrollView>
 
