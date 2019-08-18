@@ -66,6 +66,14 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
             int commentcounter=0;
             try {
                 doc = Jsoup.connect(vid.getBitchuteUrl()).get();
+
+                System.out.println(doc);
+/*                Elements hunks = doc.getAllElements();
+                for (Element h : hunks){
+                    System.out.println(h.get+"]<-=->["+h.text());
+                }
+*/
+
                 vid.setCategory(doc.getElementsByClass("video-detail-list").first().getElementsByTag("a").first().text());
                 vid.setDescription(doc.getElementsByClass("full hidden").toString());
                 vid.setMagnet(doc.getElementsByClass("video-actions").first().getElementsByAttribute("href").first().attr("href"));

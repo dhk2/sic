@@ -17,6 +17,23 @@
         android:backgroundTint="#1AFFFFFF"
         android:foregroundTint="#1AFFFFFF">
 
+        <TextView
+            android:id="@+id/videoviewcount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/author2"
+            android:layout_alignEnd="@+id/thumbnail2"
+            android:layout_alignParentStart="false"
+            android:layout_alignParentTop="false"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="2dp"
+            android:autoText="false"
+            android:background="#8BFFFFFF"
+            android:elevation="15dp"
+            android:textColor="#B5000000"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
         <ImageView
             android:id="@+id/thumbnail2"
             android:layout_width="match_parent"

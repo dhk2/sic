@@ -72,14 +72,21 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         else {
             holder.name.setText(video.getTitle());
         }
-        holder.videoViewCount.setText("\uD83D\uDC41"+video.getViewCount());
-
+        String iconString ="";
+        if (!"".equals(video.getViewCount())) {
+            iconString= "\uD83D\uDC41" + video.getViewCount();
+        }
+        if (!"".equals(video.getUpCount())){
+            iconString=iconString+"\uD83D\uDC4D"+video.getUpCount();
+        }
+        if (!"".equals(video.getDownCount())){
+            iconString=iconString+"\uD83D\uDC4E"+video.getDownCount();
+        }
+        holder.videoViewCount.setText(iconString);
         if (video.isBitchute()) {
-            System.out.println("setting video bitchute icon");
             hold.serviceIcon.setImageResource(R.drawable.bitchuteicon2);
         }
         if (video.isYoutube()){
-            System.out.println("setting video youtube icon");
            hold.serviceIcon.setImageResource(R.drawable.youtubeicon);
         }
         Picasso.get().load(video.getThumbnail()).fit().into(hold.image);
