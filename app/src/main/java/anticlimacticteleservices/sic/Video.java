@@ -55,6 +55,11 @@ class Video implements Serializable,Comparable<Video>
     private String localPath;
     @ColumnInfo(name = "duration")
     private Long duration;
+    @ColumnInfo(name = "hackDataString")
+    private String hackDateString;
+    @ColumnInfo(name = "rank")
+    private int rank;
+
     public Video()
     {
         this.title = "";
@@ -156,10 +161,7 @@ class Video implements Serializable,Comparable<Video>
     {
         return this.rating;
     }
-    public boolean getWatched()
-    {
-        return this.watched;
-    }
+
     public String getSourceID()
     {
         return this.sourceID;
@@ -394,5 +396,25 @@ class Video implements Serializable,Comparable<Video>
 
     public void setDuration(Long duration) {
         this.duration = duration;
+    }
+
+    public boolean isWatched() {
+        return watched;
+    }
+
+    public String getHackDateString() {
+        return hackDateString;
+    }
+
+    public void setHackDateString(String hackDateString) {
+        this.hackDateString = hackDateString;
+    }
+
+    public int getRank() {
+        return rank;
+    }
+
+    public void setRank(int rank) {
+        this.rank = rank;
     }
 }

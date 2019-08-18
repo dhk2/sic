@@ -85,7 +85,7 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                         commentcounter++;
                     }
                 }
-                Log.v("Videoscrape","added "+commentcounter+" from bitchute url");
+                Log.v("Videoscrape","added "+commentcounter+" comments from bitchute url");
                 doc = Jsoup.connect("https://dissenter.com/discussion/begin?url="+vid.getYoutubeUrl()+"&cpp=69").get();
                 posts = doc.getElementsByClass("comment-container");
                 for (Element p : posts){
@@ -102,7 +102,7 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                         commentcounter++;
                     }
                 }
-               Log.v("Videoscrape","added "+commentcounter+" videos after youtube url");
+               Log.v("Videoscrape","added "+commentcounter+" Comments after youtube url");
                 videoDao.update(vid);
             } catch (IOException e) {
                 e.printStackTrace();

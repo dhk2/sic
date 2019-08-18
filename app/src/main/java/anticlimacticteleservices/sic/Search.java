@@ -5,9 +5,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.net.*;
 import java.io.*;
+import java.util.Date;
 
 import android.app.*;
 import android.os.*;
@@ -18,16 +21,17 @@ class Search {
     private int searchCount = 0;
     private Document doc;
     private boolean searching;
-
+    final SimpleDateFormat bvsdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     public Search(String term, boolean video, boolean youtube, boolean bitchute) {
 
         searching = true;
         String fixedTerm = term.replaceAll("\\s+", "+");
         if (video) {
+            Log.v("Search","Performing video search");
             MainActivity.masterData.setsVideos(new ArrayList <Video>());
             final String location = "https://www.youtube.com/results?search_query=" + fixedTerm + "&sp=EgIQAQ%253D%253D";
             final String location2 = "https://search.bitchute.com/renderer?query=" + fixedTerm + "&use=bitchute-json&name=Search&login=bcadmin&key=7ea2d72b62aa4f762cc5a348ef6642b8&fqr.kind=video";
-            final String location3 = "https://www.google.com/search?q="+fixedTerm+"+%22www.bitchute.com/channel%22";
+            final String location3 = "https://www.google.com/search?q="+fixedTerm+"+%22www.bitchute.com/video%22";
             if (youtube){
                 searchCount++;
             }
@@ -43,7 +47,8 @@ class Search {
                 BitchuteVideoSearcher bitchuteScraper = new BitchuteVideoSearcher();
                 bitchuteScraper.execute(location2);
             }
-        } else {
+        }
+        else {
             MainActivity.masterData.setsChannels(new ArrayList <Channel>());
             final String location = "https://www.youtube.com/results?search_query=" + fixedTerm + "&sp=EgIQAg%253D%253D";
             final String location2 = "https://search.bitchute.com/renderer?query=" + fixedTerm + "&use=bitchute-json&name=Search&login=bcadmin&key=7ea2d72b62aa4f762cc5a348ef6642b8&fqa.kind=channel";
@@ -79,14 +84,16 @@ class Search {
 
         @Override
         protected String doInBackground(String... params) {
-            //          String tempAuthor=doc.title();
+            Log.v("Search-YVS ", MainActivity.masterData.getsVideos().size()+ "search:"+params[0]);
             String thumbnail = "";
             try {
                 doc = Jsoup.connect(params[0]).get();
+                System.out.println(doc);
                 // pull out the responses from the list
                 Elements listing = doc.getElementsByTag("li");
                 Video nv = new Video();
                 for (Element l : listing) {
+                    //System.out.println("trying for date"+l.getElementsByClass("style-scope ytd-video-meta-block").text());
                     Elements titles = l.getElementsByClass("yt-lockup-title ");
                     for (Element t : titles) {
                         Elements anchor = t.getElementsByTag("a");
@@ -113,12 +120,14 @@ class Search {
             } catch (IOException e) {
                 System.out.println("I/O Error: " + e.getMessage());
             }
+            Log.v("Search-YVS ", MainActivity.masterData.getsVideos().size()+" done searching");
             return "done";
         }
         @Override
         protected void onPostExecute(String result) {
             searchCount--;
             if (searchCount < 1) {
+                Log.v("Search-YVS ", MainActivity.masterData.getsVideos().size()+ "Creating video results fragment:");
                 searching = false;
                 VideoFragment fragment = new VideoFragment();
                 MainActivity.masterData.sortsVideos();
@@ -144,12 +153,14 @@ class Search {
         protected String doInBackground(String... params) {
             String thumbnail = "";
             try {
-                Log.v("Search","scraping bitchute search at " + params[0]);
+                Log.v("Search-BVS","scraping bitchute search at " + params[0]);
                 doc = Jsoup.connect(params[0]).get();
                 Elements results = doc.getElementsByClass("osscmnrdr oss-result");
                 Elements parts = results.first().getAllElements();
                 Video nv = new Video();
+                Date pd = new Date();
                 for (Element r : parts) {
+                  // System.out.println("["+r.className()+"]<-=->["+r.text()+"]");
                     switch (r.className()) {
                         case "osscmnrdr ossfieldrdr1":
                             nv = new Video(r.child(0).attr("href"));
@@ -161,7 +172,18 @@ class Search {
                         case "osscmnrdr ossfieldrdr3":
                             nv.setDescription(r.text());
                             break;
+
+                        case "osscmnrdr ossfieldrdr4 oss-item-date":
+                            System.out.println(r.text()+" time date stuffing "+bvsdf.toString()+" "+r.text().substring(0,19));
+                            try {
+                                pd = bvsdf.parse(r.text().substring(0,19));
+                            } catch (ParseException ex) {
+                                Log.v("Search-bvs", ex.getLocalizedMessage());
+                            }
+                            nv.setDate(pd);
+                            break;
                         case "osscmnrdr ossfieldrdr8 oss-item-displayviews":
+                            nv.setViewCount(r.text());
                             MainActivity.masterData.addsVideos(nv);
                     }
                 }
@@ -181,7 +203,7 @@ class Search {
             super.onPostExecute(result);
             searchCount--;
             if (searchCount < 1) {
-                Log.v("Search","done searching with "+MainActivity.masterData.getsVideos().size());
+                Log.v("Search-BVS","done searching with "+MainActivity.masterData.getsVideos().size());
                 searching = false;
                 VideoFragment fragment = new VideoFragment();
                 MainActivity.masterData.sortsVideos();
@@ -221,7 +243,7 @@ class Search {
     private class BitchuteChannelSearcher extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... params) {
-            //          String tempAuthor=doc.title();
+            Log.v("Search-BCS ", MainActivity.masterData.getsChannels().size()+ "search:"+params[0]);
             String thumbnail = "";
             try {
                 System.out.println("scraping bitchute channel search at " + params[0]);
@@ -267,8 +289,7 @@ class Search {
         protected void onPostExecute(String result) {
             // execution of result of Long time consuming operation
             super.onPostExecute(result);
-            System.out.println("Search count:"+searchCount);
-            System.out.println(MainActivity.masterData.getsChannels().size());
+            Log.v("Search-BCS ", MainActivity.masterData.getsChannels().size()+ "done searching");
             searchCount--;
             if (searchCount < 1) {
                 searching = false;
@@ -294,18 +315,15 @@ class Search {
     private class YoutubeChannelSearcher extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... params) {
+            Log.v("Search-YCS ", MainActivity.masterData.getsChannels().size()+ "search:"+params[0]);
             String thumbnail = "";
-            System.out.println("starting to search youtube using "+params[0]);
             try {
                 doc = Jsoup.connect(params[0]).get();
-                // pull out the responses from the list
                 Elements listing = doc.getElementsByTag("li");
                 Channel nc = new Channel();
-                //System.out.println(doc);
                 System.out.println("looping through "+listing.size()+"list elements");
 
                 for (Element l : listing) {
-                    //System.out.println(">>>>>>>"+l.toString()+"<<<<<<<<<<<<<<");
                     Elements titles = l.getElementsByClass("yt-lockup-title ");
                     for (Element t : titles) {
                         Elements anchor = t.getElementsByTag("a");
@@ -317,8 +335,6 @@ class Search {
                                 System.out.println(channelUrl);
                                 String[] segments = channelUrl.split("/");
                                 nc=new Channel(" https://www.youtube.com/feeds/videos.xml?channel_id="+segments[segments.length - 1]);
-                                //nc.setSourceID(segments[segments.length - 1]);
-                              //  nc.setUrl(" https://www.youtube.com/feeds/videos.xml?channel_id=" + nc.getSourceID());
                                 nc.setTitle(anchor.attr("title"));
                                 nc.setDescription(anchor.attr("aria-label"));
                             }
@@ -356,8 +372,7 @@ class Search {
             // execution of result of Long time consuming operation
             super.onPostExecute(result);
 
-            System.out.println("Search count:"+searchCount);
-            System.out.println(MainActivity.masterData.getsChannels().size());
+            Log.v("Search-YCS ", MainActivity.masterData.getsChannels().size()+ "done searcing for channels");
             searchCount--;
             if (searchCount < 1) {
                 System.out.println("done searching for channels," );
@@ -389,8 +404,8 @@ class Search {
         protected String doInBackground(String... params) {
             //          String tempAuthor=doc.title();
             String thumbnail = "";
+            Log.v("Search-BGCS ", MainActivity.masterData.getsVideos().size()+ "search:"+params[0]);
             try {
-                System.out.println("scraping youtube search at " + params[0]);
                 doc = Jsoup.connect(params[0]).get();
                   //System.out.println(doc);
               //    Elements links = doc.getElementsByAttribute("href");
@@ -420,8 +435,7 @@ class Search {
         protected void onPostExecute(String result) {
             // execution of result of Long time consuming operation
             super.onPostExecute(result);
-            System.out.println("Search count:"+searchCount);
-            System.out.println(MainActivity.masterData.getsChannels().size());
+            Log.v("Search-BGCS ", MainActivity.masterData.getsChannels().size()+ "done searcing for channels");
             searchCount--;
             if (searchCount < 1) {
                 searching = false;

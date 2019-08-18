@@ -19,6 +19,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 /**
@@ -85,11 +86,17 @@ public class fragment_video_properties extends Fragment {
         Spanned spanned = HtmlCompat.fromHtml(vid.getDescription(), HtmlCompat.FROM_HTML_MODE_COMPACT);
         String description=vid.getDescription()+"<p>";
         description = description + vid.toHtmlString();
-        if (comments.size()>0){
+        if (comments.size()>0 && MainActivity.masterData.isUseComments()){
             description=description+"<p><h2>Comments:</h2><p>";
-        }
-        for (Comment c : comments) {
-            description = description + c.toHtml();
+            for (Comment c : comments) {
+                if (MainActivity.masterData.isDissenterComments()) {
+                    description = description + c.toHtml();
+                }
+                if (MainActivity.masterData.isKittenComments()){
+                    description = description + "<img src=\"https://cataas.com/cat?"+ Integer.toString(ThreadLocalRandom.current().nextInt(1, 1001)) +"\" width=\"240\" ><p>";
+
+                }
+            }
         }
         textView.setText(Html.fromHtml(description));
         ImageView image = v.findViewById(R.id.thumbNailView);

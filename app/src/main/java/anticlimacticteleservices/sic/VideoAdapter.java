@@ -78,6 +78,13 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
            hold.serviceIcon.setImageResource(R.drawable.youtubeicon);
         }
         Picasso.get().load(video.getThumbnail()).fit().into(hold.image);
+        if (null == video.getAuthor()){
+            video.setAuthor(video.getTitle());
+            if (null == video.getAuthor()){
+                video.setAuthor(("Author Unknown"));
+            }
+        }
+
         hold.author.setText(video.getAuthor()+ " \n "+Util.getHowLongAgo(video.getDate()) );
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -104,8 +111,10 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                     MainActivity.masterData.getPlayer().stop();
                     Long spot = MainActivity.masterData.getPlayer().getCurrentPosition();
                     Video tempVideo = MainActivity.masterData.getVideoDao().getvideoById(MainActivity.masterData.getPlayerVideoID());
-                    tempVideo.setCurrentPosition(spot);
-                    MainActivity.masterData.getVideoDao().update(tempVideo);
+                    if (null != tempVideo){
+                        tempVideo.setCurrentPosition(spot);
+                        MainActivity.masterData.getVideoDao().update(tempVideo);
+                    }
                     MainActivity.masterData.getPlayer().release();
                     MainActivity.masterData.setPlayer(null);
                     MainActivity.masterData.setPlayerVideoID(0l);

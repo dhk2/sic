@@ -20,6 +20,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -42,12 +43,11 @@ public class SettingsFragment extends Fragment {
     Dialog dialogHandle;
     WebView webviewHandle;
     TextView feedAge;
+    RadioButton useKittens,useDissenter;
+    CheckBox useComments,backgroundSync,wifiOnly;
+
     public SettingsFragment() {
-        // Required empty public constructor
     }
-
-
-
     public static SettingsFragment newInstance(String param1, String param2) {
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
@@ -57,7 +57,6 @@ public class SettingsFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,16 +65,12 @@ public class SettingsFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_settings, container, false);
-
-
     }
-
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -83,6 +78,18 @@ public class SettingsFragment extends Fragment {
         final Button importYoutube = view.findViewById(R.id.load_youtube);
         feedAge = view.findViewById(R.id.feed_age);
         feedAge.setText(Long.toString(MainActivity.masterData.getFeedAge()));
+        backgroundSync = view.findViewById(R.id.backgroundsyncenabled);
+        backgroundSync.setChecked(MainActivity.masterData.isUseComments());
+        wifiOnly = view.findViewById(R.id.wifisynconly);
+        wifiOnly.setChecked(MainActivity.masterData.isWifionly());
+        useComments = view.findViewById(R.id.commentsenabled);
+        useComments.setChecked(MainActivity.masterData.isUseComments());
+        useDissenter = view.findViewById(R.id.dissentercommentsenabled);
+        useKittens = view.findViewById(R.id.kittencommentsenabled);
+        useKittens.setChecked(MainActivity.masterData.isKittenComments());
+        useDissenter.setChecked(MainActivity.masterData.isDissenterComments());
+
+
         importBitchute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -101,8 +108,6 @@ public class SettingsFragment extends Fragment {
                 webView.addJavascriptInterface(new MyJavaScriptInterface(), "HtmlHandler");
                 WebSettings webSettings = webView.getSettings();
                 webSettings.setJavaScriptEnabled(true);
-
-
                 webView.getSettings().setUseWideViewPort(true);
                 webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
                 webView.setScrollbarFadingEnabled(false);
@@ -116,27 +121,9 @@ public class SettingsFragment extends Fragment {
                         dialog.dismiss();
                     }
                 });
-  /*              Button importButton = (Button) dialog.findViewById(R.id.idimportbutton);
-                importButton.setText("Import");
-                importButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        System.out.println(webView.getTitle());
-                    }
-                });
-   */             dialog.show();
+            dialog.show();
             }
         });
-/*        Button importButton = view.findViewById(R.id.load_youtube);
-        importButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ImportSubscriptions is = new ImportSubscriptions();
-                is.execute();
-            }
-
-        });
-  */
         importYoutube.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -154,14 +141,9 @@ public class SettingsFragment extends Fragment {
                 webView.addJavascriptInterface(new MyJavaScriptInterface(), "HtmlHandler");
                 WebSettings webSettings = webView.getSettings();
                 webSettings.setJavaScriptEnabled(true);
-
-
                 webView.getSettings().setUseWideViewPort(true);
                 webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
                 webView.setScrollbarFadingEnabled(false);
-
-
-
                 webView.loadUrl("https://www.youtube.com/subscription_manager");
                 Button closeButton = dialog.findViewById(R.id.idclosebutton);
                 closeButton.setText("close");
@@ -172,15 +154,7 @@ public class SettingsFragment extends Fragment {
                         dialog.dismiss();
                     }
                 });
-  /*              Button importButton = (Button) dialog.findViewById(R.id.idimportbutton);
-                importButton.setText("Import");
-                importButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        System.out.println(webView.getTitle());
-                    }
-                });
-   */             dialog.show();
+           dialog.show();
             }
         });
         RadioGroup youtubeRadioGroup = view.findViewById(R.id.youtubeplayerradioGroup);
@@ -308,7 +282,11 @@ public class SettingsFragment extends Fragment {
     public void onPause() {
         super.onPause();
         MainActivity.masterData.setFeedAge(Long.parseLong( feedAge.getText().toString()));
-
+        MainActivity.masterData.setUseComments(useComments.isChecked());
+        MainActivity.masterData.setKittenComments(useKittens.isChecked());
+        MainActivity.masterData.setDissenterComments(useDissenter.isChecked());
+        MainActivity.masterData.setBackgroundSync(backgroundSync.isChecked());
+        MainActivity.masterData.setWifionly(wifiOnly.isChecked());
         MainActivity.masterData.saveUserData();
     }
 }

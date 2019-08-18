@@ -8,9 +8,12 @@ import android.app.PendingIntent;
 import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
@@ -32,6 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static android.content.Context.MODE_PRIVATE;
 import static android.content.Context.NOTIFICATION_SERVICE;
 
 class ChannelUpdate extends AsyncTask<String, String, Boolean> {
@@ -51,21 +55,71 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
     ChannelDatabase channelDatabase;
     CommentDatabase commentDatabase;
     String updateError="";
+    boolean headless=true;
+    boolean backgroundSync;
+    boolean wifiOnly;
+    boolean wifiConnected;
+    boolean mobileConnected;
+
+    public static SharedPreferences preferences;
     @Override
     protected void onPreExecute() {
-        // load these settings into static variables in case Mainactivity closes and the background app is still running.
         super.onPreExecute();
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> am i actually visiable <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-        System.out.println(videoDao);
-        if (null==context) {
-            if (null == MainActivity.masterData) {
-                context = SicSync.context;
-            }
-            else{
-                context=MainActivity.masterData.context;
-            }
+    }
+
+    @Override
+    protected void onPostExecute(Boolean aBoolean) {
+        super.onPostExecute(aBoolean);
+        if (newcount>0) {
+            Toast.makeText(context, newcount + " new videos added", Toast.LENGTH_SHORT).show();
         }
-        System.out.println("context"+context);
+        if (updateError !=""){
+            Toast.makeText(context, newcount + updateError, Toast.LENGTH_LONG).show();
+        }
+        if (!headless ||  backgroundSync) {
+            Util.scheduleJob(context);
+        }
+
+    }
+
+    @Override
+    protected Boolean doInBackground(String... params) {
+        if (null == MainActivity.masterData) {
+            context = SicSync.context;
+            headless=true;
+        }
+        else{
+            headless=false;
+            context=MainActivity.masterData.context;
+        }
+        ConnectivityManager connMgr = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
+        if (activeInfo != null && activeInfo.isConnected()) {
+            wifiConnected = activeInfo.getType() == ConnectivityManager.TYPE_WIFI;
+            mobileConnected = activeInfo.getType() == ConnectivityManager.TYPE_MOBILE;
+        } else {
+            wifiConnected = false;
+            mobileConnected = false;
+        }
+        if (headless){
+            preferences = context.getSharedPreferences( "anticlimacticteleservices.sic" + "_preferences", MODE_PRIVATE);
+            feedAge = preferences.getLong("feedAge",7);
+            backgroundSync = preferences.getBoolean("backgroundSync",true);
+            wifiOnly = preferences.getBoolean("wifiOnly",false);
+        }
+        else
+        {
+            feedAge = MainActivity.preferences.getLong("feedAge",7);
+            backgroundSync = MainActivity.preferences.getBoolean("backgroundSync",true);
+            wifiOnly = MainActivity.preferences.getBoolean("wifiOnly",false);
+        }
+        Log.v("Update-Channel", "status loaded wifi:"+wifiConnected+" mobile:"+mobileConnected+" background sync:"+backgroundSync+" wifi only:"+wifiOnly+" headless"+headless);
+        if (headless && wifiOnly && !wifiConnected){
+            return false;
+        }
+        if (headless && !backgroundSync){
+            return false;
+        }
         if (null == videoDao){
             if (null == MainActivity.masterData){
                 channelDatabase = Room.databaseBuilder(context , ChannelDatabase.class, "channel")
@@ -90,41 +144,22 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
                 commentDao = MainActivity.masterData.getCommentDao();
             }
         }
-        //TODO get this out of preferences or something.
-        if (null==feedAge){
-            feedAge=30l;
-        }
-    }
-
-    @Override
-    protected void onPostExecute(Boolean aBoolean) {
-        super.onPostExecute(aBoolean);
-        if (newcount>0) {
-            Toast.makeText(context, newcount + " new videos added", Toast.LENGTH_SHORT).show();
-        }
-        if (updateError !=""){
-            Toast.makeText(context, newcount + " new videos added", Toast.LENGTH_LONG).show();
-        }
-        Util.scheduleJob(context);
-
-
-    }
-
-    @Override
-    protected Boolean doInBackground(String... params) {
         if (null != videoDao){
             allVideos =(ArrayList)videoDao.getVideos();
-            System.out.println("loaded videos from database"+allVideos.size());
+            Log.v("Channel-Update","loaded videos from database"+allVideos.size());
         }
         else {
-            System.out.println("error trying to access databse from background asynctask");
+            Log.e("Channel-Update","Nothing accessing feed database");
+            return false;
         }
         if (null != channelDao){
-            System.out.println("loading channels from sql");
+
             allChannels = (ArrayList<Channel>) channelDao.getChannels();
+            Log.v("Channel-Update","Loaded channel database with "+allChannels.size());
         }
         else{
-            System.out.println("failed to load channel list from sql");
+            Log.e("Channel-Update", "failed to load channel list from sql");
+            return false;
         }
 
 channelloop:for (Channel chan :allChannels){
@@ -182,9 +217,6 @@ channelloop:for (Channel chan :allChannels){
                        // System.out.println("adding video "+nv.getTitle()+ " published on:"+nv.getDate());
                         //TODO put in the check for if the channel has notifications enabled
                         if (chan.isNotify());{
-
-
-
                             Notification notificationBuilder =
                                     new NotificationCompat.Builder(context, "anticlimacticteleservices.sic")
                                             .setSmallIcon(R.mipmap.sic_round)
@@ -204,12 +236,11 @@ channelloop:for (Channel chan :allChannels){
                         doc = Jsoup.connect(chan.getBitchuteRssFeedUrl()).get();
                     } catch (IOException e) {
                         e.printStackTrace();
-                        System.out.println("network failure tying to get rss feeds in background, aborting this run");
+                        Log.e("Channel-Update","network failure tying to get rss feeds in background");
                         updateError=e.toString();
                         break channelloop;
                     }
                     if (null==doc){
-                        System.out.println("this is where network failure shows up");
                         return false;
                     }
                     Elements videos = doc.getElementsByTag("item");
@@ -217,8 +248,7 @@ channelloop:for (Channel chan :allChannels){
                         Video nv = new Video(video.getElementsByTag("link").first().text());
                         for (Video match : allVideos) {
                             if (match.getSourceID().equals(nv.getSourceID())&& match.isBitchute()) {
-                                System.out.println("video duped "+nv.getSourceID()+"\n"+match.toDebugString());
-
+                              //  System.out.println("video duped "+nv.getSourceID()+"\n"+match.toDebugString());
                                 dupecount++;
                                 continue channelloop;
                             }
@@ -226,11 +256,10 @@ channelloop:for (Channel chan :allChannels){
                         Date pd=new Date(1);
                         try {
                            pd = bdf.parse(video.getElementsByTag("pubDate").first().text());
-                        } catch (ParseException ex) {
-                           Log.v("Exception", ex.getLocalizedMessage());
+                        } catch (ParseException e) {
+                           Log.e("Channel-Update", "date parsing error "+e.getLocalizedMessage());
                         }
                         if (pd.getTime()+(feedAge*24*60*60*1000)<new Date().getTime()) {
-                           System.out.println("out of feed range for " + chan.getTitle());
                            break;
                         }
                         nv.setDate(pd);
@@ -264,14 +293,14 @@ channelloop:for (Channel chan :allChannels){
 
             }
         }
-        for (Video v : allVideos){
-            if (v.getMp4().isEmpty() && v.getUpCount().isEmpty()){
-                new VideoScrape().execute(v);
+        if (headless) {
+            for (Video v : allVideos) {
+                if (v.getMp4().isEmpty() && v.getUpCount().isEmpty()) {
+                    new VideoScrape().execute(v);
+                }
             }
         }
-  //      database.close();
- //       channelDatabase.close();
-        System.out.println(dupecount+ "duplicate videos discarded from RSS feeds, "+newcount+" new videos added");
+        Log.v("Channel-Update","duplicate videos discarded,"+newcount+" new videos added");
         return true;
     }
 }

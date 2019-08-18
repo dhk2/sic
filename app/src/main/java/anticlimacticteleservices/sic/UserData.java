@@ -179,7 +179,18 @@ public class UserData {
         this.sVideos = value;
     }
     public void addsVideos(Video value){
-        this.sVideos.add(value);
+        boolean unique=true;
+        for (Video v : sVideos) {
+            if (v.getSourceID().equals(value.getSourceID())){
+                System.out.println("attempted to add duplicate video");
+                unique=false;
+                break;
+            }
+        }
+        if (unique){
+            System.out.println(videos.size()+"trying to add"+value);
+           sVideos.add(value);
+        }
     }
 
 
@@ -250,6 +261,52 @@ public class UserData {
     }
     public void setFeedAge(long feedAge) {
         this.feedAge = feedAge;
+    }
+
+    public boolean useComments;
+    public boolean dissenterComments;
+    public boolean kittenComments;
+    public boolean backgroundSync;
+    public boolean wifionly;
+
+    public boolean isUseComments() {
+        return useComments;
+    }
+
+    public void setUseComments(boolean useComments) {
+        this.useComments = useComments;
+    }
+
+    public boolean isDissenterComments() {
+        return dissenterComments;
+    }
+
+    public void setDissenterComments(boolean dissenterComments) {
+        this.dissenterComments = dissenterComments;
+    }
+
+    public boolean isKittenComments() {
+        return kittenComments;
+    }
+
+    public void setKittenComments(boolean kittenComments) {
+        this.kittenComments = kittenComments;
+    }
+
+    public boolean isBackgroundSync() {
+        return backgroundSync;
+    }
+
+    public void setBackgroundSync(boolean backgroundSync) {
+        this.backgroundSync = backgroundSync;
+    }
+
+    public boolean isWifionly() {
+        return wifionly;
+    }
+
+    public void setWifionly(boolean wifionly) {
+        this.wifionly = wifionly;
     }
 
     private Set<String> feedLinks =new HashSet<String>();
@@ -337,9 +394,14 @@ public class UserData {
         editor = MainActivity.preferences.edit();
         youtubePlayerChoice = MainActivity.preferences.getInt("youtubePlayerChoice", 4);
         bitchutePlayerChoice = MainActivity.preferences.getInt("bitchutePlayerChoice", 8);
-        feedAge = MainActivity.preferences.getLong("feedAge",7);
+
         feedLinks = MainActivity.preferences.getStringSet("feedlinks",feedLinks);
-        System.out.println("loaded/reloaded preferences:"+feedAge+" "+youtubePlayerChoice+" "+bitchutePlayerChoice);
+        feedAge = MainActivity.preferences.getLong("feedAge",7);
+        useComments = MainActivity.preferences.getBoolean("useComments",true);
+        dissenterComments = MainActivity.preferences.getBoolean("dissenterComments",true);
+        kittenComments = MainActivity.preferences.getBoolean("kittenComments",false);
+        backgroundSync = MainActivity.preferences.getBoolean("backgroundSync",true);
+        wifionly = MainActivity.preferences.getBoolean("wifiOnly",false);
         //shouldn't be needed
         if (youtubePlayerChoice==0)
             youtubePlayerChoice=4;
@@ -381,6 +443,11 @@ public class UserData {
         editor.putInt("bitchutePlayerChoice", bitchutePlayerChoice);
         editor.putLong("feedAge",feedAge);
         editor.putStringSet("feedlinks",getFeedLinks());
+        editor.putBoolean("useComments",useComments);
+        editor.putBoolean("dissenterComments",dissenterComments);
+        editor.putBoolean("kittenComments",kittenComments);
+        editor.putBoolean("backgroundSync",backgroundSync);
+        editor.putBoolean("wifiOnly",wifionly);
         editor.commit();
         return true;
     }

@@ -84,20 +84,14 @@ public class SearchFragment extends Fragment {
         sText.requestFocus();
         sText.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                // If the event is a key-down event on the "enter" button
                 if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
                         (keyCode == KeyEvent.KEYCODE_ENTER)) {
-         //           ((MainActivity) getActivity())
-                   //         .setMainTitle("Searching...");
                     Search target;
                     String searchText = sText.getText().toString();
                     target = new Search(searchText, videoSearch.isChecked(),youtubeSearch.isChecked(),bitchuteSearch.isChecked());
-                    Fragment subFragment = new VideoFragment();
-                    ((VideoFragment) subFragment).setVideos(MainActivity.masterData.getsVideos());
-                    FragmentManager supervisor =getChildFragmentManager();
-
-                    //MainActivity.masterData.fragmentManager=supervisor;
-                    supervisor.beginTransaction().replace(R.id.search_subfragment, subFragment).commitAllowingStateLoss();
+         //           Fragment subFragment = new VideoFragment();
+         //           ((VideoFragment) subFragment).setVideos(MainActivity.masterData.getsVideos());
+         //           getChildFragmentManager().beginTransaction().replace(R.id.search_subfragment, subFragment).commitAllowingStateLoss();
                     return true;
                 }
                 return false;
@@ -109,11 +103,9 @@ public class SearchFragment extends Fragment {
                 Search target;
                 String searchText = sText.getText().toString();
                 target = new Search(searchText, videoSearch.isChecked(),youtubeSearch.isChecked(),bitchuteSearch.isChecked());
-                Fragment subFragment = new VideoFragment();
-                ((VideoFragment) subFragment).setVideos(MainActivity.masterData.getsVideos());
-                FragmentManager supervisor =getChildFragmentManager();
-                //MainActivity.masterData.fragmentManager=supervisor;
-                supervisor.beginTransaction().replace(R.id.search_subfragment, subFragment).commitAllowingStateLoss();
+      //          Fragment subFragment = new VideoFragment();
+      //          ((VideoFragment) subFragment).setVideos(MainActivity.masterData.getsVideos());
+      //          getChildFragmentManager().beginTransaction().replace(R.id.search_subfragment, subFragment).commitAllowingStateLoss();
 
            }
         });

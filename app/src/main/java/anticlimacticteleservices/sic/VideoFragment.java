@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +44,7 @@ public class VideoFragment extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_video, container, false);
         videoRecyclerView = v.findViewById(R.id.vrv);
-        if (vfVideos.size()==0){
+        if (null == this.getParentFragment() && (vfVideos.size() == 0)) {
             vfVideos = MainActivity.masterData.getVideoDao().getVideos();
         }
         vAdapter = new VideoAdapter(vfVideos);

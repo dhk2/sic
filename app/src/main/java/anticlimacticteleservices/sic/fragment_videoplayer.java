@@ -14,6 +14,7 @@ import android.widget.VideoView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 /**
@@ -81,10 +82,19 @@ public class fragment_videoplayer extends Fragment  {
         WebView comments=v.findViewById(R.id.commentsdetails);
         String description=video.getDescription();
         allComments = MainActivity.masterData.getCommentDao().getCommentsByFeedId(video.getID());
-        if (!(null == allComments)) {
-            Log.v("Videoplayer","this many comments should be showing up"+allComments.size());
-            for (Comment c : allComments) {
-                description = description + c.toHtml();
+        if (MainActivity.masterData.isUseComments()) {
+            allComments = (ArrayList<Comment>) MainActivity.masterData.getCommentDao().getCommentsByFeedId(video.getID());
+            if (!(allComments.isEmpty())) {
+                description = description + "<p><p><h2>comments</h2><p>";
+                for (Comment c : allComments) {
+                    if (MainActivity.masterData.isDissenterComments()) {
+                        description = description + c.toHtml();
+                    }
+                    if (MainActivity.masterData.isKittenComments()){
+                        description = description + "<img src=\"https://cataas.com/cat?"+ Integer.toString(ThreadLocalRandom.current().nextInt(1, 1001)) +"\" width=\"240\" ><p>";
+
+                    }
+                }
             }
         }
         comments.loadData(description,"text/html","utf-8");

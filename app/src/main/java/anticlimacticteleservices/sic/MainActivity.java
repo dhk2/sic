@@ -268,11 +268,12 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
         Log.v("Main-op","on pause started");
         super.onPause();
 // not sure if this is the best
-        for (Video v : MainActivity.masterData.getVideos()){
+ /*       for (Video v : MainActivity.masterData.getVideos()){
             if (v.getMp4().isEmpty() && v.getUpCount().isEmpty()){
                 new VideoScrape().execute(v);
             }
         }
+   */
     }
 
     @Override

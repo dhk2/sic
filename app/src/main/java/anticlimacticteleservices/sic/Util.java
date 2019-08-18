@@ -48,6 +48,8 @@ public class Util {
         }
         if (days>1){
             timehack= days +" days ago";
+        }if (days>18000){
+            timehack = "Time im-memorial";
         }
         return timehack;
     }
