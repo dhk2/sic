@@ -29,14 +29,19 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         private ImageView youtubeIcon;
         private ImageView bitchuteIcon;
         private ImageView serviceIcon;
+        private TextView videoViewCount;
+
         private FloatingActionButton floatingActionButton;
+
+        private TextView viewCount;
         CustomViewHolder(View view) {
             super(view);
             name = view.findViewById(R.id.movieName2);
             image = view.findViewById(R.id.thumbnail2);
             author = view.findViewById(R.id.author2);
             serviceIcon = view.findViewById(R.id.videoserviceicon2);
-        //    floatingActionButton = view.findViewById(R.id.floatingActionButton);
+            videoViewCount = view.findViewById(R.id.videoviewcount);
+            //    floatingActionButton = view.findViewById(R.id.floatingActionButton);
         }
     }
     public VideoAdapter(){
@@ -67,7 +72,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         else {
             holder.name.setText(video.getTitle());
         }
-
+        holder.videoViewCount.setText("\uD83D\uDC41"+video.getViewCount());
 
         if (video.isBitchute()) {
             System.out.println("setting video bitchute icon");

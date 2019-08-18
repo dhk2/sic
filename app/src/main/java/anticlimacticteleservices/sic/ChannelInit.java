@@ -23,25 +23,18 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
     private int newChannelCount=0;
     @Override
     protected Integer doInBackground(String[] params) {
-    //    System.out.println("channel count"+MainActivity.masterData.getChannels().size());
-//        System.out.println("Starting to init channel"+params[0]);
-
-
+    Log.v("Channel-Init",MainActivity.masterData.getChannels().size()+" channels, init channel"+params[0]);
         Document channelPage;
         Document channelRss;
         channels:for (String g : params) {
-            chan = new Channel(g);
-            System.out.println("attempting to add channel "+g);
-
+           chan = new Channel(g);
            for (Channel c : MainActivity.masterData.getChannels()){
                if (((chan.getYoutubeID() == c.getYoutubeID()) && chan.isYoutube() )|| ( chan.isBitchute() &&(chan.getBitchuteID() == c.getBitchuteID()))){
                    dupeCount++;
-                   System.out.println("channel already exists");
                    continue channels;
                }
            }
            try {
-                //chan.setUrl(g);
                 chan = new Channel(g);
                 if (chan.isBitchute()){
                     channelPage = Jsoup.connect(chan.getBitchuteUrl()).get();
@@ -55,11 +48,8 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                     channelRss = Jsoup.connect(chan.getYoutubeRssFeedUrl()).get();
                     channelPage= Jsoup.connect(chan.getYoutubeUrl()).get();
                 }
-
                 chan.setTitle(channelRss.title());
-
                System.out.println("g is:"+g +"\n   id is "+chan.getSourceID()+ "\n    url is "+chan.getBitchuteUrl()+"\n   youtube rss: "+chan.getYoutubeRssFeedUrl()+"\n  bitchute rss feed "+chan.getBitchuteRssFeedUrl());
-
                if (chan.isYoutube()) {
                     chan.setTitle(channelRss.title());
                     chan.setAuthor(channelRss.getElementsByTag("name").first().text());
@@ -72,10 +62,9 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                         try {
                             pd = ydf.parse(entry.getElementsByTag("published").first().text());
                         } catch (ParseException ex) {
-                            Log.v("Exception parsing date", ex.getLocalizedMessage());
+                            Log.e("Exception parsing date", ex.getLocalizedMessage());
                             System.out.println(entry);
                         }
-                        //TODO put in exception for archived channels here when implemented
                         if (pd.getTime()+(MainActivity.masterData.getFeedAge()*24*60*60*1000)<new Date().getTime()){
                             System.out.println("out of feed range for "+chan.getTitle()+Long.toString(MainActivity.masterData.getFeedAge()));
                             break;
@@ -86,11 +75,9 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                         nv.setAuthorID(chan.getID());
                         nv.setTitle(entry.getElementsByTag("title").first().html());
                         nv.setThumbnail(entry.getElementsByTag("media:thumbnail").first().attr("url"));
-
                         nv.setDescription(entry.getElementsByTag("media:description").first().text());
                         nv.setRating(entry.getElementsByTag("media:starRating").first().attr("average"));
                         nv.setViewCount(entry.getElementsByTag("media:statistics").first().attr("views"));
-
                         boolean unique = true;
                         for (Video match : MainActivity.masterData.getVideos()) {
                             if (match.getSourceID().equals(nv.getSourceID())) {
@@ -104,12 +91,9 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                         }
                     }
                 }
-
                 if (chan.isBitchute()) {
                     try {
-
                         chan.setDescription(channelRss.getElementsByTag("description").first().text());
-                       // System.out.println(doc);
                         chan.setThumbnail(channelPage.getElementsByAttribute("data-src").last().attr("data-src"));
                         Elements videos = channelRss.getElementsByTag("item");
                         System.out.println(videos.size());
@@ -117,7 +101,6 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                             Video nv=new Video(video.getElementsByTag("link").first().text());
                             nv.setTitle(video.getElementsByTag("title").first().text());
                             nv.setDescription(video.getElementsByTag("description").first().text());
-
                            // System.out.println(nv);
                             nv.setThumbnail(video.getElementsByTag("enclosure").first().attr("url"));
                             Date pd=new Date(1);
@@ -147,45 +130,24 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                                 newVideoCount++;
                             }
                         }
-                       // System.out.println("finished scraping videos");
-
                     } catch (NullPointerException e) {
                         System.out.println("null pointer issue" + e);
                         e.printStackTrace();
                     }
                 }
-/*                boolean unique = true;
-                for (Channel match : MainActivity.masterData.getChannels()) {
-                    if (match.matches(chan.getSourceID())) {
-                        unique = false;
-                    }
-                }
-                if (unique) {
- */                 MainActivity.masterData.addChannel(chan);
-                    System.out.println("adding channel "+chan.getTitle());
+                 MainActivity.masterData.addChannel(chan);
+                    Log.v("Channel-Init",MainActivity.masterData.getChannels().size()+" added channel "+chan.getTitle());
                     newChannelCount++;
-  /*              }
-                else {
-                    System.out.println("duplicate channel rejected "+chan.getTitle());
-                }
-  */             } catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
-     //       System.out.println("finished initting channel"+chan.getVideos().size());
-    //        System.out.println(chan);
             MainActivity.masterData.sortVideos();
-
         }
-       // MainActivity.masterData.sortVideos();
-    //    System.out.println("sorting"+MainActivity.masterData.getVideos().size());
-    //    MainActivity.masterData.saveUserData();
         return 69;
     }
-
     @Override
     protected void onPostExecute(Integer integer) {
         super.onPostExecute(integer);
-
         if (newChannelCount ==1){
             Toast.makeText(MainActivity.masterData.context,"added "+chan.getTitle()+ " with "+newVideoCount+" videos",Toast.LENGTH_SHORT).show();
         }

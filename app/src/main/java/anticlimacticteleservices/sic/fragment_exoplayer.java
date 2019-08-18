@@ -169,35 +169,42 @@ public class fragment_exoplayer extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        Long spot = MainActivity.masterData.getPlayer().getCurrentPosition();
-        Video tempVideo=MainActivity.masterData.getVideoDao().getvideoById(MainActivity.masterData.getPlayerVideoID());
-        if (null != tempVideo){
-            tempVideo.setCurrentPosition(spot);
-            MainActivity.masterData.getVideoDao().update(tempVideo);
+        if (null != MainActivity.masterData.getPlayer()){
+
+            Long spot = MainActivity.masterData.getPlayer().getCurrentPosition();
+            Video tempVideo=MainActivity.masterData.getVideoDao().getvideoById(MainActivity.masterData.getPlayerVideoID());
+            if (null != tempVideo){
+                tempVideo.setCurrentPosition(spot);
+                MainActivity.masterData.getVideoDao().update(tempVideo);
+            }
         }
-
-
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Long spot = MainActivity.masterData.getPlayer().getCurrentPosition();
-        Video tempVideo=MainActivity.masterData.getVideoDao().getvideoById(MainActivity.masterData.getPlayerVideoID());
-        if (null != tempVideo){
-            tempVideo.setCurrentPosition(spot);
-            MainActivity.masterData.getVideoDao().update(tempVideo);
+        if (null != MainActivity.masterData.getPlayer()){
+
+            Long spot = MainActivity.masterData.getPlayer().getCurrentPosition();
+            Video tempVideo=MainActivity.masterData.getVideoDao().getvideoById(MainActivity.masterData.getPlayerVideoID());
+            if (null != tempVideo){
+                tempVideo.setCurrentPosition(spot);
+                MainActivity.masterData.getVideoDao().update(tempVideo);
+            }
         }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Long spot = MainActivity.masterData.getPlayer().getCurrentPosition();
-        Video tempVideo=MainActivity.masterData.getVideoDao().getvideoById(MainActivity.masterData.getPlayerVideoID());
-        if (null != tempVideo){
-            tempVideo.setCurrentPosition(spot);
-            MainActivity.masterData.getVideoDao().update(tempVideo);
+        if (null != MainActivity.masterData.getPlayer()){
+
+            Long spot = MainActivity.masterData.getPlayer().getCurrentPosition();
+            Video tempVideo=MainActivity.masterData.getVideoDao().getvideoById(MainActivity.masterData.getPlayerVideoID());
+            if (null != tempVideo){
+                tempVideo.setCurrentPosition(spot);
+             MainActivity.masterData.getVideoDao().update(tempVideo);
+            }
         }
     }
 }

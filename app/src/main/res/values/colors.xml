@@ -75,7 +75,7 @@
     <color name="black">#000</color>
     <color name="gray_transparent">#be757575</color>
     <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorPrimaryDark">#23000000</color>
     <color name="colorAccent">#D81B60</color>
 
 </resources>

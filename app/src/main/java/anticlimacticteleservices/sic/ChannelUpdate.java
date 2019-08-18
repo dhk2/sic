@@ -213,9 +213,6 @@ channelloop:for (Channel chan :allChannels){
                         nv.setRating(entry.getElementsByTag("media:starRating").first().attr("average"));
                         nv.setViewCount(entry.getElementsByTag("media:statistics").first().attr("views"));
                         videoDao.insert(nv);
-                       // MainActivity.masterData.setDirtydata(1);
-                       // System.out.println("adding video "+nv.getTitle()+ " published on:"+nv.getDate());
-                        //TODO put in the check for if the channel has notifications enabled
                         if (chan.isNotify());{
                             Notification notificationBuilder =
                                     new NotificationCompat.Builder(context, "anticlimacticteleservices.sic")
@@ -271,8 +268,6 @@ channelloop:for (Channel chan :allChannels){
                         nv.setAuthor(chan.getTitle());
                         videoDao.insert(nv);
                         newcount++;
-                        //System.out.println("adding video " + nv.getTitle() + " published on:" + nv.getDate());
-                       //TODO put in the check for if the channel has notifications enabled
                         if (chan.isNotify()){
                            Notification notificationBuilder =
                                    new NotificationCompat.Builder(context, "anticlimacticteleservices.sic")
