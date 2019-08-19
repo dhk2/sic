@@ -17,7 +17,9 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class fragment_channel_properties extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
@@ -97,7 +99,12 @@ public class fragment_channel_properties extends Fragment {
             public void onClick(View v) {
                 chan.setNotify(notify.isChecked());
                 chan.setArchive(archive.isChecked());
-                //TODO put in actual subscribe/unsubscribe ability from here.
+                if (!subscribed.isChecked()) {
+                    MainActivity.masterData.removeChannel(chan.getSourceID());
+                }
+                if (subscribed.isChecked()){
+                    MainActivity.masterData.addChannel(chan);
+                }
                 MainActivity.masterData.getChannelDao().update(chan);
                 MainActivity.masterData.fragmentManager.popBackStack();
             }
@@ -110,14 +117,11 @@ public class fragment_channel_properties extends Fragment {
         });
         return v;
     }
-
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
     }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -128,23 +132,11 @@ public class fragment_channel_properties extends Fragment {
                     + " must implement OnFragmentInteractionListener");
         }
     }
-
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
     }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
