@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
         fragment_video_properties.OnFragmentInteractionListener  {
     FragmentManager manager;
     Fragment fragment;
+    int count=0;
     FragmentTransaction transaction;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener;
     public static UserData masterData;
@@ -100,7 +101,8 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
                     case R.id.navigation_history:
                         getSupportActionBar().show();
                         setTitle("Not implemented yet");
-           return true;
+
+                        return true;
                     case R.id.navigation_channels:
                         getSupportActionBar().hide();
                         masterData.getChannels();
@@ -162,8 +164,7 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
 
 
         }
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Log.v("Main-OC", "high enough version to need the notification channel created");
             CharSequence name = "sic";
@@ -171,8 +172,6 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel("anticlimacticteleservices.sic", name, importance);
             channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
@@ -205,9 +204,9 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
                     dialog.setContentView(R.layout.videoprop);
                     dialog.setTitle("new user");
 
-                    TextView message = dialog.findViewById(R.id.channel_property_description);
+                    WebView message = dialog.findViewById(R.id.videoproperties);
 
-                    message.setText("Looks like this is your first time\n You can use the search feature to find channels,\n or import channels from the settings page");
+                    message.loadData("Looks like this is your first time\n You can use the search feature to find channels,\n or import channels from the settings page","text/html","utf-8");
                     //  message.loadData(,"html","utf-8");
                     ImageView image = dialog.findViewById(R.id.thumbNailView);
                     image.setImageResource(R.mipmap.sic_round);

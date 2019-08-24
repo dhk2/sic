@@ -19,30 +19,6 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginBottom="8dp"
-                android:autoLink="web"
-                android:paddingTop="16dp"
-                android:text="Webview plays the embedded version from either sites player. VLC is a great open source ad free player. If you prefer another player on your system use default. Exo player is a decent option for Bitchute which supports background play. " />
-
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:autoLink="web"
-                android:text="To import,click the appropriate button and logon. Once logged in it should show a list of your subscribed channels, then immediately start importing them. The first time " />
-
-            <TextView
                 android:id="@+id/textView4"
                 android:layout_width="match_parent"
                 android:layout_height="35dp"
@@ -54,8 +30,14 @@
             <RadioGroup
                 android:id="@+id/bitchuteplayerradioGroup"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/bitchuteuse_webtorrentwebview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Webtorrent Webview" />
 
                 <RadioButton
                     android:id="@+id/bitchuteuse_vlc"
@@ -70,10 +52,10 @@
                     android:text="exo " />
 
                 <RadioButton
-                    android:id="@+id/bitchuteuse_native"
+                    android:id="@+id/bitchuteuse_default"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Vidview " />
+                    android:text="System" />
 
                 <RadioButton
                     android:id="@+id/bitchuteuse_webview"
@@ -82,10 +64,16 @@
                     android:text="Webview" />
 
                 <RadioButton
-                    android:id="@+id/bitchuteuse_default"
+                    android:id="@+id/bitchuteuse_native"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="System" />
+                    android:text="Vidview " />
+
+                <RadioButton
+                    android:id="@+id/bitchuteuse_newpipe"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Newpipe" />
 
             </RadioGroup>
 
@@ -111,11 +99,11 @@
             <RadioGroup
                 android:id="@+id/youtubeplayerradioGroup"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:duplicateParentState="false"
                 android:layoutDirection="ltr"
                 android:layoutMode="clipBounds"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:textDirection="ltr">
 
 
@@ -126,11 +114,11 @@
                     android:text="VLC" />
 
                 <RadioButton
-                    android:id="@+id/youtubeuse_exo"
+                    android:id="@+id/youtubeusenewpipe"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="exo " />
+                    android:text="Newpipe" />
 
                 <RadioButton
                     android:id="@+id/youtubeuse_webview"
@@ -146,6 +134,13 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="System" />
+
+                <RadioButton
+                    android:id="@+id/youtubeuse_exo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="exo*" />
 
             </RadioGroup>
 
@@ -234,6 +229,30 @@
                         android:text="Kittens" />
                 </RadioGroup>
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="8dp"
+                android:autoLink="web"
+                android:paddingTop="16dp"
+                android:text="Webview plays the embedded version from either sites player. VLC is a great open source ad free player. If you prefer another player on your system use default. Exo player is a decent option for Bitchute which supports background play. " />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:autoLink="web"
+                android:text="To import,click the appropriate button and logon. Once logged in it should show a list of your subscribed channels, then immediately start importing them. The first time " />
 
         </LinearLayout>
     </ScrollView>

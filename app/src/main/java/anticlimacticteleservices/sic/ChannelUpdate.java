@@ -14,6 +14,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
@@ -60,6 +61,8 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
     boolean wifiOnly;
     boolean wifiConnected;
     boolean mobileConnected;
+    int youtubePlayerChoice;
+    int bitchutePlayerChoice;
 
     public static SharedPreferences preferences;
     @Override
@@ -106,12 +109,16 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
             feedAge = preferences.getLong("feedAge",7);
             backgroundSync = preferences.getBoolean("backgroundSync",true);
             wifiOnly = preferences.getBoolean("wifiOnly",false);
+            youtubePlayerChoice = preferences.getInt("youtubePlayerChoice", 4);
+            bitchutePlayerChoice = preferences.getInt("bitchutePlayerChoice", 8);
         }
         else
         {
             feedAge = MainActivity.preferences.getLong("feedAge",7);
             backgroundSync = MainActivity.preferences.getBoolean("backgroundSync",true);
             wifiOnly = MainActivity.preferences.getBoolean("wifiOnly",false);
+            youtubePlayerChoice = MainActivity.preferences.getInt("bitchutePlayerChoice", 8);
+            bitchutePlayerChoice = MainActivity.preferences.getInt("bitchutePlayerChoice", 8);
         }
         Log.v("Update-Channel", "status loaded wifi:"+wifiConnected+" mobile:"+mobileConnected+" background sync:"+backgroundSync+" wifi only:"+wifiOnly+" headless"+headless);
         if (headless && wifiOnly && !wifiConnected){
@@ -213,18 +220,9 @@ channelloop:for (Channel chan :allChannels){
                         nv.setRating(entry.getElementsByTag("media:starRating").first().attr("average"));
                         nv.setViewCount(entry.getElementsByTag("media:statistics").first().attr("views"));
                         videoDao.insert(nv);
-                        if (chan.isNotify());{
-                            Notification notificationBuilder =
-                                    new NotificationCompat.Builder(context, "anticlimacticteleservices.sic")
-                                            .setSmallIcon(R.mipmap.sic_round)
-                                            .setContentTitle(nv.getAuthor())
-                                            .setContentText(nv.getTitle())
-                                            .setPriority(Notification.PRIORITY_MAX)
-                                            .setAutoCancel(true)
-                                            .build();
-                            NotificationManager notificationManager = context.getSystemService(
-                                    NotificationManager.class);
-                            notificationManager.notify(1, notificationBuilder);
+                        //if (chan.isNotify()){
+                        if(true){
+                            createNotification(nv);
                         }
                     }
                 }
@@ -268,24 +266,12 @@ channelloop:for (Channel chan :allChannels){
                         nv.setAuthor(chan.getTitle());
                         videoDao.insert(nv);
                         newcount++;
-                        if (chan.isNotify()){
-                           Notification notificationBuilder =
-                                   new NotificationCompat.Builder(context, "anticlimacticteleservices.sic")
-                                           .setSmallIcon(R.mipmap.sic_round)
-                                           .setContentTitle(nv.getAuthor())
-                                           .setContentText(nv.getTitle())
-                                           .setPriority(Notification.PRIORITY_MAX)
-                                           .setAutoCancel(true)
-                                           .build();
-                           NotificationManager notificationManager = context.getSystemService(
-                                   NotificationManager.class);
-
-                           notificationManager.notify(1, notificationBuilder);
+                        //if (chan.isNotify()){
+                        if (true){
+                            createNotification(nv);
                        }
-
                     }
                 }
-
             }
         }
         if (headless) {
@@ -295,7 +281,51 @@ channelloop:for (Channel chan :allChannels){
                 }
             }
         }
-        Log.v("Channel-Update","duplicate videos discarded,"+newcount+" new videos added");
+        Log.v("Channel-Update",dupecount+" duplicate videos discarded,"+newcount+" new videos added");
         return true;
+    }
+    private void createNotification(Video vid){
+        String path="";
+        Intent notificationIntent = new Intent(Intent.ACTION_VIEW);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        notificationIntent.setPackage("anticlimacticteleservices.sic");
+        if (vid.isBitchute()) {
+            path = vid.getMp4();
+            switch (bitchutePlayerChoice){
+                case 1:
+                    notificationIntent.setPackage("org.videolan.vlc");
+                    break;
+            }
+        }
+        if (vid.isYoutube()){
+            path = vid.getYoutubeUrl();
+            switch(youtubePlayerChoice){
+                case 1:
+                    notificationIntent.setPackage("org.videolan.vlc");
+                    break;
+                case 32:
+                    notificationIntent.setPackage("org.schabi.newpipe");
+                    break;
+            }
+
+        }
+        Uri uri = Uri.parse(path);
+        notificationIntent.setDataAndTypeAndNormalize(uri, "video/*");
+        notificationIntent.putExtra("title", vid.getTitle());
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+
+        Notification notificationBuilder =
+                new NotificationCompat.Builder(context, "anticlimacticteleservices.sic")
+                        .setSmallIcon(R.mipmap.sic_round)
+                        .setContentTitle(vid.getAuthor())
+                        .setContentText(vid.getTitle())
+                        .setPriority(Notification.PRIORITY_MAX)
+                        .setAutoCancel(true)
+                        .setContentIntent(pendingIntent)
+                        .build();
+
+        NotificationManager notificationManager = context.getSystemService(
+                NotificationManager.class);
+        notificationManager.notify(((int) vid.getID()), notificationBuilder);
     }
 }

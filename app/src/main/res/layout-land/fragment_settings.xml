@@ -62,7 +62,7 @@
             <RadioGroup
                 android:id="@+id/youtubeplayerradioGroup"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:duplicateParentState="false"
                 android:layoutDirection="ltr"
                 android:layoutMode="clipBounds"
@@ -97,6 +97,13 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="System" />
+
+                <RadioButton
+                    android:id="@+id/youtubeusenewpipe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Newpipe" />
 
             </RadioGroup>
 

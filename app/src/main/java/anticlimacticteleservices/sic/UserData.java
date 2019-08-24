@@ -223,8 +223,10 @@ public class UserData {
 
     private int youtubePlayerChoice;
     private int bitchutePlayerChoice;
+
+    public boolean youtubeUseNewpipe() {return youtubePlayerChoice == 32;}
     public boolean youtubeUseExoView() {
-        return youtubePlayerChoice == 8;
+        return youtubePlayerChoice == 16;
     }
     public boolean youtubeUseWebView() {
         return youtubePlayerChoice == 4;
@@ -242,6 +244,8 @@ public class UserData {
     public boolean bitchuteUseDefault() {return bitchutePlayerChoice ==2; }
     public boolean bitchuteUseNative() {return bitchutePlayerChoice ==8; }
     public boolean bitchuteUseExo() {return bitchutePlayerChoice ==16; }
+    public boolean bitchuteUseNewpipe() {return bitchutePlayerChoice ==32;}
+    public boolean bitchuteUseWebtorrentWebview() {return bitchutePlayerChoice ==64;}
     public int getYoutubePlayerChoice() {
         return youtubePlayerChoice;
     }

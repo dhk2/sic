@@ -88,6 +88,9 @@ public class fragment_webviewplayer extends Fragment  {
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webView.loadUrl(video.getEmbeddedUrl());
+        if (video.isBitchute() && MainActivity.masterData.bitchuteUseWebtorrentWebview()){
+            webView.loadDataWithBaseURL("https://www.bitchute.com",WebTorrentJavascript.getWebviewHtml(video),"text/html","utf-8","https://www.bitchute.com");
+        }
         MainActivity.masterData.webPlayer = webView;
         MainActivity.masterData.webPlayerVideo=video;
 

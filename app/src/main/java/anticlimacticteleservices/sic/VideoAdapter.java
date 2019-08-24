@@ -134,8 +134,8 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                 int adapterPos = holder.getAdapterPosition();
                 Uri uri;
                 int vlcRequestCode = 42;
-                String path;
-                Intent vlcIntent = new Intent(Intent.ACTION_VIEW);
+                String path ="";
+                Intent playerIntent = new Intent(Intent.ACTION_VIEW);
                 int switcher = 0;
                 if (vid.isYoutube()){
                     switcher = MainActivity.masterData.getYoutubePlayerChoice();
@@ -149,19 +149,28 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                 FragmentTransaction transaction; //= MainActivity.masterData.getFragmentManager().beginTransaction();
                 switch(switcher){
                     case 1:
-                        //no break to prevent duplication of case 2 code
-                        vlcIntent.setPackage("org.videolan.vlc");
+                        playerIntent.setPackage("org.videolan.vlc");
+                        if (vid.isBitchute()) {
+                            path = vid.getMp4();
+                        }
+                        if (vid.isYoutube()){
+                            path = vid.getYoutubeUrl();
+                        }
+                        uri = Uri.parse(path);
+                        playerIntent.setDataAndTypeAndNormalize(uri, "video/*");
+                        playerIntent.putExtra("title", vid.getTitle());
+                        v.getContext().startActivity(playerIntent);
+                        break;
                     case 2:
-                            //update for additional sources
                         if (vid.isBitchute()) {
                             path = vid.getMp4();
                         } else {
                             path = vid.getYoutubeUrl();
                         }
                         uri = Uri.parse(path);
-                        vlcIntent.setDataAndTypeAndNormalize(uri, "video/*");
-                        vlcIntent.putExtra("title", vid.getTitle());
-                        v.getContext().startActivity(vlcIntent);
+                        playerIntent.setData(uri);
+                        playerIntent.putExtra("title", vid.getTitle());
+                        v.getContext().startActivity(playerIntent);
                         break;
                     case 4:
                         fragment_webviewplayer wfragment = fragment_webviewplayer.newInstance("",vid);
@@ -182,6 +191,27 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                         fragment_exoplayer efragment = fragment_exoplayer.newInstance("",vid);
                         transaction = MainActivity.masterData.getFragmentManager().beginTransaction();
                         transaction.replace(R.id.fragment, efragment);
+                        transaction.addToBackStack(null);
+                        transaction.commitAllowingStateLoss();
+                        break;
+                    case 32:
+                        playerIntent.setPackage("org.schabi.newpipe");
+                        if (vid.isBitchute()) {
+                            path = vid.getMp4();
+                        }
+                        if (vid.isYoutube()){
+                            path = vid.getYoutubeUrl();
+                        }
+                        uri = Uri.parse(path);
+                        //playerIntent.setDataAndTypeAndNormalize(uri, "video/*");
+                        playerIntent.setData(uri);
+                       // playerIntent.putExtra("title", vid.getTitle());
+                        v.getContext().startActivity(playerIntent);
+                        break;
+                    case 64:
+                        fragment_webviewplayer wwfragment = fragment_webviewplayer.newInstance("",vid);
+                        transaction = MainActivity.masterData.getFragmentManager().beginTransaction();
+                        transaction.replace(R.id.fragment, wwfragment);
                         transaction.addToBackStack(null);
                         transaction.commitAllowingStateLoss();
                         break;

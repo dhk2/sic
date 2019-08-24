@@ -162,6 +162,7 @@ public class SettingsFragment extends Fragment {
         RadioButton youtubeUseDefault =view.findViewById(R.id.youtubeuse_default);
         RadioButton youtubeUseWebview =view.findViewById(R.id.youtubeuse_webview);
         RadioButton youtubeUseExoview = view.findViewById(R.id.youtubeuse_exo);
+        RadioButton youtubeUseNewpipe = view.findViewById(R.id.youtubeusenewpipe);
 
         RadioGroup bitchuteRadioGroup = view.findViewById(R.id.bitchuteplayerradioGroup);
         RadioButton bitchuteUseVlc =view.findViewById(R.id.bitchuteuse_vlc);
@@ -169,6 +170,8 @@ public class SettingsFragment extends Fragment {
         RadioButton bitchuteUseWebview =view.findViewById(R.id.bitchuteuse_webview);
         RadioButton bitchuteUseNative = view.findViewById(R.id.bitchuteuse_native);
         RadioButton bitchuteUseExo = view.findViewById(R.id.bitchuteuse_exo);
+        RadioButton bitchuteUseNewpipe = view.findViewById(R.id.bitchuteuse_newpipe);
+        RadioButton bitchuteUseWebtorrentWebview = view.findViewById(R.id.bitchuteuse_webtorrentwebview);
 
         switch(MainActivity.masterData.getYoutubePlayerChoice()){
             case 1:
@@ -180,8 +183,10 @@ public class SettingsFragment extends Fragment {
             case 4:
                 youtubeUseWebview.setChecked(true);
                 break;
-            case 8:
+            case 16:
                 youtubeUseExoview.setChecked(true);
+            case 32:
+                youtubeUseNewpipe.setChecked(true);
         }
         youtubeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
@@ -198,7 +203,10 @@ public class SettingsFragment extends Fragment {
                         MainActivity.masterData.setYoutubePlayerChoice(4);
                         break;
                     case R.id.youtubeuse_exo:
-                        MainActivity.masterData.setYoutubePlayerChoice(8);
+                        MainActivity.masterData.setYoutubePlayerChoice(16);
+                        break;
+                    case R.id.youtubeusenewpipe:
+                        MainActivity.masterData.setYoutubePlayerChoice(32);
                         break;
                 }
             }
@@ -219,6 +227,12 @@ public class SettingsFragment extends Fragment {
             case 16:
                 bitchuteUseExo.setChecked(true);
                 break;
+            case 32:
+                bitchuteUseNewpipe.setChecked(true);
+                break;
+            case 64:
+                bitchuteUseWebtorrentWebview.setChecked(true);
+                break;
         }
         bitchuteRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
@@ -238,6 +252,12 @@ public class SettingsFragment extends Fragment {
                         break;
                     case R.id.bitchuteuse_exo:
                         MainActivity.masterData.setBitchutePlayerChoice(16);
+                        break;
+                    case R.id.bitchuteuse_newpipe:
+                        MainActivity.masterData.setBitchutePlayerChoice(32);
+                        break;
+                    case R.id.bitchuteuse_webtorrentwebview:
+                        MainActivity.masterData.setBitchutePlayerChoice(64);
                         break;
                 }
             }
