@@ -220,8 +220,8 @@ channelloop:for (Channel chan :allChannels){
                         nv.setRating(entry.getElementsByTag("media:starRating").first().attr("average"));
                         nv.setViewCount(entry.getElementsByTag("media:statistics").first().attr("views"));
                         videoDao.insert(nv);
-                        //if (chan.isNotify()){
-                        if(true){
+                        if (chan.isNotify()){
+                        //(true){
                             createNotification(nv);
                         }
                     }
@@ -266,8 +266,8 @@ channelloop:for (Channel chan :allChannels){
                         nv.setAuthor(chan.getTitle());
                         videoDao.insert(nv);
                         newcount++;
-                        //if (chan.isNotify()){
-                        if (true){
+                        if (chan.isNotify()){
+                        //if (true){
                             createNotification(nv);
                        }
                     }
@@ -288,30 +288,29 @@ channelloop:for (Channel chan :allChannels){
         String path="";
         Intent notificationIntent = new Intent(Intent.ACTION_VIEW);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        notificationIntent.setPackage("anticlimacticteleservices.sic");
+        int switcher=0;
+        Uri uri = Uri.parse(vid.getYoutubeUrl());
         if (vid.isBitchute()) {
-            path = vid.getMp4();
-            switch (bitchutePlayerChoice){
-                case 1:
-                    notificationIntent.setPackage("org.videolan.vlc");
-                    break;
-            }
+            switcher = bitchutePlayerChoice;
+            uri = Uri.parse(vid.getMp4());
         }
         if (vid.isYoutube()){
-            path = vid.getYoutubeUrl();
-            switch(youtubePlayerChoice){
-                case 1:
-                    notificationIntent.setPackage("org.videolan.vlc");
-                    break;
-                case 32:
-                    notificationIntent.setPackage("org.schabi.newpipe");
-                    break;
-            }
-
+            switcher = youtubePlayerChoice;
         }
-        Uri uri = Uri.parse(path);
-        notificationIntent.setDataAndTypeAndNormalize(uri, "video/*");
-        notificationIntent.putExtra("title", vid.getTitle());
+        switch(switcher){
+            case 1:
+                notificationIntent.setPackage("org.videolan.vlc");
+                notificationIntent.setDataAndTypeAndNormalize(uri, "video/*");
+                notificationIntent.putExtra("title", vid.getTitle());
+                break;
+            case 32:
+                notificationIntent.setPackage("org.schabi.newpipe");
+                notificationIntent.setDataAndTypeAndNormalize(uri, "video/*");
+                break;
+            default:
+                notificationIntent = new Intent(context, HandleIntent.class);
+                notificationIntent.putExtra("videoID",vid.getID());
+        }
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
 
         Notification notificationBuilder =

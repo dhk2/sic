@@ -87,10 +87,20 @@ public class fragment_webviewplayer extends Fragment  {
         webView.setWebViewClient(webViewClient);
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
+        webSettings.setAllowContentAccess(true);
+        webSettings.setAllowFileAccess(true);
+        webSettings.setDomStorageEnabled(true);
+        webSettings.setMediaPlaybackRequiresUserGesture(false);
+        webSettings.setMixedContentMode(1);
+        webSettings.setAllowUniversalAccessFromFileURLs(true);
+        webSettings.setAllowFileAccessFromFileURLs(true);
+
+
         webView.loadUrl(video.getEmbeddedUrl());
         if (video.isBitchute() && MainActivity.masterData.bitchuteUseWebtorrentWebview()){
             webView.loadDataWithBaseURL("https://www.bitchute.com",WebTorrentJavascript.getWebviewHtml(video),"text/html","utf-8","https://www.bitchute.com");
         }
+        webView.addJavascriptInterface(new JavascriptWebviewInterface(MainActivity.masterData.context), "Android");
         MainActivity.masterData.webPlayer = webView;
         MainActivity.masterData.webPlayerVideo=video;
 

@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
                     case R.id.navigation_history:
                         getSupportActionBar().show();
                         setTitle("Not implemented yet");
-
+                        System.out.println(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS));
                         return true;
                     case R.id.navigation_channels:
                         getSupportActionBar().hide();
@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
                 }
                 else {
                     //TODO put in inital scrape to make sure top videos are playable.
-                    Log.v("Main-OC", "launcing initial background update");
+                    Log.v("Main-OC", "launching initial background update");
                     getSupportActionBar().hide();
                     fragment = new VideoFragment();
                     masterData.setVideos(masterData.getVideoDao().getVideos());
@@ -343,4 +343,5 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
     protected void onRestart() {
         super.onRestart();
     }
+
 }

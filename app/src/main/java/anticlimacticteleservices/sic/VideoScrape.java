@@ -67,7 +67,7 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
             try {
                 doc = Jsoup.connect(vid.getBitchuteUrl()).get();
 
-                System.out.println(doc);
+           //     System.out.println(doc);
 /*                Elements hunks = doc.getAllElements();
                 for (Element h : hunks){
                     System.out.println(h.get+"]<-=->["+h.text());

@@ -282,7 +282,7 @@ public class SettingsFragment extends Fragment {
                    new ChannelInit().execute("https://www.bitchute.com"+s.getElementsByTag("a").first().attr("href"));
                 }
                 dialogHandle.dismiss();
-                Toast.makeText(MainActivity.masterData.context,"adding "+subscriptions.size()+ " channels from bitchute.",Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.masterData.context,"adding "+subscriptions.size()+ " possible channels from bitchute.",Toast.LENGTH_SHORT).show();
             }
             if (doc.title().equals("Subscription manager - YouTube")) {
                 Elements channels = doc.getElementsByClass("guide-item yt-uix-sessionlink yt-valign spf-link    ");
@@ -294,7 +294,7 @@ public class SettingsFragment extends Fragment {
                     }
                 }
                 dialogHandle.dismiss();
-                Toast.makeText(MainActivity.masterData.context,"adding "+channels.size()+ " channels from youtube.",Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.masterData.context,"adding "+channels.size()+ " possible channels from youtube.",Toast.LENGTH_SHORT).show();
             }
         }
     }
