@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Dialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.ProgressDialog;
 import android.arch.persistence.room.Room;
 import android.content.ComponentName;
 import android.content.Context;
@@ -88,7 +89,6 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
                         //TODO remove masterdata and use direct DAO
                         masterData.setVideos(masterData.getVideoDao().getVideos());
                         Log.v("Main-Navigation-Home","size of video database:"+masterData.getVideos().size());
-                        fragment = new VideoFragment();
                         VideoFragment vfragment = new VideoFragment();
                         vfragment.setVideos(masterData.getVideoDao().getVideos());
                         transaction = masterData.getFragmentManager().beginTransaction();
@@ -201,16 +201,15 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
                 if (masterData.getVideos().isEmpty()) {
                     Log.v("Main-OC", "No videos reported from channels"+masterData.getChannels().size());
                     final Dialog dialog = new Dialog(this);
-                    dialog.setContentView(R.layout.videoprop);
+                    dialog.setContentView(R.layout.newuseralert);
                     dialog.setTitle("new user");
+                    TextView message = dialog.findViewById(R.id.alerttext);
 
-                    WebView message = dialog.findViewById(R.id.videoproperties);
-
-                    message.loadData("Looks like this is your first time\n You can use the search feature to find channels,\n or import channels from the settings page","text/html","utf-8");
+                    message.setText("Looks like this is your first time\n You can use the search feature to find channels,\n or import channels from the settings page");
                     //  message.loadData(,"html","utf-8");
-                    ImageView image = dialog.findViewById(R.id.thumbNailView);
+                    ImageView image = dialog.findViewById(R.id.alertpicture);
                     image.setImageResource(R.mipmap.sic_round);
-                    Button dialogButton = dialog.findViewById(R.id.closeButton);
+                    Button dialogButton = dialog.findViewById(R.id.closebutton);
                     dialogButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -219,15 +218,14 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
                         }
                     });
                     dialog.show();
-                    getSupportActionBar().show();
-                    setTitle("settings");
+
                     fragment = new SettingsFragment();
                     transaction = manager.beginTransaction();
                     transaction.replace(R.id.fragment, fragment);
                     transaction.addToBackStack(null);
                     Log.v("Main-OC","commiting settings fragment");
-
                     transaction.commitAllowingStateLoss();
+                    new BitchuteHomePage().execute("https://www.bitchute.com/#listing-popular");
                 }
                 else {
                     //TODO put in inital scrape to make sure top videos are playable.
@@ -342,6 +340,95 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
     @Override
     protected void onRestart() {
         super.onRestart();
+    }
+
+    private class BitchuteHomePage extends AsyncTask<String, String, String> {
+        private String resp;
+        Document doc;
+        final SimpleDateFormat bvsdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        @Override
+        protected String doInBackground(String... params) {
+            String thumbnail = "";
+            try {
+                Log.v("Main-Bitchute-homepage","Loading videos from main page " + params[0]);
+                doc = Jsoup.connect(params[0]).get();
+                Elements results = doc.getElementsByClass("video-card");
+
+                for (Element r : results){
+                    Video nv = new Video("https://www.bitchute.com"+r.getElementsByTag("a").first().attr("href"));
+                    Date pd = new Date();
+                    nv.setHackDateString(r.getElementsByClass("video-card-published").first().text());
+                    nv.setTitle(r.getElementsByClass("video-card-title").first().text());
+                    nv.setThumbnailurl(r.getElementsByTag("img").first().attr("data-src").toString());
+                    nv.setViewCount(r.getElementsByClass(    "video-views").first().text());
+                    //TODO calculate duration time into milliseconds  r.getElementsByClass("video-duration").first().text()
+                    masterData.addVideo(nv);
+                    System.out.println(nv.toDebugString());
+                }
+
+                for (Element r : results) {
+                    // System.out.println("["+r.className()+"]<-=->["+r.text()+"]");
+                    /*
+                    switch (r.className()) {
+                        case "osscmnrdr ossfieldrdr1":
+                            nv = new Video(r.child(0).attr("href"));
+                            nv.setTitle(r.text());
+                            break;
+                        case "osscmnrdr ossfieldrdr2":
+                            nv.setThumbnail(r.child(0).child(0).attr("src"));
+                            break;
+                        case "osscmnrdr ossfieldrdr3":
+                            nv.setDescription(r.text());
+                            break;
+
+                        case "osscmnrdr ossfieldrdr4 oss-item-date":
+                            System.out.println(r.text()+" time date stuffing "+bvsdf.toString()+" "+r.text().substring(0,19));
+                            try {
+                                pd = bvsdf.parse(r.text().substring(0,19));
+                            } catch (ParseException ex) {
+                                Log.v("Search-bvs", ex.getLocalizedMessage());
+                            }
+                            nv.setDate(pd);
+                            break;
+                        case "osscmnrdr ossfieldrdr8 oss-item-displayviews":
+                            nv.setViewCount(r.text());
+                            MainActivity.masterData.addVideo(nv);
+                    }
+
+                     */
+                }
+            } catch (MalformedURLException e) {
+
+                Log.e("Search","Malformed URL: " + e.getMessage());
+            } catch (IOException e) {
+                Log.e("Search","I/O Error: " + e.getMessage());
+            } catch(NullPointerException e){
+                Log.e("Search","Null pointer exception"+e.getMessage());
+            }
+            return "done";
+        }
+        @Override
+        protected void onPostExecute(String result) {
+            // execution of result of Long time consuming operation
+            super.onPostExecute(result);
+                Log.v("Search-BVS","done loading with "+MainActivity.masterData.getsVideos().size());
+            VideoFragment vfragment = new VideoFragment();
+            vfragment.setVideos(masterData.getVideos());
+            transaction = masterData.getFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment, vfragment);
+            transaction.addToBackStack(null);
+            Log.v("Main-Bitchute-Home","commiting video list fragment from navigation"+masterData.getVideos().size());
+            transaction.commitAllowingStateLoss();
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            System.out.println("starting to load BitChute homepage");
+            // searchCount++;
+        }
+
+
     }
 
 }

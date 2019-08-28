@@ -24,6 +24,7 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
     SicDatabase sicDatabase;
     CommentDatabase commentDatabase;
     Context context;
+    Boolean headless=true;
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
@@ -40,6 +41,7 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
             }
             else{
                 context=MainActivity.masterData.context;
+                headless=false;
             }
         }
         vid = videos[0];
@@ -112,6 +114,9 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                 }
                Log.v("Videoscrape","added "+commentcounter+" Comments after youtube url");
                 videoDao.update(vid);
+                if (!headless){
+                    MainActivity.masterData.updateVideo(vid);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.e("Videoscrape","network failure in background video updater. aborting this run");

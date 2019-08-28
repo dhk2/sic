@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout"
+    style="@style/full_screen_dialog"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <Button
+        android:id="@+id/closebutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="close"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/alerttext" />
+
+    <ImageView
+        android:id="@+id/alertpicture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="center"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@+id/alerttext"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@mipmap/sic_round" />
+
+    <TextView
+        android:id="@+id/alerttext"
+        android:layout_width="wrap_content"
+        android:layout_height="600dp"
+        android:text="No Channels configured for your video feed. You can import yoru channels from Bitchute or Youtube by going to settings and hitting the import button for the respective sites. Note:system may be a little wonky while its importing all the channels and videos at first.
+\n You could also manually search and add channels in the discover section, but realistically it's better to maintain subscriptions on your site account, and then just import any changes to this app."
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/alertpicture" />
+</android.support.constraint.ConstraintLayout>

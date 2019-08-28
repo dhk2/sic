@@ -148,6 +148,14 @@ public class UserData {
         return videos;
     }
     public void setVideos(List<Video> value) {this.videos = value;}
+    public void updateVideo(Video value){
+        for (Video v : videos) {
+            if (v.getSourceID().equals(value.getSourceID())){
+                v = value;
+                break;
+            }
+        }
+    }
     public void addVideo(Video value) {
 
         boolean unique=true;
@@ -397,7 +405,7 @@ public class UserData {
         //TODO rationalize the preferences betwixt userdata and mainactivity.
         editor = MainActivity.preferences.edit();
         youtubePlayerChoice = MainActivity.preferences.getInt("youtubePlayerChoice", 4);
-        bitchutePlayerChoice = MainActivity.preferences.getInt("bitchutePlayerChoice", 8);
+        bitchutePlayerChoice = MainActivity.preferences.getInt("bitchutePlayerChoice", 64);
 
         feedLinks = MainActivity.preferences.getStringSet("feedlinks",feedLinks);
         feedAge = MainActivity.preferences.getLong("feedAge",7);
@@ -410,7 +418,7 @@ public class UserData {
         if (youtubePlayerChoice==0)
             youtubePlayerChoice=4;
         if (bitchutePlayerChoice==0)
-            bitchutePlayerChoice=8;
+            bitchutePlayerChoice=64;
 
         channelDatabase = Room.databaseBuilder(context , ChannelDatabase.class, "channel")
                 .allowMainThreadQueries()

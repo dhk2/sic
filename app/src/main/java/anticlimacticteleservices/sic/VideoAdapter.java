@@ -96,8 +96,14 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                 video.setAuthor(("Author Unknown"));
             }
         }
-
-        hold.author.setText(video.getAuthor()+ " \n "+Util.getHowLongAgo(video.getDate()) );
+        String howLongAgo="Forever";
+        if (video.getHackDateString().isEmpty()) {
+            howLongAgo = Util.getHowLongAgo(video.getDate());
+        }
+        else {
+            howLongAgo=video.getHackDateString();
+        }
+            hold.author.setText(video.getAuthor()+ " \n "+howLongAgo);
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override

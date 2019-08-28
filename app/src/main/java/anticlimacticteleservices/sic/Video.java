@@ -80,6 +80,7 @@ class Video implements Serializable,Comparable<Video>
         this.hashtags = "";
         this.category = "";
         this.currentPosition=0l;
+        this.hackDateString="";
     }
 
     public Video(String location)
@@ -110,6 +111,7 @@ class Video implements Serializable,Comparable<Video>
         this.hashtags = "";
         this.category = "";
         this.currentPosition=0l;
+        this.hackDateString="";
     }
 
 //  	     Getters
@@ -268,6 +270,7 @@ class Video implements Serializable,Comparable<Video>
                 "authorID:"+authorID +"\n" +
 //			"watched:" + watched.toString() + "\n" +
                 "uploaded:" + new Date(date).toString() + "\n" +
+                "hack date:"+hackDateString+"\n"+
                 "magnet link:" + magnet + "\n" +
                 "description:" + description + "\n" +
                 "mp4 file" + mp4 + "\n" +

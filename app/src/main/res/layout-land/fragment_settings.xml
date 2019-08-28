@@ -20,29 +20,6 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:autoLink="web"
-                android:paddingTop="16dp"
-                android:text="Which video player to use. VLC is open source and ad free, and supports youtube backwards compatibility. it can be installed from the app store at
-     https://play.google.com/store/apps/details?id=org.videolan.vlc Most players should work for Bitchute. Webview is mildly functional." />
-
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:autoLink="web"
-                android:text="To import,click the appropriate button and logon. Once logged in it should show a list of subscriptions and immediately start importing them." />
-
-            <TextView
                 android:id="@+id/textView5"
                 android:layout_width="match_parent"
                 android:layout_height="37dp"
@@ -77,19 +54,12 @@
                     android:text="VLC" />
 
                 <RadioButton
-                    android:id="@+id/youtubeuse_exo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="exo " />
-
-                <RadioButton
                     android:id="@+id/youtubeuse_webview"
                     android:layout_width="56dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layoutDirection="ltr"
-                    android:text="Webview" />
+                    android:text="Embedded Webview" />
 
                 <RadioButton
                     android:id="@+id/youtubeuse_default"
@@ -126,6 +96,12 @@
                 android:orientation="horizontal">
 
                 <RadioButton
+                    android:id="@+id/bitchuteuse_webtorrentwebview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Webtorrent Webview" />
+
+                <RadioButton
                     android:id="@+id/bitchuteuse_vlc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -138,16 +114,10 @@
                     android:text="exo " />
 
                 <RadioButton
-                    android:id="@+id/bitchuteuse_native"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Vidview " />
-
-                <RadioButton
                     android:id="@+id/bitchuteuse_webview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Webview" />
+                    android:text="Embedded Webview" />
 
                 <RadioButton
                     android:id="@+id/bitchuteuse_default"
@@ -244,6 +214,29 @@
                         android:text="Kittens" />
                 </RadioGroup>
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:autoLink="web"
+                android:paddingTop="16dp"
+                android:text="Which video player to use. VLC is open source and ad free, and supports youtube backwards compatibility. it can be installed from the app store at
+     https://play.google.com/store/apps/details?id=org.videolan.vlc Most players should work for Bitchute. Webview is mildly functional." />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:autoLink="web"
+                android:text="To import,click the appropriate button and logon. Once logged in it should show a list of subscriptions and immediately start importing them." />
         </LinearLayout>
     </ScrollView>
 
