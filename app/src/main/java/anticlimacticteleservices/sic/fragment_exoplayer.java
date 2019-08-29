@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
-import android.widget.VideoView;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
@@ -21,13 +20,13 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 
 public class fragment_exoplayer extends Fragment {
+
     private static final String PassedUrl = "URL";
     private static final String PassedVideo = "VIDEO";
     private static Uri uri;
@@ -61,6 +60,7 @@ public class fragment_exoplayer extends Fragment {
             }
 
         }
+
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
