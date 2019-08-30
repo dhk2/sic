@@ -248,24 +248,7 @@ class Channel implements Serializable{
         this.lastsync = lastsync;
     }
 
-    //          OTher bits
-    /*
-    public void addVideo(Video vid){
-        boolean unique=true;
-        for (Video match : videos) {
-            if (match.getSourceID().equals(vid.getSourceID())) {
-                unique = false;
-                break;
-            }
-        }
-        if (unique) {
-            videos.add(vid);
-            if (author.isEmpty()) {
-                this.author = vid.getAuthor();
-            }
-        }
-    }
-    */
+
     public String toString(){
         return("title:"+this.title+"\n"+
                 "author id:"+ID+"\n"+

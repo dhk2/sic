@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -402,6 +403,7 @@ public class UserData {
 
     public UserData(Context con) {
         context=con;
+        fragmentID="home";
         //TODO rationalize the preferences betwixt userdata and mainactivity.
         editor = MainActivity.preferences.edit();
         youtubePlayerChoice = MainActivity.preferences.getInt("youtubePlayerChoice", 4);
@@ -462,6 +464,33 @@ public class UserData {
         editor.putBoolean("wifiOnly",wifionly);
         editor.commit();
         return true;
+    }
+    private SwipeRefreshLayout swipeRefreshLayout;
+
+    public SwipeRefreshLayout getSwipeRefreshLayout() {
+        return swipeRefreshLayout;
+    }
+
+    public void setSwipeRefreshLayout(SwipeRefreshLayout swipeRefreshLayout) {
+        this.swipeRefreshLayout = swipeRefreshLayout;
+    }
+    private String fragmentID;
+
+    public String getFragmentID() {
+        return fragmentID;
+    }
+
+    public void setFragmentID(String fragmentID) {
+        this.fragmentID = fragmentID;
+    }
+    private boolean forceRefresh;
+
+    public boolean isForceRefresh() {
+        return forceRefresh;
+    }
+
+    public void setForceRefresh(boolean forceRefresh) {
+        this.forceRefresh = forceRefresh;
     }
 }
    

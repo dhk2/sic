@@ -2,6 +2,7 @@ package anticlimacticteleservices.sic;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +17,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
 import static android.app.PendingIntent.getActivity;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHolder> {
@@ -30,7 +33,6 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         private ImageView bitchuteIcon;
         private ImageView serviceIcon;
         private TextView videoViewCount;
-
         private FloatingActionButton floatingActionButton;
 
         private TextView viewCount;
@@ -52,6 +54,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
     @Override
     public CustomViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         //System.out.println("this is the view type dude"+ viewType);
+
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.smallvideolist, parent, false);
         return new CustomViewHolder(itemView);
@@ -60,6 +63,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
     public void onBindViewHolder(CustomViewHolder hold, final int position) {
        // System.out.println("building video card for "+position+" video of "+videos.size());
         Video video = videos.get(position);
+
         final CustomViewHolder holder = hold;
         if (video.getMp4().isEmpty() && video.getUpCount().isEmpty()){
             System.out.println("getting extra info for video"+video.getTitle());
@@ -124,6 +128,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
             public void onClick(final View v) {
                 Video vid = videos.get(position);
                 Log.v("Videoadapter","Attempting to play video at "+vid.getUrl());
+
                 //Clear stored settings and save current position for actively playing EXO video
                 if ((null != MainActivity.masterData.getPlayer() ) && (vid.getID() != MainActivity.masterData.getPlayerVideoID())) {
                     MainActivity.masterData.getPlayer().stop();
@@ -137,6 +142,8 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                     MainActivity.masterData.setPlayer(null);
                     MainActivity.masterData.setPlayerVideoID(0l);
                 }
+                vid.setWatched(true);
+                MainActivity.masterData.getVideoDao().update(vid);
                 int adapterPos = holder.getAdapterPosition();
                 Uri uri;
                 int vlcRequestCode = 42;
@@ -153,6 +160,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                 // 1=vlc, 2=system default, 4=webview, 8=internal player
             //    if( vid.isBitchute())switcher=8;
                 FragmentTransaction transaction; //= MainActivity.masterData.getFragmentManager().beginTransaction();
+
                 switch(switcher){
                     case 1:
                         playerIntent.setPackage("org.videolan.vlc");
@@ -221,9 +229,34 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                         transaction.addToBackStack(null);
                         transaction.commitAllowingStateLoss();
                         break;
+                    case 128:
+                        // actual kodi doesn't seem to launchable with intent, will see about integrating library with feed later.
+                        playerIntent.setPackage( "org.xbmc.kodi" );
+                        if (vid.isBitchute()) {
+                            path = vid.getMp4();
+                        }
+                        if (vid.isYoutube()){
+                            path ="http"+vid.getYoutubeUrl().substring((vid.getYoutubeUrl()).indexOf(":"));
+                        }
+                        uri = Uri.parse(path);
+                        Log.v("Video-Update","Path for intent:"+path);
+                        playerIntent.setData(uri);
+
+                        v.getContext().startActivity(playerIntent);
+                        break;
+                    case 256:
+                        playerIntent.setPackage( "com.google.android.youtube" );
+                        if (vid.isYoutube()){
+                            path = vid.getYoutubeUrl();
+                        }
+                        uri = Uri.parse(path);
+                        playerIntent.setData(uri);
+                        v.getContext().startActivity(playerIntent);
+                        break;
                 }
             }
         });
+
     }
     @Override
     public int getItemCount() {
@@ -240,4 +273,5 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
             return 2;
         }
     }
+
 }

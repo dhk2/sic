@@ -61,6 +61,7 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
     boolean wifiOnly;
     boolean wifiConnected;
     boolean mobileConnected;
+    boolean forceRefresh;
     int youtubePlayerChoice;
     int bitchutePlayerChoice;
 
@@ -73,6 +74,10 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
     @Override
     protected void onPostExecute(Boolean aBoolean) {
         super.onPostExecute(aBoolean);
+        if (!headless && null != MainActivity.masterData.getSwipeRefreshLayout()) {
+            MainActivity.masterData.setVideos(videoDao.getVideos());
+            MainActivity.masterData.getSwipeRefreshLayout().setRefreshing(false);
+        }
         if (newcount>0) {
             Toast.makeText(context, newcount + " new videos added", Toast.LENGTH_SHORT).show();
         }
@@ -90,10 +95,13 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
         if (null == MainActivity.masterData) {
             context = SicSync.context;
             headless=true;
+            forceRefresh=false;
         }
         else{
             headless=false;
             context=MainActivity.masterData.context;
+            forceRefresh=MainActivity.masterData.isForceRefresh();
+            MainActivity.masterData.setForceRefresh(false);
         }
         ConnectivityManager connMgr = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
@@ -144,6 +152,7 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
                         .fallbackToDestructiveMigration()
                         .build();
                 commentDao = commentDatabase.CommentDao();
+
             }
             else {
                 videoDao = MainActivity.masterData.getVideoDao();
@@ -176,7 +185,7 @@ channelloop:for (Channel chan :allChannels){
             int days = (int) ((diff / (1000*60*60*24)));
             //System.out.println(chan.getTitle()+"synched days:"+days+" hours:"+hours+" minutes:"+minutes);
             //TODO implement variable refresh rate by channel here
-            if (minutes>5 ){
+            if (minutes>5 || forceRefresh){
                 chan.setLastsync(new Date());
                 channelDao.update(chan);
                 if (chan.isYoutube()){
@@ -220,8 +229,8 @@ channelloop:for (Channel chan :allChannels){
                         nv.setRating(entry.getElementsByTag("media:starRating").first().attr("average"));
                         nv.setViewCount(entry.getElementsByTag("media:statistics").first().attr("views"));
                         videoDao.insert(nv);
-                        if (chan.isNotify()){
-                        //(true){
+                        //if (chan.isNotify()){
+                        if (true){
                             createNotification(nv);
                         }
                     }
@@ -266,8 +275,8 @@ channelloop:for (Channel chan :allChannels){
                         nv.setAuthor(chan.getTitle());
                         videoDao.insert(nv);
                         newcount++;
-                        if (chan.isNotify()){
-                        //if (true){
+                        //if (chan.isNotify()){
+                        if (true){
                             createNotification(nv);
                        }
                     }
@@ -280,6 +289,9 @@ channelloop:for (Channel chan :allChannels){
                     new VideoScrape().execute(v);
                 }
             }
+        }
+        else{
+
         }
         Log.v("Channel-Update",dupecount+" duplicate videos discarded,"+newcount+" new videos added");
         return true;
@@ -307,6 +319,10 @@ channelloop:for (Channel chan :allChannels){
                 notificationIntent.setPackage("org.schabi.newpipe");
                 notificationIntent.setDataAndTypeAndNormalize(uri, "video/*");
                 break;
+            case 256:
+                notificationIntent.setPackage( "com.google.android.youtube" );
+                notificationIntent.setData(uri);
+                break;
             default:
                 notificationIntent = new Intent(context, HandleIntent.class);
                 notificationIntent.putExtra("videoID",vid.getID());
@@ -318,7 +334,7 @@ channelloop:for (Channel chan :allChannels){
                         .setSmallIcon(R.mipmap.sic_round)
                         .setContentTitle(vid.getAuthor())
                         .setContentText(vid.getTitle())
-                        .setPriority(Notification.PRIORITY_MAX)
+                        .setPriority(Notification.PRIORITY_DEFAULT)
                         .setAutoCancel(true)
                         .setContentIntent(pendingIntent)
                         .build();

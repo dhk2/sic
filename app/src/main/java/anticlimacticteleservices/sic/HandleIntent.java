@@ -8,11 +8,19 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 
 public class HandleIntent extends Activity {
+    Long videoIdNumber=0l;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.v("Handle-Intent","starting to play video from new intent");
         Intent i = getIntent();
+        if (null==i){
+            Log.e("Handle-Intent","app started by intent but no extra data with intent");
+        }
+        else {
+            videoIdNumber = i.getLongExtra("videoID",0);
+        }
+        Log.v("Handle-Intent","playing video:"+Long.toString(videoIdNumber));
         Video vid = MainActivity.masterData.getVideoDao().getvideoById(i.getLongExtra("videoID",1));
         Log.v("Videoadapter","Attempting to play video at "+vid.getUrl());
         //Clear stored settings and save current position for actively playing EXO video

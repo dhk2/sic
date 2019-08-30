@@ -18,9 +18,9 @@ public interface VideoDao {
     @Delete
     public void delete(Video  feed_item);
 
+
     @Query("SELECT * FROM feed_item ORDER BY date DESC")
     List<Video> getVideos();
-
 
     @Query("SELECT * FROM feed_item WHERE ID = :id")
     public Video getvideoById(Long id);
@@ -36,4 +36,7 @@ public interface VideoDao {
 
     @Insert
     void insertAll(Video... feed_item);
+
+    @Query("SELECT * FROM feed_item WHERE watched=1 ORDER BY date DESC")
+    List<Video> getWatchedVideos();
 }

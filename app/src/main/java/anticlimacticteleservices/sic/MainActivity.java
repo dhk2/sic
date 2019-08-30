@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
     Fragment fragment;
     int count=0;
     FragmentTransaction transaction;
+    VideoFragment vfragment;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener;
     public static UserData masterData;
     private BottomNavigationView navView;
@@ -83,13 +84,14 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
                 Log.v("Main-Navigation","starting navigation with id "+item.getItemId());
                 switch (item.getItemId()) {
                     case R.id.navigation_home:
+                        masterData.setFragmentID("home");
                         //setTitle("Video Feed");
                         Log.v("Main-Navigation-Home","starting home navigation");
                         getSupportActionBar().hide();
                         //TODO remove masterdata and use direct DAO
                         masterData.setVideos(masterData.getVideoDao().getVideos());
                         Log.v("Main-Navigation-Home","size of video database:"+masterData.getVideos().size());
-                        VideoFragment vfragment = new VideoFragment();
+                        vfragment = new VideoFragment();
                         vfragment.setVideos(masterData.getVideoDao().getVideos());
                         transaction = masterData.getFragmentManager().beginTransaction();
                         transaction.replace(R.id.fragment, vfragment);
@@ -99,11 +101,20 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
 
                         return true;
                     case R.id.navigation_history:
-                        getSupportActionBar().show();
-                        setTitle("Not implemented yet");
-                        System.out.println(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS));
+                        masterData.setFragmentID("history");
+                        Log.v("Main-Navigation-Home","size of watched video database:"+masterData.getVideos().size());
+                        vfragment = new VideoFragment();
+                        vfragment.setVideos(masterData.getVideoDao().getWatchedVideos());
+                        transaction = masterData.getFragmentManager().beginTransaction();
+                        transaction.replace(R.id.fragment, vfragment);
+                        transaction.addToBackStack(null);
+                        Log.v("Main-Navigation-home","commiting watched video list fragment from navigation"+masterData.getVideos().size());
+                        transaction.commitAllowingStateLoss();
+
+
                         return true;
                     case R.id.navigation_channels:
+                        masterData.setFragmentID("channels");
                         getSupportActionBar().hide();
                         masterData.getChannels();
                         Log.v("Main-Navigation-Channel",masterData.getChannels().size()+"  "+ masterData.getChannels().size());
@@ -117,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
                         ((ChannelFragment) cfragment).setChannels(masterData.getChannels());
                         return true;
                     case R.id.navigation_discover:
+                        masterData.setFragmentID("discover");
                         getSupportActionBar().hide();
                         setTitle("under construction");
                         SearchFragment sfragment = new SearchFragment();
@@ -127,6 +139,7 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
                         transaction.commitAllowingStateLoss();
                         return true;
                     case R.id.navigation_settings:
+                        masterData.setFragmentID("settings");
                         getSupportActionBar().hide();
                         SettingsFragment settingsfragment = new SettingsFragment();
                         transaction = masterData.getFragmentManager().beginTransaction();
@@ -367,68 +380,30 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
                 }
 
                 for (Element r : results) {
-                    // System.out.println("["+r.className()+"]<-=->["+r.text()+"]");
-                    /*
-                    switch (r.className()) {
-                        case "osscmnrdr ossfieldrdr1":
-                            nv = new Video(r.child(0).attr("href"));
-                            nv.setTitle(r.text());
-                            break;
-                        case "osscmnrdr ossfieldrdr2":
-                            nv.setThumbnail(r.child(0).child(0).attr("src"));
-                            break;
-                        case "osscmnrdr ossfieldrdr3":
-                            nv.setDescription(r.text());
-                            break;
 
-                        case "osscmnrdr ossfieldrdr4 oss-item-date":
-                            System.out.println(r.text()+" time date stuffing "+bvsdf.toString()+" "+r.text().substring(0,19));
-                            try {
-                                pd = bvsdf.parse(r.text().substring(0,19));
-                            } catch (ParseException ex) {
-                                Log.v("Search-bvs", ex.getLocalizedMessage());
-                            }
-                            nv.setDate(pd);
-                            break;
-                        case "osscmnrdr ossfieldrdr8 oss-item-displayviews":
-                            nv.setViewCount(r.text());
-                            MainActivity.masterData.addVideo(nv);
-                    }
-
-                     */
                 }
             } catch (MalformedURLException e) {
 
-                Log.e("Search","Malformed URL: " + e.getMessage());
+                Log.e("Main-Bitchute-Home","Malformed URL: " + e.getMessage());
             } catch (IOException e) {
-                Log.e("Search","I/O Error: " + e.getMessage());
+                Log.e("Main-Bitchute-Home","I/O Error: " + e.getMessage());
             } catch(NullPointerException e){
-                Log.e("Search","Null pointer exception"+e.getMessage());
+                Log.e("Main-Bitchute-Home","Null pointer exception"+e.getMessage());
+
             }
             return "done";
         }
         @Override
         protected void onPostExecute(String result) {
-            // execution of result of Long time consuming operation
             super.onPostExecute(result);
-                Log.v("Search-BVS","done loading with "+MainActivity.masterData.getsVideos().size());
+            Log.v("Main-Bitchute-Home","done loading with "+MainActivity.masterData.getsVideos().size());
             VideoFragment vfragment = new VideoFragment();
             vfragment.setVideos(masterData.getVideos());
             transaction = masterData.getFragmentManager().beginTransaction();
             transaction.replace(R.id.fragment, vfragment);
             transaction.addToBackStack(null);
-            Log.v("Main-Bitchute-Home","commiting video list fragment from navigation"+masterData.getVideos().size());
+            Log.v("Main-Bitchute-Home","commiting video list fragment from bitchute home page:"+masterData.getVideos().size());
             transaction.commitAllowingStateLoss();
         }
-
-
-        @Override
-        protected void onPreExecute() {
-            System.out.println("starting to load BitChute homepage");
-            // searchCount++;
-        }
-
-
     }
-
 }

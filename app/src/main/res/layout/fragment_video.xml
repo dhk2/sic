@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/simpleSwipeRefreshLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark">
+    android:layout_height="match_parent">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/vrv"
@@ -16,4 +16,4 @@
         android:orientation="horizontal"
         tools:layout_editor_absoluteX="-67dp"
         tools:layout_editor_absoluteY="270dp" />
-</FrameLayout>
+</android.support.v4.widget.SwipeRefreshLayout>

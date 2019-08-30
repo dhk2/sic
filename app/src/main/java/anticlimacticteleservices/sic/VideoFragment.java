@@ -2,8 +2,10 @@ package anticlimacticteleservices.sic;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,7 +21,7 @@ public class VideoFragment extends Fragment {
     private List<Video> vfVideos = new ArrayList<>();
     private VideoAdapter vAdapter = new VideoAdapter();
     private RecyclerView videoRecyclerView;
-
+    private SwipeRefreshLayout swipeRefreshLayout;
     public VideoFragment() {
 
     }
@@ -44,6 +46,26 @@ public class VideoFragment extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_video, container, false);
         videoRecyclerView = v.findViewById(R.id.vrv);
+        swipeRefreshLayout = v.findViewById(R.id.simpleSwipeRefreshLayout);
+        if (null != swipeRefreshLayout) {
+            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (MainActivity.masterData.getFragmentID().equals("home")) {
+                                MainActivity.masterData.setSwipeRefreshLayout(swipeRefreshLayout);
+                                MainActivity.masterData.setForceRefresh(true);
+                                new ChannelUpdate().execute();
+                            } else {
+                                swipeRefreshLayout.setRefreshing(false);
+                            }
+                        }
+                    }, 10);
+                }
+            });
+        }
         if (null == this.getParentFragment() && (vfVideos.size() == 0)) {
             vfVideos = MainActivity.masterData.getVideoDao().getVideos();
         }

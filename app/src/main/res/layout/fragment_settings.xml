@@ -38,6 +38,30 @@
                         android:textSize="24sp"
                         android:textStyle="bold" />
 
+                    <TextView
+                        android:id="@+id/textView6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="search engine" />
+
+                    <CheckBox
+                        android:id="@+id/searchbitchute"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Bitchute" />
+
+                    <CheckBox
+                        android:id="@+id/searchgoogle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Google" />
+
+                    <CheckBox
+                        android:id="@+id/searchduck"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="DuckDuckGo" />
+
                     <Button
                         android:id="@+id/load_bitchute"
                         android:layout_width="wrap_content"
@@ -60,7 +84,7 @@
                         android:id="@+id/bitchuteuse_webtorrentwebview"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Webtorrent Webview" />
+                        android:text="Webtorrent" />
 
                     <RadioButton
                         android:id="@+id/bitchuteuse_vlc"
@@ -84,7 +108,7 @@
                         android:id="@+id/bitchuteuse_webview"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Embedded Webview" />
+                        android:text="Embedded" />
 
                 </RadioGroup>
             </LinearLayout>
@@ -223,12 +247,18 @@
                         android:text="Newpipe" />
 
                     <RadioButton
+                        android:id="@+id/youtubeuse_youtube"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Youtube" />
+
+                    <RadioButton
                         android:id="@+id/youtubeuse_webview"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layoutDirection="ltr"
-                        android:text="Embedded Webview" />
+                        android:text="Embedded" />
 
                     <RadioButton
                         android:id="@+id/youtubeuse_default"
@@ -252,7 +282,14 @@
                 android:layout_marginBottom="8dp"
                 android:autoLink="web"
                 android:paddingTop="16dp"
-                android:text="Webview plays the embedded version from either sites player. The bitchute embedded player seemed to just be playing the MP4 file, so added an explicit Webtorrent version. VLC is a great open source ad free player. Newpipe is a great open source Youtube player option. If you prefer another player on your system use default and then select your preferred player when prompted. Exo player is a decent option for Bitchute which supports background play. " />
+                android:text="Embedded plays the embedded version from site. Should be the most compatible, but least feature rich players.\n
+    Webtorrent explicitly works only on torrent with limited background functionality.\n
+    VLC is a great open source ad free player. \n
+    Newpipe is a another good open source player for Youtube.\n
+    System will prompt for which player you would like to use until you pick a default.\n
+    Exo player is a decent option for Bitchute which supports background play.\n
+    Youtube uses Youtube's app to play" />
+
 
             <TextView
                 android:id="@+id/textView3"
@@ -263,7 +300,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:autoLink="web"
-                android:text="To import,click the appropriate button and logon. Once logged in it should show a list of your subscribed channels, then immediately start importing them. The first time " />
+                android:text="To import,click the appropriate button and logon. Once logged in it should show a list of your subscribed channels, then immediately start importing them. While initial synching is taking place the app may behave slowly while the background thread is busy" />
 
         </LinearLayout>
     </ScrollView>

@@ -4,13 +4,7 @@ package anticlimacticteleservices.sic;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +15,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -31,9 +24,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class SettingsFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
@@ -163,13 +153,14 @@ public class SettingsFragment extends Fragment {
         RadioButton youtubeUseWebview =view.findViewById(R.id.youtubeuse_webview);
        // RadioButton youtubeUseExoview = view.findViewById(R.id.youtubeuse_exo);
         RadioButton youtubeUseNewpipe = view.findViewById(R.id.youtubeusenewpipe);
-
+        RadioButton youtubeUseYoutube = view.findViewById(R.id.youtubeuse_youtube);
         RadioGroup bitchuteRadioGroup = view.findViewById(R.id.bitchuteplayerradioGroup);
         RadioButton bitchuteUseVlc =view.findViewById(R.id.bitchuteuse_vlc);
         RadioButton bitchuteUseDefault =view.findViewById(R.id.bitchuteuse_default);
         RadioButton bitchuteUseWebview =view.findViewById(R.id.bitchuteuse_webview);
        // RadioButton bitchuteUseNative = view.findViewById(R.id.bitchuteuse_native);
         RadioButton bitchuteUseExo = view.findViewById(R.id.bitchuteuse_exo);
+        //RadioButton bitchuteUseKodi = view.findViewById(R.id.bitchuteuse_kodi);
         //RadioButton bitchuteUseNewpipe = view.findViewById(R.id.bitchuteuse_newpipe);
         RadioButton bitchuteUseWebtorrentWebview = view.findViewById(R.id.bitchuteuse_webtorrentwebview);
 
@@ -185,6 +176,8 @@ public class SettingsFragment extends Fragment {
                 break;
             case 32:
                 youtubeUseNewpipe.setChecked(true);
+            case 256:
+                youtubeUseYoutube.setChecked(true);
         }
         youtubeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
@@ -203,6 +196,8 @@ public class SettingsFragment extends Fragment {
                     case R.id.youtubeusenewpipe:
                         MainActivity.masterData.setYoutubePlayerChoice(32);
                         break;
+                    case R.id.youtubeuse_youtube:
+                        MainActivity.masterData.setYoutubePlayerChoice(256);
                 }
             }
         });
