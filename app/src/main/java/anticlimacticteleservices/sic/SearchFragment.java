@@ -88,6 +88,8 @@ public class SearchFragment extends Fragment {
                         (keyCode == KeyEvent.KEYCODE_ENTER)) {
                     Search target;
                     String searchText = sText.getText().toString();
+                    MainActivity.masterData.getMainActionBar().setTitle("Searching");
+                    MainActivity.masterData.getMainActionBar().show();
                     target = new Search(searchText, videoSearch.isChecked(),youtubeSearch.isChecked(),bitchuteSearch.isChecked());
          //           Fragment subFragment = new VideoFragment();
          //           ((VideoFragment) subFragment).setVideos(MainActivity.masterData.getsVideos());
@@ -102,6 +104,8 @@ public class SearchFragment extends Fragment {
             public void onClick(View v) {
                 Search target;
                 String searchText = sText.getText().toString();
+                MainActivity.masterData.getMainActionBar().setTitle("Searching");
+                MainActivity.masterData.getMainActionBar().show();
                 target = new Search(searchText, videoSearch.isChecked(),youtubeSearch.isChecked(),bitchuteSearch.isChecked());
       //          Fragment subFragment = new VideoFragment();
       //          ((VideoFragment) subFragment).setVideos(MainActivity.masterData.getsVideos());

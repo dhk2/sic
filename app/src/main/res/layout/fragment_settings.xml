@@ -80,6 +80,12 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
+                    <TextView
+                        android:id="@+id/textView7"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Video Player" />
+
                     <RadioButton
                         android:id="@+id/bitchuteuse_webtorrentwebview"
                         android:layout_width="match_parent"
@@ -138,6 +144,12 @@
                     android:text="7" />
 
             </LinearLayout>
+
+            <CheckBox
+                android:id="@+id/muteerrors"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Mute errors" />
 
             <LinearLayout
                 android:id="@+id/syncsettingslayout"
@@ -232,6 +244,12 @@
                     android:orientation="vertical"
                     android:textDirection="ltr">
 
+
+                    <TextView
+                        android:id="@+id/textView8"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Video Player" />
 
                     <RadioButton
                         android:id="@+id/youtubeuse_vlc"

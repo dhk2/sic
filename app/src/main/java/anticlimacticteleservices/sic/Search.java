@@ -25,6 +25,7 @@ class Search {
     public Search(String term, boolean video, boolean youtube, boolean bitchute) {
 
         searching = true;
+      //  MainActivity.masterData.getMainActionBar().setTitle("Searching..........");
         String fixedTerm = term.replaceAll("\\s+", "+");
         if (video) {
             Log.v("Search","Performing video search");
@@ -32,20 +33,25 @@ class Search {
             final String location = "https://www.youtube.com/results?search_query=" + fixedTerm + "&sp=EgIQAQ%253D%253D";
             final String location2 = "https://search.bitchute.com/renderer?query=" + fixedTerm + "&use=bitchute-json&name=Search&login=bcadmin&key=7ea2d72b62aa4f762cc5a348ef6642b8&fqr.kind=video";
             final String location3 = "https://www.google.com/search?q="+fixedTerm+"+%22www.bitchute.com/video%22";
+            final String location4 = "https://duckduckgo.com/?q="+fixedTerm+"+site%3Awww.bitchute.com%2Fvideo&ia=web";
             if (youtube){
                 searchCount++;
-            }
-            if (bitchute){
-                searchCount++;
-            }
-
-            if (youtube) {
                 YoutubeVideoSearcher youtubeScraper = new YoutubeVideoSearcher();
                 youtubeScraper.execute(location);
             }
             if (bitchute) {
-                BitchuteVideoSearcher bitchuteScraper = new BitchuteVideoSearcher();
-                bitchuteScraper.execute(location2);
+                if (MainActivity.masterData.isBitchuteSearchBitchute()) {
+                    BitchuteVideoSearcher bitchuteScraper = new BitchuteVideoSearcher();
+                    bitchuteScraper.execute(location2);
+                }
+                if (MainActivity.masterData.isBitchuteSearchGoogle()) {
+                    GoogleVideoSearcher googleScraper = new GoogleVideoSearcher();
+                    googleScraper.execute(location3);
+                }
+                if (MainActivity.masterData.isBitchuteSearchDuck()) {
+                    DuckVideoSearcher duckScraper = new DuckVideoSearcher();
+                    duckScraper.execute(location4);
+                }
             }
         }
         else {
@@ -53,25 +59,29 @@ class Search {
             final String location = "https://www.youtube.com/results?search_query=" + fixedTerm + "&sp=EgIQAg%253D%253D";
             final String location2 = "https://search.bitchute.com/renderer?query=" + fixedTerm + "&use=bitchute-json&name=Search&login=bcadmin&key=7ea2d72b62aa4f762cc5a348ef6642b8&fqa.kind=channel";
             final String location3 = "https://www.google.com/search?q="+fixedTerm+"+%22www.bitchute.com/channel%22&num=25";
-
-            if (youtube){
-                searchCount++;
-            }
-            if (bitchute){
-                searchCount++;
-                searchCount++;
-            }
-
+            final String location4 = "https://duckduckgo.com/?q="+fixedTerm+"+site%3Awww.bitchute.com%2Fchannel&ia=web";
             if (youtube) {
+                searchCount++;
                 YoutubeChannelSearcher youtubecScraper = new YoutubeChannelSearcher();
                 youtubecScraper.execute(location);
             }
             if (bitchute)
             {
-                BitchuteChannelSearcher bitchutecScraper = new BitchuteChannelSearcher();
-                bitchutecScraper.execute(location2);
-                BitchuteGoogleChannelSearcher bgScraper = new BitchuteGoogleChannelSearcher();
-                bgScraper.execute(location3);
+                if (MainActivity.masterData.isBitchuteSearchBitchute()){
+                    searchCount++;
+                    BitchuteChannelSearcher bitchutecScraper = new BitchuteChannelSearcher();
+                    bitchutecScraper.execute(location2);
+                }
+                if (MainActivity.masterData.isBitchuteSearchGoogle()) {
+                    searchCount++;
+                    BitchuteGoogleChannelSearcher bgScraper = new BitchuteGoogleChannelSearcher();
+                    bgScraper.execute(location3);
+                }
+                if (MainActivity.masterData.isBitchuteSearchDuck()){
+                    searchCount++;
+                    BitchuteDuckChannelSearcher bdScraper = new BitchuteDuckChannelSearcher();
+                    bdScraper.execute(location4);
+                }
             }
         }
 
@@ -136,8 +146,9 @@ class Search {
                 transaction.replace(R.id.search_subfragment, fragment);
                 transaction.addToBackStack(null);
                 transaction.commitAllowingStateLoss();
+                MainActivity.masterData.getMainActionBar().hide();
             } else {
-                Log.v("search","Youtube search finished but searching isn't done yet");
+                Log.v("search","Youtube search finished but searching isn't done yet "+MainActivity.masterData.getsVideos().size());
             }
         }
         @Override
@@ -213,7 +224,7 @@ class Search {
                 transaction.replace(R.id.search_subfragment, fragment);
                 transaction.addToBackStack(null);
                 transaction.commitAllowingStateLoss();
-
+                MainActivity.masterData.getMainActionBar().hide();
             } else {
                 System.out.println("Bitchute search finished but searching isn't done yet");
             }
@@ -236,6 +247,193 @@ class Search {
             System.out.println("starting to scrape BitChute channel search");
             searching = true;
            // searchCount++;
+        }
+
+
+    }
+    private class GoogleVideoSearcher extends AsyncTask<String, String, String> {
+        private String resp;
+        ProgressDialog progressDialog;
+        @Override
+        protected String doInBackground(String... params) {
+            String thumbnail = "";
+            try {
+                Log.v("Search-gVS","scraping with google search at " + params[0]);
+                doc = Jsoup.connect(params[0]).get();
+           //    System.out.println(doc);
+            //    Elements results = doc.getElementsByClass("osscmnrdr oss-result");
+            //    Elements parts = results.first().getAllElements();
+                Elements parts = doc.getElementsByTag("a");
+                Video nv = new Video();
+                Date pd = new Date();
+                for (Element r : parts) {
+                   Log.v("Search-GVS","["+r.attr("href")+"]<-=->["+r.text()+"]");
+                   String url = r.attr("href");
+                   if (null==url || url.length()<35){
+                       continue;
+                   }
+                   if (url.substring(0,31).equals("https://www.bitchute.com/video/")){
+                       nv=new Video(url);
+                       Document bitchuteDoc = Jsoup.connect(nv.getBitchuteUrl()).get();
+                       System.out.println(bitchuteDoc);
+                       nv.setCategory(bitchuteDoc.getElementsByClass("video-detail-list").first().getElementsByTag("a").first().text());
+                       nv.setDescription(bitchuteDoc.getElementsByClass("full hidden").toString());
+                       nv.setMagnet(bitchuteDoc.getElementsByClass("video-actions").first().getElementsByAttribute("href").first().attr("href"));
+                       nv.setMp4(bitchuteDoc.getElementsByTag("source").attr("src"));
+                       nv.setThumbnailurl(bitchuteDoc.getElementsByTag("video").attr("poster"));
+                        nv.setTitle(bitchuteDoc.getElementsByTag("title").first().text());
+                       System.out.println(nv.toDebugString());
+
+                       MainActivity.masterData.addsVideos(nv);
+                   }
+                }
+            } catch (MalformedURLException e) {
+
+                Log.e("Search","Malformed URL: " + e.getMessage());
+            } catch (IOException e) {
+                Log.e("Search","I/O Error: " + e.getMessage());
+            } catch(NullPointerException e){
+                Log.e("Search","Null pointer exception"+e.getMessage());
+                e.printStackTrace();
+            }
+            return "done";
+        }
+        @Override
+        protected void onPostExecute(String result) {
+            // execution of result of Long time consuming operation
+            super.onPostExecute(result);
+            searchCount--;
+            if (searchCount < 1) {
+                Log.v("Search-GVS","done searching with "+MainActivity.masterData.getsVideos().size());
+                searching = false;
+                VideoFragment fragment = new VideoFragment();
+                MainActivity.masterData.sortsVideos();
+                fragment.setVideos(MainActivity.masterData.getsVideos());
+
+                FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
+                transaction.replace(R.id.search_subfragment, fragment);
+                transaction.addToBackStack(null);
+                transaction.commitAllowingStateLoss();
+                MainActivity.masterData.getMainActionBar().hide();
+            } else {
+                System.out.println("Google search finished but searching isn't done yet "+MainActivity.masterData.getsVideos().size());
+            }
+/*
+            //VideoAdapter searchResults = new VideoAdapter(sVideos);
+            VideoFragment fragment = new VideoFragment();
+            ((VideoFragment) fragment).setVideos(sVideos);
+
+            FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
+            transaction.replace(R.id.search_subfragment, fragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+
+*/
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            System.out.println("starting to scrape BitChute channel search");
+            searching = true;
+            // searchCount++;
+        }
+
+
+    }
+    private class DuckVideoSearcher extends AsyncTask<String, String, String> {
+        private String resp;
+        ProgressDialog progressDialog;
+        @Override
+        protected String doInBackground(String... params) {
+            String thumbnail = "";
+            try {
+                Log.v("Search-BVS","scraping duck duck go search at " + params[0]);
+                doc = Jsoup.connect(params[0]).get();
+               // System.out.println(doc);
+             //   Elements results = doc.getElementsByClass("osscmnrdr oss-result");
+              //  Elements parts = results.first().getAllElements();
+                Elements parts = doc.getAllElements();
+                Video nv = new Video();
+                Date pd = new Date();
+                for (Element r : parts) {
+                    // System.out.println("["+r.className()+"]<-=->["+r.text()+"]");
+                    switch (r.className()) {
+                        case "osscmnrdr ossfieldrdr1":
+                            nv = new Video(r.child(0).attr("href"));
+                            nv.setTitle(r.text());
+                            break;
+                        case "osscmnrdr ossfieldrdr2":
+                            nv.setThumbnail(r.child(0).child(0).attr("src"));
+                            break;
+                        case "osscmnrdr ossfieldrdr3":
+                            nv.setDescription(r.text());
+                            break;
+
+                        case "osscmnrdr ossfieldrdr4 oss-item-date":
+                            System.out.println(r.text()+" time date stuffing "+bvsdf.toString()+" "+r.text().substring(0,19));
+                            try {
+                                pd = bvsdf.parse(r.text().substring(0,19));
+                            } catch (ParseException ex) {
+                                Log.v("Search-bvs", ex.getLocalizedMessage());
+                            }
+                            nv.setDate(pd);
+                            break;
+                        case "osscmnrdr ossfieldrdr8 oss-item-displayviews":
+                            nv.setViewCount(r.text());
+                            MainActivity.masterData.addsVideos(nv);
+                    }
+                }
+            } catch (MalformedURLException e) {
+
+                Log.e("Search","Malformed URL: " + e.getMessage());
+            } catch (IOException e) {
+                Log.e("Search","I/O Error: " + e.getMessage());
+            } catch(NullPointerException e){
+                Log.e("Search","Null pointer exception"+e.getMessage());
+                e.printStackTrace();
+            }
+            return "done";
+        }
+        @Override
+        protected void onPostExecute(String result) {
+            // execution of result of Long time consuming operation
+            super.onPostExecute(result);
+            searchCount--;
+            if (searchCount < 1) {
+                Log.v("Search-DVS","done searching with "+MainActivity.masterData.getsVideos().size());
+                searching = false;
+                VideoFragment fragment = new VideoFragment();
+                MainActivity.masterData.sortsVideos();
+                fragment.setVideos(MainActivity.masterData.getsVideos());
+
+                FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
+                transaction.replace(R.id.search_subfragment, fragment);
+                transaction.addToBackStack(null);
+                transaction.commitAllowingStateLoss();
+                MainActivity.masterData.getMainActionBar().hide();
+            } else {
+                System.out.println("duck duck go search finished but searching isn't done yet"+MainActivity.masterData.getsVideos().size());
+            }
+/*
+            //VideoAdapter searchResults = new VideoAdapter(sVideos);
+            VideoFragment fragment = new VideoFragment();
+            ((VideoFragment) fragment).setVideos(sVideos);
+
+            FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
+            transaction.replace(R.id.search_subfragment, fragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+
+*/
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            System.out.println("starting to scrape BitChute channel search");
+            searching = true;
+            // searchCount++;
         }
 
 
@@ -281,7 +479,8 @@ class Search {
             } catch (IOException e) {
                 System.out.println("I/O Error: " + e.getMessage());
             } catch(NullPointerException e){
-            System.out.println("Null pointer exception"+e.getMessage());
+                System.out.println("Null pointer exception"+e.getMessage());
+                e.printStackTrace();
             }
             return "done";
         }
@@ -300,6 +499,7 @@ class Search {
                 transaction.replace(R.id.search_subfragment, fragment);
                 transaction.addToBackStack(null);
                 transaction.commitAllowingStateLoss();
+                MainActivity.masterData.getMainActionBar().hide();
             } else {
                 System.out.println("Bitchute search finished but searching isn't done yet");
             }
@@ -385,6 +585,7 @@ class Search {
                 transaction.replace(R.id.search_subfragment, fragment);
                 transaction.addToBackStack(null);
                 transaction.commitAllowingStateLoss();
+                MainActivity.masterData.getMainActionBar().hide();
             } else {
                 System.out.println("youtube search finished but searching isn't done yet");
             }
@@ -398,7 +599,6 @@ class Search {
         }
 
     }
-
     private class BitchuteGoogleChannelSearcher extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... params) {
@@ -446,6 +646,68 @@ class Search {
                 transaction.replace(R.id.search_subfragment, fragment);
                 transaction.addToBackStack(null);
                 transaction.commitAllowingStateLoss();
+                MainActivity.masterData.getMainActionBar().hide();
+
+            } else {
+                System.out.println("Bitchute google search finished but searching isn't done yet");
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {
+            System.out.println("starting to scrape google for BitChute channels");
+            searching = true;
+            // searchCount++;
+        }
+    }
+    private class BitchuteDuckChannelSearcher extends AsyncTask<String, String, String> {
+        @Override
+        protected String doInBackground(String... params) {
+            //          String tempAuthor=doc.title();
+            String thumbnail = "";
+            Log.v("Search-BGCS ", MainActivity.masterData.getsVideos().size()+ "search:"+params[0]);
+            try {
+                doc = Jsoup.connect(params[0]).get();
+                System.out.println(doc);
+                //    Elements links = doc.getElementsByAttribute("href");
+                Elements links = doc.getElementsByClass("rc");
+                for (Element l : links){
+                    //  System.out.println("[[[[["+l+"]]]]]");
+                    String link=l.getElementsByAttribute("href").first().attr("href");
+                    if ((link.length()>33) && (link.substring(0,33).equals("https://www.bitchute.com/channel/"))) {
+                        Channel nc = new Channel(link);
+                        nc.setDescription(l.getElementsByClass("st").text());
+                        nc.setTitle(l.getElementsByTag("h3").text());
+                        nc.setThumbnail("https://i2.wp.com/www.xanjero.com/wp-content/uploads/2018/04/G-Suite-apps-cards.png");
+                        MainActivity.masterData.addsChannel(nc);
+                    }
+                }
+            } catch (MalformedURLException e) {
+                System.out.println("Malformed URL: " + e.getMessage());
+            } catch (IOException e) {
+                System.out.println("I/O Error: " + e.getMessage());
+            } catch(NullPointerException e){
+                System.out.println("Null pointer exception"+e.getMessage());
+                e.printStackTrace();
+            }
+            return "done";
+        }
+        @Override
+        protected void onPostExecute(String result) {
+            // execution of result of Long time consuming operation
+            super.onPostExecute(result);
+            Log.v("Search-BGCS ", MainActivity.masterData.getsChannels().size()+ "done searcing for channels");
+            searchCount--;
+            if (searchCount < 1) {
+                searching = false;
+                ChannelFragment fragment = new ChannelFragment();
+                fragment.setChannels(MainActivity.masterData.getsChannels());
+
+                FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
+                transaction.replace(R.id.search_subfragment, fragment);
+                transaction.addToBackStack(null);
+                transaction.commitAllowingStateLoss();
+                MainActivity.masterData.getMainActionBar().hide();
             } else {
                 System.out.println("Bitchute google search finished but searching isn't done yet");
             }
