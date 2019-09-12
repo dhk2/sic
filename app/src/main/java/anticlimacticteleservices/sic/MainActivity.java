@@ -218,10 +218,10 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
                     dialog.setTitle("new user");
                     TextView message = dialog.findViewById(R.id.alerttext);
 
-                    message.setText("Looks like this is your first time\n You can use the search feature to find channels,\n or import channels from the settings page");
+                    //message.setText("Looks like this is your first time\n You can use the search feature to find channels,\n or import channels from the settings page");
                     //  message.loadData(,"html","utf-8");
                     ImageView image = dialog.findViewById(R.id.alertpicture);
-                    image.setImageResource(R.mipmap.sic_round);
+                    image.setImageResource(R.mipmap.sicicon);
                     Button dialogButton = dialog.findViewById(R.id.closebutton);
                     dialogButton.setOnClickListener(new View.OnClickListener() {
                         @Override

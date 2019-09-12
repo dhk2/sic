@@ -30,25 +30,13 @@ import java.util.Set;
 
 public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomViewHolder> {
     private List<Channel> channels;
-
-    private Button dialogButton;
-    private Button subscribeButton;
-    Set<String> subscriptionList;
-    String[] subscriptionArray;
- //   Channel chan;
-    SharedPreferences prefs;
-    SharedPreferences.Editor editor;
     private String status;
-    private FragmentActivity myContext;
     public class CustomViewHolder extends RecyclerView.ViewHolder {
         private TextView name;
         private ImageView image;
         private Button subscribed;
         private TextView description;
         private ImageView serviceIcon;
-
-//        final Context context = this;
-
         CustomViewHolder(View view) {
             super(view);
             name = view.findViewById(R.id.channelName);
@@ -64,35 +52,29 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
         this.channels = channels;
     }
 
-
     @Override
     public CustomViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.channellist, parent, false);
-
         return new CustomViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(CustomViewHolder hold, final int position) {
         Channel channel = channels.get(position);
- //       final CustomViewHolder holder = hold;
         Log.v("Channel-Adaptor","attempting to display a channel"+channel.toString() );
-        //holder.name.setText(channel.getTitle());
         if (!channel.getThumbnail().isEmpty()){
             Picasso.get().load(channel.getThumbnail()).resize(160,120).centerInside().into(hold.image);
         }
         else {
             Log.w("ChannelAdaptor","no thumbnail set for channel");
         }
-
         if (channel.isBitchute()) {
             hold.serviceIcon.setImageResource(R.drawable.bitchuteicon2);
-        } else {
+        }
+        if (channel.isYoutube()) {
             hold.serviceIcon.setImageResource(R.drawable.youtubeicon);
         }
-
-
         hold.name.setText(channel.getTitle());
         hold.description.setText(channel.getDescription());
         status="Subscribe";
@@ -109,7 +91,6 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
                 status=(String)sub.getText();
                 if(status.equals("Unsubscribe")){
                     status="Subscribe";
-                    //TODO make sure channel removal works properly
                     MainActivity.masterData.removeChannel(channel.getSourceID());
                     sub.setText(status );
                 }

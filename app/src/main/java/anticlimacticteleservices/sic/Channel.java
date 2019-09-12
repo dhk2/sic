@@ -33,7 +33,7 @@ class Channel implements Serializable{
     private String bitchuteID;
     @ColumnInfo(name = "youtube_id")
     private String youtubeID;
-    @ColumnInfo(name = "start date")
+    @ColumnInfo(name = "start_date")
     private long joined;
     @ColumnInfo(name = "last_sync")
     private long lastsync;
@@ -41,15 +41,13 @@ class Channel implements Serializable{
     private boolean notify;
     @ColumnInfo (name = "archive")
     private boolean archive;
+    @ColumnInfo (name ="errors")
+    private int errors;
+    @ColumnInfo (name="local_file")
+    private String localPath;
+    @ColumnInfo (name = "supported")
+    private boolean supported;
 
-/*
-
-    //private ArrayList<Video> videos;
-    final SimpleDateFormat bdf = new SimpleDateFormat("MMM dd, yyyy");
-    final SimpleDateFormat ydf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-    final SimpleDateFormat bdf2 = new SimpleDateFormat( "                   hh:mm zzz    MMMM dd    yyyy");
-   */
- //         Constructors   
     public Channel(){
         this.title="";
         this.author="";
@@ -60,18 +58,17 @@ class Channel implements Serializable{
         this.sourceID ="";
         this.youtubeID="";
         this.bitchuteID="";
-      //  this.urls=new ArrayList<String>();
-     //   this.videos=new ArrayList<Video>();
         this.lastsync=new Date().getTime();
         this.joined=lastsync;
         this.subscribers="";
         this.notify = false;
         this.archive = false;
+        this.errors=0;
+        this.localPath="";
+        this.supported=false;
     }
     public Channel(String url) {
         this.url = url;
-      //  urls = new ArrayList<String>();
-//        urls.add(url);
         description="";
         thumbnailurl="";
         profileImage="";
@@ -81,9 +78,7 @@ class Channel implements Serializable{
         {
             this.sourceID = url.substring(url.lastIndexOf("id=") + 3);
         }
-        //if(url.indexOf("bitchute.com")>0)
-        else
-        {
+        else {
             String[] segments = url.split("/");
             sourceID = segments[segments.length - 1];
         }
@@ -99,41 +94,30 @@ class Channel implements Serializable{
         joined = lastsync;
         this.notify = false;
         this.archive = false;
-       // videos=new ArrayList<Video>();
-        toString();
-    }
-    
-//          Getters 
-    public String getSourceID() {
-        return sourceID;
-    }
-    public long getJoined() {
-        return joined;
-    }    
-    public long getLastsync() {
-        return lastsync;
-    }    
-    public String getSubscribers() {
-        return subscribers;
-    }
-    public String getUrl(){
-        return this.url;
-    }
-    public String getDescription(){
-        return this.description;
-    }
-    public String getTitle(){
-        return this.title;
-    }
-    public String getAuthor(){
-        return this.author;
-    }
-    public String getThumbnail(){
-        return this.thumbnailurl;
+        this.errors=0;
+        this.localPath="";
+        this.supported=false;
+ //       toString();
     }
 
-    //public ArrayList<Video> getVideos(){return this.videos;}
-    public String getBitchuteRssFeedUrl(){
+    public void setUrl(String value){
+        if (value.indexOf("youtube.com")>0 && youtubeID.isEmpty()){
+            if (value.indexOf("youtube.com/feeds") > 0) {
+                youtubeID = value.substring(value.lastIndexOf("id=") + 3);
+            }
+            else {
+                String[] segments = value.split("/");
+                youtubeID = segments[segments.length - 1];
+            }
+            url=(value);
+        }
+        if (value.indexOf("bitchute.com")>0 && bitchuteID.isEmpty()){
+            String[] segments = value.split("/");
+            bitchuteID = segments[segments.length - 1];
+            url = value;
+        }
+    }
+     public String getBitchuteRssFeedUrl(){
         if (!bitchuteID.isEmpty()){
             return "https://www.bitchute.com/feeds/rss/channel/" + bitchuteID;
         }
@@ -165,7 +149,52 @@ class Channel implements Serializable{
             return "";
         }
     }
-   //           setters
+    public String toString(){
+        return("title:"+this.title+"\n"+
+                "author id:"+ID+"\n"+
+                "sourceID:"+this.sourceID +"\n"+
+                "youtube id:"+youtubeID+"\n"+
+                "bitchute id:"+bitchuteID+"\n"+
+                "url:"+url+"\n"+
+                "thumbnail:"+this.thumbnailurl+"\n"+
+                "author:"+this.author+"\n"+
+                "profile image"+this.profileImage+"\n"+
+                "Subscribers:"+this.subscribers+"\n"+
+                "date joined"+new Date(this.joined)+"\n"+
+                "Last Sync"+new Date(lastsync)+"\n"+
+                "description:"+this.description+"\n");
+    }
+    public boolean matches(String value){
+        return youtubeID.equals(value) || bitchuteID.equals(value);
+    }
+
+    public String getSourceID() {
+        return this.sourceID;
+    }
+    public long getJoined() {
+        return this.joined;
+    }
+    public long getLastsync() {
+        return this.lastsync;
+    }
+    public String getSubscribers() {
+        return this.subscribers;
+    }
+    public String getUrl(){
+        return this.url;
+    }
+    public String getDescription(){
+        return this.description;
+    }
+    public String getTitle(){
+        return this.title;
+    }
+    public String getAuthor(){
+        return this.author;
+    }
+    public String getThumbnail(){
+        return this.thumbnailurl;
+    }
     public void setJoined(Date joined) {
         this.joined = joined.getTime();
     }
@@ -174,23 +203,6 @@ class Channel implements Serializable{
     }
     public void setLastsync(Date lastsync) {
         this.lastsync = lastsync.getTime();
-    }
-    public void setUrl(String value){
-        if (value.indexOf("youtube.com")>0 && youtubeID.isEmpty()){
-            if (value.indexOf("youtube.com/feeds") > 0) {
-                youtubeID = value.substring(value.lastIndexOf("id=") + 3);
-            }
-            else {
-                String[] segments = value.split("/");
-                youtubeID = segments[segments.length - 1];
-            }
-            url=(value);
-        }
-        if (value.indexOf("bitchute.com")>0 && bitchuteID.isEmpty()){
-            String[] segments = value.split("/");
-            bitchuteID = segments[segments.length - 1];
-            url = value;
-        }
     }
     public void setTitle(String value){
         this.title=value;
@@ -207,98 +219,79 @@ class Channel implements Serializable{
     public void setSourceID(String value){
         this.sourceID = value;
     }
-
     public String getThumbnailurl() {
-        return thumbnailurl;
+        return this.thumbnailurl;
     }
-
     public void setThumbnailurl(String thumbnailurl) {
         this.thumbnailurl = thumbnailurl;
     }
-
     public String getProfileImage() {
-        return profileImage;
+        return this.profileImage;
     }
-
     public void setProfileImage(String profileImage) {
         this.profileImage = profileImage;
     }
-
     public String getBitchuteID() {
-        return bitchuteID;
+        return this.bitchuteID;
     }
-
     public void setBitchuteID(String bitchuteID) {
         this.bitchuteID = bitchuteID;
     }
-
     public String getYoutubeID() {
-        return youtubeID;
+        return this.youtubeID;
     }
-
     public void setYoutubeID(String youtubeID) {
         this.youtubeID = youtubeID;
     }
-
     public void setJoined(long joined) {
         this.joined = joined;
     }
-
     public void setLastsync(long lastsync) {
         this.lastsync = lastsync;
-    }
-
-
-    public String toString(){
-        return("title:"+this.title+"\n"+
-                "author id:"+ID+"\n"+
-                "sourceID:"+this.sourceID +"\n"+
-                "youtube id:"+youtubeID+"\n"+
-                "bitchute id:"+bitchuteID+"\n"+
-                "url:"+url+"\n"+
-                "thumbnail:"+this.thumbnailurl+"\n"+
-                "author:"+this.author+"\n"+
-                "profile image"+this.profileImage+"\n"+
-                "Subscribers:"+this.subscribers+"\n"+
-                "date joined"+new Date(this.joined)+"\n"+
-                "Last Sync"+new Date(lastsync)+"\n"+
-                "description:"+this.description+"\n");
-
-
     }
     public boolean isBitchute(){
         return !bitchuteID.isEmpty();
     }
-
     public boolean isYoutube(){
         return !youtubeID.isEmpty();
     }
-    public boolean matches(String value){
-      //  System.out.println("trying to match:"+value);
-        return youtubeID.equals(value) || bitchuteID.equals(value);
-    }
-
     public long getID() {
-        return ID;
+        return this.ID;
     }
-
     public void setID(long ID) {
         this.ID = ID;
     }
-
     public boolean isNotify() {
         return notify;
     }
-
     public void setNotify(boolean notify) {
         this.notify = notify;
     }
-
     public boolean isArchive() {
-        return archive;
+        return this.archive;
     }
-
     public void setArchive(boolean archive) {
         this.archive = archive;
+    }
+    public int getErrors() {
+        return this.errors;
+    }
+    public void incrementErrors(){
+        errors++;
+    }
+    public void setErrors(int errors) {
+        this.errors = errors;
+    }
+    public String getLocalPath() {
+        return localPath;
+    }
+    public void setLocalPath(String localPath) {
+        this.localPath = localPath;
+    }
+    public boolean isSupported() {
+        return this.supported;
+    }
+    public void setSupported(boolean supported) {
+        this.supported = supported;
     }
 }

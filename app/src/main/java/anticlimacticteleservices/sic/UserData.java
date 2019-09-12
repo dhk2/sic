@@ -412,8 +412,8 @@ public class UserData {
         feedLinks = MainActivity.preferences.getStringSet("feedlinks",feedLinks);
         feedAge = MainActivity.preferences.getLong("feedAge",7);
         useComments = MainActivity.preferences.getBoolean("useComments",true);
-        dissenterComments = MainActivity.preferences.getBoolean("dissenterComments",true);
-        kittenComments = MainActivity.preferences.getBoolean("kittenComments",false);
+        dissenterComments = MainActivity.preferences.getBoolean("dissenterComments",false);
+        kittenComments = MainActivity.preferences.getBoolean("kittenComments",true);
         backgroundSync = MainActivity.preferences.getBoolean("backgroundSync",true);
         wifionly = MainActivity.preferences.getBoolean("wifiOnly",false);
         //shouldn't be needed
@@ -423,6 +423,7 @@ public class UserData {
             bitchutePlayerChoice=64;
 
         channelDatabase = Room.databaseBuilder(context , ChannelDatabase.class, "channel")
+             //TODO get rid of main thread queries
                 .allowMainThreadQueries()
                 .fallbackToDestructiveMigration()
                 .build();
