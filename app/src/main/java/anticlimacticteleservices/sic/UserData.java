@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -416,6 +417,10 @@ public class UserData {
         kittenComments = MainActivity.preferences.getBoolean("kittenComments",true);
         backgroundSync = MainActivity.preferences.getBoolean("backgroundSync",true);
         wifionly = MainActivity.preferences.getBoolean("wifiOnly",false);
+        muteErrors = MainActivity.preferences.getBoolean("muteErrors",true);
+        bitchuteSearchBitchute = MainActivity.preferences.getBoolean("bitchuteSearchBitchute",true);
+        bitchuteSearchGoogle = MainActivity.preferences.getBoolean("bitchuteSearchGoogle",true);
+        bitchuteSearchDuck = MainActivity.preferences.getBoolean("bitchuteSearchDuck",false);
         //shouldn't be needed
         if (youtubePlayerChoice==0)
             youtubePlayerChoice=4;
@@ -463,6 +468,10 @@ public class UserData {
         editor.putBoolean("kittenComments",kittenComments);
         editor.putBoolean("backgroundSync",backgroundSync);
         editor.putBoolean("wifiOnly",wifionly);
+        editor.putBoolean("muteErrors",muteErrors);
+        editor.putBoolean("bitchuteSearchBitchute",bitchuteSearchBitchute);
+        editor.putBoolean("bitchuteSearchGoogle",bitchuteSearchGoogle);
+        editor.putBoolean("bitchuteSearchDuck",bitchuteSearchDuck);
         editor.commit();
         return true;
     }
@@ -492,6 +501,49 @@ public class UserData {
 
     public void setForceRefresh(boolean forceRefresh) {
         this.forceRefresh = forceRefresh;
+    }
+    private boolean muteErrors;
+
+    public boolean isMuteErrors() {
+        return muteErrors;
+    }
+
+    public void setMuteErrors(boolean muteErrors) {
+        this.muteErrors = muteErrors;
+    }
+    private boolean bitchuteSearchGoogle,bitchuteSearchDuck,bitchuteSearchBitchute;
+
+    public boolean isBitchuteSearchGoogle() {
+        return bitchuteSearchGoogle;
+    }
+
+    public void setBitchuteSearchGoogle(boolean bitchuteSearchGoogle) {
+        this.bitchuteSearchGoogle = bitchuteSearchGoogle;
+    }
+
+    public boolean isBitchuteSearchDuck() {
+        return bitchuteSearchDuck;
+    }
+
+    public void setBitchuteSearchDuck(boolean bitchuteSearchDuck) {
+        this.bitchuteSearchDuck = bitchuteSearchDuck;
+    }
+
+    public boolean isBitchuteSearchBitchute() {
+        return bitchuteSearchBitchute;
+    }
+
+    public void setBitchuteSearchBitchute(boolean bitchuteSearchBitchute) {
+        this.bitchuteSearchBitchute = bitchuteSearchBitchute;
+    }
+    private ActionBar mainActionBar;
+
+    public ActionBar getMainActionBar() {
+        return mainActionBar;
+    }
+
+    public void setMainActionBar(ActionBar mainActionBar) {
+        this.mainActionBar = mainActionBar;
     }
 }
    

@@ -93,7 +93,12 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         if (video.isYoutube()){
            hold.serviceIcon.setImageResource(R.drawable.youtubeicon);
         }
-        Picasso.get().load(video.getThumbnail()).fit().into(hold.image);
+        if (video.getThumbnailurl().isEmpty()){
+            hold.image.setImageResource(R.drawable.bitchuteicon2);
+        }
+        else{
+            Picasso.get().load(video.getThumbnail()).fit().into(hold.image);
+        }
         if (null == video.getAuthor()){
             video.setAuthor(video.getTitle());
             if (null == video.getAuthor()){

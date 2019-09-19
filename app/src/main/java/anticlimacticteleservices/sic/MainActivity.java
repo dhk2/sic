@@ -1,6 +1,7 @@
 package anticlimacticteleservices.sic;
 
 import android.Manifest;
+import android.app.ActionBar;
 import android.app.Dialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -165,6 +166,7 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
             ((VideoFragment) fragment).setVideos(masterData.getVideos());
             manager = getSupportFragmentManager();
             masterData.setFragmentManager(manager);
+            masterData.setMainActionBar(getSupportActionBar());
             transaction = manager.beginTransaction();
             transaction.replace(R.id.fragment, fragment);
             transaction.addToBackStack(null);
@@ -297,13 +299,12 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
     }
 
     public void setMainTitle(String t){
-        getSupportActionBar().show();
         setTitle(t);
+        getSupportActionBar().show();
     }
     public void hideMainTitle(){
         getSupportActionBar().hide();
     }
-
     @Override
     public void onFragmentInteraction(Uri uri) {
         Log.v("Main-OFI","on FragmentInteraction started");

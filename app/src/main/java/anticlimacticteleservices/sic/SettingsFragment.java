@@ -34,7 +34,8 @@ public class SettingsFragment extends Fragment {
     WebView webviewHandle;
     TextView feedAge;
     RadioButton useKittens,useDissenter;
-    CheckBox useComments,backgroundSync,wifiOnly;
+    CheckBox useComments,backgroundSync,wifiOnly,muteErrors,bcSearchGoogle,bcSearchBitchute,bcSearchDuck;
+
 
     public SettingsFragment() {
     }
@@ -78,8 +79,14 @@ public class SettingsFragment extends Fragment {
         useKittens = view.findViewById(R.id.kittencommentsenabled);
         useKittens.setChecked(MainActivity.masterData.isKittenComments());
         useDissenter.setChecked(MainActivity.masterData.isDissenterComments());
-
-
+        muteErrors=view.findViewById(R.id.muteerrors);
+        muteErrors.setChecked(MainActivity.masterData.isMuteErrors());
+        bcSearchBitchute=view.findViewById(R.id.searchbitchute);
+        bcSearchGoogle=view.findViewById(R.id.searchgoogle);
+        bcSearchDuck=view.findViewById(R.id.searchduck);
+        bcSearchBitchute.setChecked(MainActivity.masterData.isBitchuteSearchBitchute());
+        bcSearchGoogle.setChecked(MainActivity.masterData.isBitchuteSearchGoogle());
+        bcSearchDuck.setChecked(MainActivity.masterData.isBitchuteSearchDuck());
         importBitchute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -285,6 +292,10 @@ public class SettingsFragment extends Fragment {
         MainActivity.masterData.setDissenterComments(useDissenter.isChecked());
         MainActivity.masterData.setBackgroundSync(backgroundSync.isChecked());
         MainActivity.masterData.setWifionly(wifiOnly.isChecked());
+        MainActivity.masterData.setMuteErrors(muteErrors.isChecked());
+        MainActivity.masterData.setBitchuteSearchBitchute(bcSearchBitchute.isChecked());
+        MainActivity.masterData.setBitchuteSearchGoogle(bcSearchGoogle.isChecked());
+        MainActivity.masterData.setBitchuteSearchDuck(bcSearchDuck.isChecked());
         MainActivity.masterData.saveUserData();
     }
 }

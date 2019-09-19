@@ -12,6 +12,7 @@ public class HandleIntent extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent playerIntent = new Intent(Intent.ACTION_VIEW);
         Log.v("Handle-Intent","starting to play video from new intent");
         Intent i = getIntent();
         if (null==i){
@@ -19,8 +20,15 @@ public class HandleIntent extends Activity {
         }
         else {
             videoIdNumber = i.getLongExtra("videoID",0);
+            System.out.println(i+i.getExtras().toString());
+            Bundle b = i.getExtras();
+            System.out.println(b.getLong("videoID"));
         }
         Log.v("Handle-Intent","playing video:"+Long.toString(videoIdNumber));
+        if (videoIdNumber ==0){
+            playerIntent.setPackage("anticlimacticteleservices.sic");
+            MainActivity.masterData.context.startActivity(playerIntent);
+        }
         Video vid = MainActivity.masterData.getVideoDao().getvideoById(i.getLongExtra("videoID",1));
         Log.v("Videoadapter","Attempting to play video at "+vid.getUrl());
         //Clear stored settings and save current position for actively playing EXO video
@@ -39,7 +47,7 @@ public class HandleIntent extends Activity {
         Uri uri;
         int vlcRequestCode = 42;
         String path ="";
-        Intent playerIntent = new Intent(Intent.ACTION_VIEW);
+          playerIntent = new Intent(Intent.ACTION_VIEW);
         int switcher = 0;
         if (vid.isYoutube()){
             switcher = MainActivity.masterData.getYoutubePlayerChoice();

@@ -17,6 +17,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -62,6 +63,7 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
     boolean wifiConnected;
     boolean mobileConnected;
     boolean forceRefresh;
+    boolean muteErrors;
     int youtubePlayerChoice;
     int bitchutePlayerChoice;
 
@@ -78,10 +80,10 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
             MainActivity.masterData.setVideos(videoDao.getVideos());
             MainActivity.masterData.getSwipeRefreshLayout().setRefreshing(false);
         }
-        if (newcount>0) {
+        if (newcount>0 || forceRefresh) {
             Toast.makeText(context, newcount + " new videos added", Toast.LENGTH_SHORT).show();
         }
-        if (updateError !=""){
+        if (updateError !="" && !muteErrors){
             Toast.makeText(context, newcount + updateError, Toast.LENGTH_LONG).show();
         }
         if (!headless ||  backgroundSync) {
@@ -119,6 +121,7 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
             wifiOnly = preferences.getBoolean("wifiOnly",false);
             youtubePlayerChoice = preferences.getInt("youtubePlayerChoice", 4);
             bitchutePlayerChoice = preferences.getInt("bitchutePlayerChoice", 8);
+            muteErrors = preferences.getBoolean("muteErrors",true);
         }
         else
         {
@@ -229,6 +232,7 @@ channelloop:for (Channel chan :allChannels){
                         nv.setRating(entry.getElementsByTag("media:starRating").first().attr("average"));
                         nv.setViewCount(entry.getElementsByTag("media:statistics").first().attr("views"));
                         videoDao.insert(nv);
+
                         //if (chan.isNotify()){
                         if (true){
                             createNotification(nv);
@@ -279,6 +283,9 @@ channelloop:for (Channel chan :allChannels){
                         if (true){
                             createNotification(nv);
                        }
+                       if (chan.isArchive()){
+                           new Util.DownloadVideo().execute(nv.getMp4());
+                       }
                     }
                 }
             }
@@ -324,8 +331,15 @@ channelloop:for (Channel chan :allChannels){
                 notificationIntent.setData(uri);
                 break;
             default:
-                notificationIntent = new Intent(context, HandleIntent.class);
+                notificationIntent = new Intent(context, MainActivity.class);
                 notificationIntent.putExtra("videoID",vid.getID());
+                Bundle bundle = new Bundle();
+                bundle.putLong("videoID", vid.getID());
+                notificationIntent.putExtras(bundle);
+
+
+
+
         }
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
 

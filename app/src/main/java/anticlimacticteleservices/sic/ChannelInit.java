@@ -95,6 +95,9 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                     try {
                         chan.setDescription(channelRss.getElementsByTag("description").first().text());
                         chan.setThumbnail(channelPage.getElementsByAttribute("data-src").last().attr("data-src"));
+                        //TODO make setArchive depend on a configured default value
+
+                        chan.setArchive(true);
                         Elements videos = channelRss.getElementsByTag("item");
                         System.out.println(videos.size());
                         for (Element video : videos) {

@@ -155,21 +155,21 @@ public class Util {
                 c.setRequestMethod("GET");//Set Request Method to "GET" since we are grtting data
                 c.connect();//connect the URL Connection
                 if (c.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    Log.e(TAG, "Server returned HTTP " + c.getResponseCode()
+                    Log.e("Util-Download", "Server returned HTTP " + c.getResponseCode()
                             + " " + c.getResponseMessage());
                 }
                 downloadFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() );
 
                 if (!downloadFolder.exists()) {
                     downloadFolder.mkdir();
-                    Log.e(TAG, "Directory Created.");
+                    Log.e("Util-Download", "Directory Created.");
                 }
                 String fileName = strings[0].substring(strings[0].lastIndexOf("/"));
                 outputFile = new File(downloadFolder,fileName);
-
+                Log.e("Util-Download","downloading file:"+fileName);
                 if (!outputFile.exists()) {
                     outputFile.createNewFile();
-                    Log.e(TAG, "File Created");
+                    Log.e("Util-Download", "File Created");
                 }
 
                 FileOutputStream fos = new FileOutputStream(outputFile);//Get OutputStream for NewFile Location
@@ -191,7 +191,7 @@ public class Util {
                 //Read exception if something went wrong
                 e.printStackTrace();
                 outputFile = null;
-                Log.e(TAG, "Download Error Exception " + e.getMessage());
+                Log.e("Util-Download", "Download Error Exception " + e.getMessage());
             }
 
             return null;
