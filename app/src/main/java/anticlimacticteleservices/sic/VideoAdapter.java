@@ -94,7 +94,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
            hold.serviceIcon.setImageResource(R.drawable.youtubeicon);
         }
         if (video.getThumbnailurl().isEmpty()){
-            hold.image.setImageResource(R.drawable.bitchuteicon2);
+            hold.image.setImageResource(R.drawable.bitchuteicon2 );
         }
         else{
             Picasso.get().load(video.getThumbnail()).fit().into(hold.image);
@@ -192,6 +192,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                         v.getContext().startActivity(playerIntent);
                         break;
                     case 4:
+                        MainActivity.masterData.setWebViewOption(0);
                         fragment_webviewplayer wfragment = fragment_webviewplayer.newInstance("",vid);
                         transaction = MainActivity.masterData.getFragmentManager().beginTransaction();
                         transaction.replace(R.id.fragment, wfragment);
@@ -228,6 +229,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                         v.getContext().startActivity(playerIntent);
                         break;
                     case 64:
+                        MainActivity.masterData.setWebViewOption(1);
                         fragment_webviewplayer wwfragment = fragment_webviewplayer.newInstance("",vid);
                         transaction = MainActivity.masterData.getFragmentManager().beginTransaction();
                         transaction.replace(R.id.fragment, wwfragment);

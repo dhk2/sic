@@ -2,9 +2,11 @@ package anticlimacticteleservices.sic;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.text.HtmlCompat;
 import android.text.Html;
 import android.text.Spanned;
@@ -112,14 +114,92 @@ public class fragment_video_properties extends Fragment {
         TextView title = v.findViewById(R.id.video_name);
         title.setText(vid.getTitle());
         Button dialogButton = v.findViewById(R.id.closeButton);
+        Button playVlc= v.findViewById(R.id.properties_play_vlc);
+        Button playExo=v.findViewById(R.id.properties_play_exo);
+        Button playWebTorrent= v.findViewById(R.id.properties_play_webtorrent);
+        Button playEmbedded = v.findViewById(R.id.properties_play_embedded);
+        Button playSystem = v.findViewById(R.id.properties_play_default);
         dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 MainActivity.masterData.fragmentManager.popBackStack();
             }
         });
+        playVlc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri uri;
+                int vlcRequestCode = 42;
+                String path ="";
+                Intent playerIntent = new Intent(Intent.ACTION_VIEW);
+                playerIntent.setPackage("org.videolan.vlc");
+                if (vid.isBitchute()) {
+                    path = vid.getMp4();
+                }
+                if (vid.isYoutube()){
+                    path = vid.getYoutubeUrl();
+                }
+                uri = Uri.parse(path);
+                playerIntent.setDataAndTypeAndNormalize(uri, "video/*");
+                playerIntent.putExtra("title", vid.getTitle());
+                v.getContext().startActivity(playerIntent);
+            }
+        });
+        playExo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction transaction;
+                fragment_exoplayer efragment = fragment_exoplayer.newInstance("",vid);
+                transaction = MainActivity.masterData.getFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragment, efragment);
+                transaction.addToBackStack(null);
+                transaction.commitAllowingStateLoss();
+            }
+        });
+        playEmbedded.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.masterData.setWebViewOption(0);
+                FragmentTransaction transaction;
+                fragment_webviewplayer wwfragment = fragment_webviewplayer.newInstance("",vid);
+                transaction = MainActivity.masterData.getFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragment, wwfragment);
+                transaction.addToBackStack(null);
+                transaction.commitAllowingStateLoss();
+            }
+        });
+        playWebTorrent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.masterData.setWebViewOption(1);
+                FragmentTransaction transaction;
+                fragment_webviewplayer wwfragment = fragment_webviewplayer.newInstance("",vid);
+                transaction = MainActivity.masterData.getFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragment, wwfragment);
+                transaction.addToBackStack(null);
+                transaction.commitAllowingStateLoss();
+            }
+        });
+        playSystem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri uri;
+                String path ="";
+                Intent playerIntent = new Intent(Intent.ACTION_VIEW);
+                if (vid.isBitchute()) {
+                    path = vid.getMp4();
+                } else {
+                    path = vid.getYoutubeUrl();
+                }
+                uri = Uri.parse(path);
+                playerIntent.setData(uri);
+                playerIntent.putExtra("title", vid.getTitle());
+                v.getContext().startActivity(playerIntent);
+            }
+        });
 
         return v;
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event

@@ -545,5 +545,14 @@ public class UserData {
     public void setMainActionBar(ActionBar mainActionBar) {
         this.mainActionBar = mainActionBar;
     }
+    private int webViewOption;
+
+    public int getWebViewOption() {
+        return webViewOption;
+    }
+
+    public void setWebViewOption(int webViewOption) {
+        this.webViewOption = webViewOption;
+    }
 }
    

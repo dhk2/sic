@@ -1,6 +1,7 @@
 package anticlimacticteleservices.sic;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -52,6 +53,7 @@ public class fragment_webviewplayer extends Fragment  {
             }
 
         }
+        setRetainInstance(true);
     }
 
     @Override
@@ -97,7 +99,8 @@ public class fragment_webviewplayer extends Fragment  {
 
 
         webView.loadUrl(video.getEmbeddedUrl());
-        if (video.isBitchute() && MainActivity.masterData.bitchuteUseWebtorrentWebview() && !video.getMp4().isEmpty()){
+      //  if (video.isBitchute() && MainActivity.masterData.bitchuteUseWebtorrentWebview() && !video.getMp4().isEmpty()){
+        if (MainActivity.masterData.getWebViewOption()==1){
             webView.loadDataWithBaseURL("https://www.bitchute.com",WebTorrentJavascript.getWebviewHtml(video),"text/html","utf-8","https://www.bitchute.com");
         }
         webView.addJavascriptInterface(new JavascriptWebviewInterface(MainActivity.masterData.context), "Android");
@@ -130,7 +133,11 @@ public class fragment_webviewplayer extends Fragment  {
         super.onDetach();
         mListener = null;
     }
+    @Override
+    public void onConfigurationChanged(Configuration newConfig){
 
+        super.onConfigurationChanged(newConfig);
+    }
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
