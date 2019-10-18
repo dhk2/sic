@@ -30,11 +30,14 @@
                     android:layout_marginBottom="2dp"
                     android:background="#FFFFFF"
                     tools:srcCompat="@tools:sample/avatars" />
+            <HorizontalScrollView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
 
                     <Button
                         android:id="@+id/properties_play_exo"
@@ -70,8 +73,23 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="system" />
-                </LinearLayout>
 
+                    <Button
+                        android:id="@+id/properties_play_newpipe"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="newpipe" />
+
+                    <Button
+                        android:id="@+id/properties_play_youtube"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="youtube" />
+
+            </LinearLayout>
+            </HorizontalScrollView>
                 <TextView
                     android:id="@+id/video_name"
                     android:layout_width="match_parent"

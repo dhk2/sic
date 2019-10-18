@@ -45,6 +45,7 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
     private final SimpleDateFormat ydf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
     private Document doc;
     private int dupecount=0;
+    private int mirror=0;
     private int newcount=0;
     private ArrayList<Video> allVideos;
     private ArrayList<Channel> allChannels;
@@ -196,9 +197,13 @@ channelloop:for (Channel chan :allChannels){
                         doc = Jsoup.connect(chan.getYoutubeRssFeedUrl()).get();
                     } catch (IOException e) {
                         e.printStackTrace();
-                        System.out.println("network failure tying to get rss feeds in background, aborting this run");
-                        updateError=e.toString();
-                        break channelloop;
+                        System.out.println("network failure tying to get rss feeds in background:"+e.getMessage());
+                        //crash out if unable to reach Youtube
+                        if (e.getMessage().indexOf("Unable to resolve host")>0) {
+                            System.out.println("site appears to be down");
+                            updateError = e.toString();
+                            break channelloop;
+                        }
                     }
                     Elements videos = doc.getElementsByTag("entry");
         youtubeLoop:for (Element entry : videos) {
@@ -208,6 +213,14 @@ channelloop:for (Channel chan :allChannels){
                             if (match.getSourceID().equals(nv.getSourceID()) && match.isYoutube()) {
                                 dupecount++;
                                 System.out.println("video duped "+match.getAuthor()+ " "+nv.getSourceID());
+                                continue channelloop;
+                            }
+                            if (match.getSourceID().equals(nv.getSourceID()) && match.isBitchute()) {
+                                mirror++;
+                                System.out.println("video mirrored "+match.getAuthor()+ " "+nv.getSourceID());
+                                if (!match.isBitchute()) {
+                                    match.setBitchuteID(nv.getSourceID());
+                                }
                                 continue channelloop;
                             }
                         }
@@ -244,9 +257,13 @@ channelloop:for (Channel chan :allChannels){
                         doc = Jsoup.connect(chan.getBitchuteRssFeedUrl()).get();
                     } catch (IOException e) {
                         e.printStackTrace();
-                        Log.e("Channel-Update","network failure tying to get rss feeds in background");
-                        updateError=e.toString();
-                        break channelloop;
+                        Log.e("Channel-Update","network failure tying to get rss feeds in background "+e.getMessage());
+                        //crash out if unable to reach bitchute
+                        if (e.getMessage().indexOf("Unable to resolve host")>0) {
+                            System.out.println("site appears to be down");
+                            updateError = e.toString();
+                            break channelloop;
+                        }
                     }
                     if (null==doc){
                         return false;
@@ -258,6 +275,15 @@ channelloop:for (Channel chan :allChannels){
                             if (match.getSourceID().equals(nv.getSourceID())&& match.isBitchute()) {
                               //  System.out.println("video duped "+nv.getSourceID()+"\n"+match.toDebugString());
                                 dupecount++;
+                                continue channelloop;
+                            }
+                            if (match.getSourceID().equals(nv.getSourceID())&& match.isYoutube()) {
+                                //  System.out.println("video duped "+nv.getSourceID()+"\n"+match.toDebugString());
+                                mirror++;
+                                System.out.println("video mirrored "+match.getAuthor()+ " "+nv.getSourceID());
+                                if (!match.isYoutube()) {
+                                    match.setYoutubeID(nv.getSourceID());
+                                }
                                 continue channelloop;
                             }
                         }
@@ -279,8 +305,8 @@ channelloop:for (Channel chan :allChannels){
                         nv.setAuthor(chan.getTitle());
                         videoDao.insert(nv);
                         newcount++;
-                        //if (chan.isNotify()){
-                        if (true){
+                        if (chan.isNotify()){
+                        //if (true){
                             createNotification(nv);
                        }
                        if (chan.isArchive()){
@@ -300,7 +326,7 @@ channelloop:for (Channel chan :allChannels){
         else{
 
         }
-        Log.v("Channel-Update",dupecount+" duplicate videos discarded,"+newcount+" new videos added");
+        Log.v("Channel-Update",dupecount+" duplicate videos discarded,"+mirror+" videos mirrored," +newcount+" new videos added");
         return true;
     }
     private void createNotification(Video vid){

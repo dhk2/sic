@@ -5,7 +5,6 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 
 @Entity(tableName = "Feed_Item")
@@ -59,6 +58,10 @@ class Video implements Serializable,Comparable<Video>
     private String hackDateString;
     @ColumnInfo(name = "rank")
     private int rank;
+    @ColumnInfo(name = "bitchute_id")
+    private String bitchuteID;
+    @ColumnInfo(name = "youtube_id")
+    private String youtubeID;
 
     public Video()
     {
@@ -81,6 +84,8 @@ class Video implements Serializable,Comparable<Video>
         this.category = "";
         this.currentPosition=0l;
         this.hackDateString="";
+        this.youtubeID ="";
+        this.bitchuteID ="";
     }
 
     public Video(String location)
@@ -88,14 +93,18 @@ class Video implements Serializable,Comparable<Video>
         this.title = "";
         this.author = "";
         this.url = location;
+        this.youtubeID ="";
+        this.bitchuteID ="";
         if (location.indexOf("youtube") > 0)
         {
             sourceID = location.substring(location.lastIndexOf("?v=") + 3);
+            youtubeID =sourceID;
         }
         else
         {
             String[] segments = location.split("/");
             sourceID = segments[segments.length - 1];
+            bitchuteID =sourceID;
         }
         this.watched = false;
         this.date = 0;
@@ -112,6 +121,7 @@ class Video implements Serializable,Comparable<Video>
         this.category = "";
         this.currentPosition=0l;
         this.hackDateString="";
+
     }
 
 //  	     Getters
@@ -301,6 +311,8 @@ class Video implements Serializable,Comparable<Video>
                 "Up votes:" + upCount + "<p>" +
                 "Down votes:" + downCount + "<p>" +
                 "sourceID:" + sourceID + "<p>" +
+                "bitchute sourceID:" + bitchuteID + "<p>" +
+                "youtube sourceID:" + youtubeID + "<p>" +
                 "Comments:" + commentCount + "<p>" +
                 "Hash tags:" + hashtags  + "<p>" +
                 "Duration:" + duration +"<p>"+
@@ -319,15 +331,11 @@ class Video implements Serializable,Comparable<Video>
                 this.getDate()==(candidate.getDate()) ? 0 : 1);
     }
 
-    public boolean isBitchute(){
-        return (this.url.indexOf("bitchute.com") > 0);
-    }
-    public String getBitchuteUrl() {return "https://www.bitchute.com/video/"+this.sourceID;}
-    public boolean isYoutube(){
-        return this.url.indexOf("youtube.com") > 0;
-    }
+    public boolean isBitchute(){        return (this.bitchuteID.length() > 0);    }
+    public String getBitchuteUrl() {return "https://www.bitchute.com/video/"+this.bitchuteID;}
+    public boolean isYoutube(){return (this.youtubeID.length()>0); }
     public String getYoutubeUrl(){
-        return "https://www.youtube.com/watch?v="+this.sourceID;
+        return "https://www.youtube.com/watch?v="+this.youtubeID;
     }
 
  //   public ArrayList<Comment> getComments(){
@@ -419,5 +427,21 @@ class Video implements Serializable,Comparable<Video>
 
     public void setRank(int rank) {
         this.rank = rank;
+    }
+
+    public String getBitchuteID() {
+        return bitchuteID;
+    }
+
+    public void setBitchuteID(String bitchuteID) {
+        this.bitchuteID = bitchuteID;
+    }
+
+    public String getYoutubeID() {
+        return youtubeID;
+    }
+
+    public void setYoutubeID(String youtubeID) {
+        this.youtubeID = youtubeID;
     }
 }

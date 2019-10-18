@@ -119,6 +119,17 @@ public class fragment_video_properties extends Fragment {
         Button playWebTorrent= v.findViewById(R.id.properties_play_webtorrent);
         Button playEmbedded = v.findViewById(R.id.properties_play_embedded);
         Button playSystem = v.findViewById(R.id.properties_play_default);
+        Button playYoutube = v.findViewById(R.id.properties_play_youtube);
+        Button playNewpipe = v.findViewById(R.id.properties_play_newpipe);
+        // turn off bitchute options if not bitchute
+        if (!vid.isBitchute()){
+            playExo.setVisibility(View.GONE);
+            playWebTorrent.setVisibility(View.GONE);
+        }
+        if (!vid.isYoutube()){
+            playNewpipe.setVisibility(View.GONE);
+            playYoutube.setVisibility(View.GONE);
+        }
         dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -142,6 +153,34 @@ public class fragment_video_properties extends Fragment {
                 uri = Uri.parse(path);
                 playerIntent.setDataAndTypeAndNormalize(uri, "video/*");
                 playerIntent.putExtra("title", vid.getTitle());
+                v.getContext().startActivity(playerIntent);
+            }
+        });
+        playNewpipe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri uri;
+                String path ="";
+                Intent playerIntent = new Intent(Intent.ACTION_VIEW);
+                playerIntent.setPackage("org.schabi.newpipe");
+                path = vid.getYoutubeUrl();
+                uri = Uri.parse(path);
+                playerIntent.setData(uri);
+               // playerIntent.setDataAndTypeAndNormalize(uri, "video/*");
+               // playerIntent.putExtra("title", vid.getTitle());
+                v.getContext().startActivity(playerIntent);
+            }
+        });
+        playYoutube.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri uri;
+                String path ="";
+                Intent playerIntent = new Intent(Intent.ACTION_VIEW);
+                playerIntent.setPackage( "com.google.android.youtube" );
+                path = vid.getYoutubeUrl();
+                uri = Uri.parse(path);
+                playerIntent.setData(uri);
                 v.getContext().startActivity(playerIntent);
             }
         });
