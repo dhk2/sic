@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
-
+        setTheme(R.style.DarkTheme);
         setContentView(R.layout.activity_main);
         navView = findViewById(R.id.nav_view);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);

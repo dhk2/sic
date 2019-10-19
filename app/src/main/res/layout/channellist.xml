@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="5dp"
-    android:background="@color/colorPrimaryDark"
-    cardview:cardCornerRadius="2dp"
+    android:background="?attr/bgColor"
+    cardview:cardCornerRadius="10dp"
     cardview:cardElevation="3dp"
     cardview:cardUseCompatPadding="true">
 
@@ -13,7 +13,7 @@
         android:id="@+id/ChannelRecView"
         android:layout_width="match_parent"
         android:layout_height="120dp"
-        android:background="#609C27B0">
+        android:background="@color/colorPrimaryDark">
 
         <ImageView
             android:id="@+id/channelthumbnail"
@@ -24,14 +24,14 @@
             android:layout_alignParentBottom="false"
             android:layout_marginStart="0dp"
             android:layout_marginTop="0dp"
-            android:background="#659C27B0"
+
             android:scaleType="fitXY" />
 
         <TextView
             android:id="@+id/channelName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/channel_description"
+            android:layout_alignStart="@id/channelthumbnail"
             android:layout_alignEnd="@+id/channel_property_description"
             android:layout_alignParentTop="true"
             android:layout_alignParentBottom="true"

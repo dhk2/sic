@@ -212,16 +212,16 @@ channelloop:for (Channel chan :allChannels){
                         for (Video match : allVideos) {
                             if (match.getSourceID().equals(nv.getSourceID()) && match.isYoutube()) {
                                 dupecount++;
-                                System.out.println("video duped "+match.getAuthor()+ " "+nv.getSourceID());
+                               // System.out.println("video duped "+match.getAuthor()+ " "+nv.getSourceID());
                                 continue channelloop;
                             }
                             if (match.getSourceID().equals(nv.getSourceID()) && match.isBitchute()) {
                                 mirror++;
-                                System.out.println("video mirrored "+match.getAuthor()+ " "+nv.getSourceID());
-                                if (!match.isBitchute()) {
-                                    match.setBitchuteID(nv.getSourceID());
+                                System.out.println("new youtube video mirrors bitchute video "+match.getAuthor()+ " "+nv.getSourceID());
+                                if (!match.isYoutube()) {
+                                    match.setYoutubeID(nv.getSourceID());
                                 }
-                                continue channelloop;
+                                //continue channelloop;
                             }
                         }
                         Date pd = new Date(1);
@@ -280,11 +280,11 @@ channelloop:for (Channel chan :allChannels){
                             if (match.getSourceID().equals(nv.getSourceID())&& match.isYoutube()) {
                                 //  System.out.println("video duped "+nv.getSourceID()+"\n"+match.toDebugString());
                                 mirror++;
-                                System.out.println("video mirrored "+match.getAuthor()+ " "+nv.getSourceID());
-                                if (!match.isYoutube()) {
-                                    match.setYoutubeID(nv.getSourceID());
+                                System.out.println("new bitchute video mirrored on youtube"+match.getAuthor()+ " "+nv.getSourceID());
+                                if (!match.isBitchute()) {
+                                    match.setBitchuteID(nv.getSourceID());
                                 }
-                                continue channelloop;
+                                //continue channelloop;
                             }
                         }
                         Date pd=new Date(1);

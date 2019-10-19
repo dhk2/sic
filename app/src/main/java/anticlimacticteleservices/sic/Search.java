@@ -41,14 +41,17 @@ class Search {
             }
             if (bitchute) {
                 if (MainActivity.masterData.isBitchuteSearchBitchute()) {
+                    searchCount++;
                     BitchuteVideoSearcher bitchuteScraper = new BitchuteVideoSearcher();
                     bitchuteScraper.execute(location2);
                 }
                 if (MainActivity.masterData.isBitchuteSearchGoogle()) {
+                    searchCount++;
                     GoogleVideoSearcher googleScraper = new GoogleVideoSearcher();
                     googleScraper.execute(location3);
                 }
                 if (MainActivity.masterData.isBitchuteSearchDuck()) {
+                    searchCount++;
                     DuckVideoSearcher duckScraper = new DuckVideoSearcher();
                     duckScraper.execute(location4);
                 }
@@ -135,6 +138,7 @@ class Search {
         }
         @Override
         protected void onPostExecute(String result) {
+            System.out.println("searchCount:"+searchCount);
             searchCount--;
             if (searchCount < 1) {
                 Log.v("Search-YVS ", MainActivity.masterData.getsVideos().size()+ "Creating video results fragment:");
@@ -212,6 +216,7 @@ class Search {
         protected void onPostExecute(String result) {
             // execution of result of Long time consuming operation
             super.onPostExecute(result);
+            System.out.println("searchCount:"+searchCount);
             searchCount--;
             if (searchCount < 1) {
                 Log.v("Search-BVS","done searching with "+MainActivity.masterData.getsVideos().size());
@@ -251,7 +256,7 @@ class Search {
 
 
     }
-    private class GoogleVideoSearcher extends AsyncTask<String, String, String> {
+      private class GoogleVideoSearcher extends AsyncTask<String, String, String> {
         private String resp;
         ProgressDialog progressDialog;
         @Override
@@ -302,6 +307,7 @@ class Search {
         protected void onPostExecute(String result) {
             // execution of result of Long time consuming operation
             super.onPostExecute(result);
+            System.out.println("searchCount:"+searchCount);
             searchCount--;
             if (searchCount < 1) {
                 Log.v("Search-GVS","done searching with "+MainActivity.masterData.getsVideos().size());
@@ -399,6 +405,7 @@ class Search {
         protected void onPostExecute(String result) {
             // execution of result of Long time consuming operation
             super.onPostExecute(result);
+            System.out.println("searchCount:"+searchCount);
             searchCount--;
             if (searchCount < 1) {
                 Log.v("Search-DVS","done searching with "+MainActivity.masterData.getsVideos().size());
@@ -489,6 +496,7 @@ class Search {
             // execution of result of Long time consuming operation
             super.onPostExecute(result);
             Log.v("Search-BCS ", MainActivity.masterData.getsChannels().size()+ "done searching");
+            System.out.println("searchCount:"+searchCount);
             searchCount--;
             if (searchCount < 1) {
                 searching = false;
@@ -573,6 +581,7 @@ class Search {
             super.onPostExecute(result);
 
             Log.v("Search-YCS ", MainActivity.masterData.getsChannels().size()+ "done searcing for channels");
+            System.out.println("searchCount:"+searchCount);
             searchCount--;
             if (searchCount < 1) {
                 System.out.println("done searching for channels," );
@@ -636,6 +645,7 @@ class Search {
             // execution of result of Long time consuming operation
             super.onPostExecute(result);
             Log.v("Search-BGCS ", MainActivity.masterData.getsChannels().size()+ "done searcing for channels");
+            System.out.println("searchCount:"+searchCount);
             searchCount--;
             if (searchCount < 1) {
                 searching = false;
@@ -697,6 +707,7 @@ class Search {
             // execution of result of Long time consuming operation
             super.onPostExecute(result);
             Log.v("Search-BGCS ", MainActivity.masterData.getsChannels().size()+ "done searcing for channels");
+            System.out.println("searchCount:"+searchCount);
             searchCount--;
             if (searchCount < 1) {
                 searching = false;

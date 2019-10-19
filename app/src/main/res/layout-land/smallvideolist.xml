@@ -5,15 +5,16 @@
     android:layout_height="match_parent"
     android:layout_margin="2dp"
     android:orientation="horizontal"
-    cardview:cardCornerRadius="2dp"
+    cardview:cardCornerRadius="10dp"
     cardview:cardElevation="3dp"
+    android:background="?attr/bgColor"
     cardview:cardUseCompatPadding="true">
 
     <RelativeLayout
         android:id="@+id/RecView2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorPrimaryDark"
+        android:background="?attr/bgColor"
         android:backgroundTint="#1AFFFFFF"
         android:foregroundTint="#1AFFFFFF">
 
@@ -42,9 +43,9 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="0dp"
             android:layout_marginTop="0dp"
-            android:layout_marginEnd="9dp"
+            android:layout_marginEnd="0dp"
             android:layout_marginBottom="80dp"
             android:backgroundTint="@color/sicbackground"
             android:elevation="0dp"
@@ -73,10 +74,10 @@
             android:layout_alignParentEnd="false"
             android:layout_marginEnd="0dp"
             android:layout_marginBottom="40dp"
-            android:background="#D0B95304"
+            android:background="?attr/bgColor"
             android:elevation="200dp"
             android:ems="10"
-            android:paddingLeft="8dp"
+            android:paddingLeft="0dp"
             android:text=""
             android:textColor="#FFEB3B"
             android:textStyle="bold" />
@@ -88,7 +89,7 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
             android:layout_marginLeft="0dp"
-            android:layout_marginRight="7dp"
+            android:layout_marginRight="0dp"
             android:background="#80000000"
             android:elevation="10dp"
             android:maxLines="3"

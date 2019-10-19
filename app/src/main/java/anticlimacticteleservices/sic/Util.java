@@ -150,6 +150,7 @@ public class Util {
         protected String doInBackground(String... strings) {
 
             try {
+                System.out.println("attempt to download url:"+strings[0]);
                 java.net.URL url = new URL(strings[0]);//Create Download URl
                 HttpURLConnection c = (HttpURLConnection) url.openConnection();//Open Url Connection
                 c.setRequestMethod("GET");//Set Request Method to "GET" since we are grtting data

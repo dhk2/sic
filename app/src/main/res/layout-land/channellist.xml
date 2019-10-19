@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:layout_marginBottom="5dp"
     android:background="@color/colorPrimaryDark"
-    cardview:cardCornerRadius="2dp"
+    cardview:cardCornerRadius="10dp"
     cardview:cardElevation="3dp"
     cardview:cardUseCompatPadding="true">
 

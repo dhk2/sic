@@ -6,6 +6,8 @@
     android:gravity="top"
     android:orientation="vertical"
     android:paddingTop="16dp"
+    android:textColor="#000000"
+    android:buttonTint="#FFFFFF"
     android:paddingEnd="16dp">
 
 
@@ -13,17 +15,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:textColor="#000000"
+        android:buttonTint="#FFFFFF"
         android:paddingTop="16dp">
-
-        <Button
-            android:id="@+id/search_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Search" />
 
         <RadioGroup
             android:id="@+id/radio_search_type"
             android:layout_width="wrap_content"
+            android:textColor="#000000"
+            android:buttonTint="#FFFFFF"
             android:layout_height="wrap_content">
 
             <RadioButton
@@ -31,13 +31,24 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
+                android:textColor="#FFFFFF"
+                android:buttonTint="#FFFFFF"
                 android:text="videos" />
 
             <RadioButton
                 android:id="@+id/radio_channel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                android:buttonTint="#FFFFFF"
                 android:text="channels" />
+            <Button
+                android:id="@+id/search_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000000"
+                android:buttonTint="#FFFFFF"
+                android:text="Search" />
 
         </RadioGroup>
 
@@ -45,21 +56,19 @@
             android:id="@+id/search_youtube"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:buttonTint="#FFFFFF"
             android:text="youtube" />
 
         <CheckBox
             android:id="@+id/search_bitchute"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:buttonTint="#FFFFFF"
             android:text="bitchute" />
-    </LinearLayout>
 
-    <EditText
-        android:id="@+id/search_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:inputType="text" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/search_subfragment"
@@ -67,8 +76,19 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         tools:layout_editor_absoluteX="8dp"
+        android:textColor="#000000"
+        android:buttonTint="#FFFFFF"
         tools:layout_editor_absoluteY="8dp">
 
+        <EditText
+
+            android:id="@+id/search_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:buttonTint="#FFFFFF"
+            android:inputType="text"
+            android:textColor="#FFFFFF" />
     </LinearLayout>
 
 

@@ -55,4 +55,9 @@
     <attr name="contrast_background_color" format="color"/>
     <attr name="windowBackground" format="color"/>
     <attr name="colorPrimary" format="color"/>
+    <attr name="bgColor" format="color"/>
+    <attr name="textColor" format="color"/>
+    <attr name="metaTextColor" format="color"/>
+
+
 </resources>
