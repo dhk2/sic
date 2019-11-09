@@ -121,6 +121,7 @@ public class fragment_video_properties extends Fragment {
         Button playSystem = v.findViewById(R.id.properties_play_default);
         Button playYoutube = v.findViewById(R.id.properties_play_youtube);
         Button playNewpipe = v.findViewById(R.id.properties_play_newpipe);
+        Button playChrome = v.findViewById(R.id.properties_play_chrome);
         // turn off bitchute options if not bitchute
         if (!vid.isBitchute()){
             playExo.setVisibility(View.GONE);
@@ -231,6 +232,26 @@ public class fragment_video_properties extends Fragment {
                     path = vid.getYoutubeUrl();
                 }
                 uri = Uri.parse(path);
+                playerIntent.setData(uri);
+                playerIntent.putExtra("title", vid.getTitle());
+                v.getContext().startActivity(playerIntent);
+            }
+        });
+
+        playChrome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri uri;
+                String path ="";
+                Intent playerIntent = new Intent(Intent.ACTION_VIEW);
+                if (vid.isBitchute()) {
+                    path = vid.getMp4();
+                } else {
+                    path = vid.getYoutubeUrl();
+                }
+                uri = Uri.parse(path);
+
+                playerIntent.setPackage( "com.android.chrome" );
                 playerIntent.setData(uri);
                 playerIntent.putExtra("title", vid.getTitle());
                 v.getContext().startActivity(playerIntent);

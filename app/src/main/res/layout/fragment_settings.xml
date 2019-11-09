@@ -56,12 +56,6 @@
                         android:layout_height="wrap_content"
                         android:text="Google" />
 
-                    <CheckBox
-                        android:id="@+id/searchduck"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="DuckDuckGo" />
-
                     <Button
                         android:id="@+id/load_bitchute"
                         android:layout_width="wrap_content"
@@ -103,7 +97,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="exo " />
-
+                    <RadioButton
+                        android:id="@+id/bitchuteuse_chrome"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Chrome" />
                     <RadioButton
                         android:id="@+id/bitchuteuse_default"
                         android:layout_width="wrap_content"
@@ -115,6 +113,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Embedded" />
+                    <RadioButton
+                        android:id="@+id/bitchuteuse_properties"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Properties" />
 
                 </RadioGroup>
             </LinearLayout>
@@ -256,7 +259,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="VLC" />
-
+                    <RadioButton
+                        android:id="@+id/youtubeuse_chrome"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Chrome" />
                     <RadioButton
                         android:id="@+id/youtubeusenewpipe"
                         android:layout_width="wrap_content"
@@ -284,6 +291,11 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="System" />
+                    <RadioButton
+                        android:id="@+id/youtubeuse_properties"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Properties" />
 
                 </RadioGroup>
 

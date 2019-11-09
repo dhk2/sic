@@ -218,8 +218,8 @@ channelloop:for (Channel chan :allChannels){
                             if (match.getSourceID().equals(nv.getSourceID()) && match.isBitchute()) {
                                 mirror++;
                                 System.out.println("video mirrored "+match.getAuthor()+ " "+nv.getSourceID());
-                                if (!match.isBitchute()) {
-                                    match.setBitchuteID(nv.getSourceID());
+                                if (!match.isYoutube()) {
+                                    match.setYoutubeID(nv.getSourceID());
                                 }
                                 continue channelloop;
                             }
@@ -281,8 +281,8 @@ channelloop:for (Channel chan :allChannels){
                                 //  System.out.println("video duped "+nv.getSourceID()+"\n"+match.toDebugString());
                                 mirror++;
                                 System.out.println("video mirrored "+match.getAuthor()+ " "+nv.getSourceID());
-                                if (!match.isYoutube()) {
-                                    match.setYoutubeID(nv.getSourceID());
+                                if (!match.isBitchute()) {
+                                    match.setBitchuteID(nv.getSourceID());
                                 }
                                 continue channelloop;
                             }
