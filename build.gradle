@@ -7,7 +7,7 @@ buildscript {
         maven { url "https://jitpack.io"}
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.1'
+        classpath 'com.android.tools.build:gradle:3.5.2'
         // https://mvnrepository.com/artifact/com.github.sv244/torrentstream-android
 
         // NOTE: Do not place your application dependencies here; they belong

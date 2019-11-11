@@ -272,7 +272,7 @@ channelloop:for (Channel chan :allChannels){
        bitchuteLoop:for (Element video : videos) {
                         Video nv = new Video(video.getElementsByTag("link").first().text());
                         for (Video match : allVideos) {
-                            if (match.getSourceID().equals(nv.getSourceID())&& match.isBitchute()) {
+                            if (match.getBitchuteID().equals(nv.getSourceID())&& match.isBitchute()) {
                               //  System.out.println("video duped "+nv.getSourceID()+"\n"+match.toDebugString());
                                 dupecount++;
                                 continue channelloop;

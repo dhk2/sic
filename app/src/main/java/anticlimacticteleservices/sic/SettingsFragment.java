@@ -34,7 +34,7 @@ public class SettingsFragment extends Fragment {
     WebView webviewHandle;
     TextView feedAge;
     RadioButton useKittens,useDissenter;
-    CheckBox useComments,backgroundSync,wifiOnly,muteErrors,bcSearchGoogle,bcSearchBitchute,bcSearchDuck;
+    CheckBox useComments,backgroundSync,wifiOnly,muteErrors,bcSearchGoogle,bcSearchBitchute;
 
 
     public SettingsFragment() {
@@ -213,10 +213,10 @@ public class SettingsFragment extends Fragment {
                         MainActivity.masterData.setYoutubePlayerChoice(256);
                         break;
                     case R.id.youtubeuse_chrome:
-                        MainActivity.masterData.setBitchutePlayerChoice(512);
+                        MainActivity.masterData.setYoutubePlayerChoice(512);
                         break;
                     case R.id.youtubeuse_properties:
-                        MainActivity.masterData.setBitchutePlayerChoice(1024);
+                        MainActivity.masterData.setYoutubePlayerChoice(1024);
                         break;
                 }
             }
