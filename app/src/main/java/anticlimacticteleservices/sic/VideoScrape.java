@@ -16,6 +16,9 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+//TODO move dissenter check outside of site specific sections
+//TODO transverse comment subthreads
+//TODO pull more useful data
 
 public class VideoScrape extends AsyncTask<Video,Video,Video> {
     static CommentDao commentDao;

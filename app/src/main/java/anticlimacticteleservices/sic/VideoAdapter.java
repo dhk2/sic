@@ -263,6 +263,26 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                         playerIntent.setData(uri);
                         v.getContext().startActivity(playerIntent);
                         break;
+                    case 512:
+                        playerIntent = new Intent(Intent.ACTION_VIEW);
+                        if (vid.isBitchute()) {
+                            path = vid.getMp4();
+                        } else {
+                            path = vid.getYoutubeUrl();
+                        }
+                        uri = Uri.parse(path);
+
+                        playerIntent.setPackage( "com.android.chrome" );
+                        playerIntent.setData(uri);
+                        playerIntent.putExtra("title", vid.getTitle());
+                        v.getContext().startActivity(playerIntent);
+                        break;
+                    case 1024:
+                        fragment_video_properties vpfragment = fragment_video_properties.newInstance(vid,"");
+                        transaction = MainActivity.masterData.getFragmentManager().beginTransaction();
+                        transaction.replace(R.id.fragment, vpfragment);
+                        transaction.addToBackStack(null);
+                        transaction.commitAllowingStateLoss();
                 }
             }
         });

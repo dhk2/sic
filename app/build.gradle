@@ -6,8 +6,8 @@ android {
         applicationId "anticlimacticteleservices.sic"
         minSdkVersion 22
         targetSdkVersion 28
-        versionCode 24
-        versionName '24'
+        versionCode 25
+        versionName '25'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

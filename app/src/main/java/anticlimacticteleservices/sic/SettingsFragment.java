@@ -83,10 +83,8 @@ public class SettingsFragment extends Fragment {
         muteErrors.setChecked(MainActivity.masterData.isMuteErrors());
         bcSearchBitchute=view.findViewById(R.id.searchbitchute);
         bcSearchGoogle=view.findViewById(R.id.searchgoogle);
-        bcSearchDuck=view.findViewById(R.id.searchduck);
         bcSearchBitchute.setChecked(MainActivity.masterData.isBitchuteSearchBitchute());
         bcSearchGoogle.setChecked(MainActivity.masterData.isBitchuteSearchGoogle());
-        bcSearchDuck.setChecked(MainActivity.masterData.isBitchuteSearchDuck());
         importBitchute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -165,6 +163,10 @@ public class SettingsFragment extends Fragment {
         RadioButton bitchuteUseVlc =view.findViewById(R.id.bitchuteuse_vlc);
         RadioButton bitchuteUseDefault =view.findViewById(R.id.bitchuteuse_default);
         RadioButton bitchuteUseWebview =view.findViewById(R.id.bitchuteuse_webview);
+        RadioButton bitchuteUseChrome =view.findViewById(R.id.bitchuteuse_chrome);
+        RadioButton bitchuteUseProperties =view.findViewById(R.id.bitchuteuse_properties);
+        RadioButton youtubeUseChrome =view.findViewById(R.id.youtubeuse_chrome);
+        RadioButton youtubeUseProperties =view.findViewById(R.id.youtubeuse_properties);
        // RadioButton bitchuteUseNative = view.findViewById(R.id.bitchuteuse_native);
         RadioButton bitchuteUseExo = view.findViewById(R.id.bitchuteuse_exo);
         //RadioButton bitchuteUseKodi = view.findViewById(R.id.bitchuteuse_kodi);
@@ -185,6 +187,10 @@ public class SettingsFragment extends Fragment {
                 youtubeUseNewpipe.setChecked(true);
             case 256:
                 youtubeUseYoutube.setChecked(true);
+            case 512:
+                youtubeUseChrome.setChecked(true);
+            case 1024:
+                youtubeUseProperties.setChecked(true);
         }
         youtubeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
@@ -205,6 +211,13 @@ public class SettingsFragment extends Fragment {
                         break;
                     case R.id.youtubeuse_youtube:
                         MainActivity.masterData.setYoutubePlayerChoice(256);
+                        break;
+                    case R.id.youtubeuse_chrome:
+                        MainActivity.masterData.setBitchutePlayerChoice(512);
+                        break;
+                    case R.id.youtubeuse_properties:
+                        MainActivity.masterData.setBitchutePlayerChoice(1024);
+                        break;
                 }
             }
         });
@@ -224,6 +237,13 @@ public class SettingsFragment extends Fragment {
             case 64:
                 bitchuteUseWebtorrentWebview.setChecked(true);
                 break;
+            case 512:
+                bitchuteUseChrome.setChecked(true);
+                break;
+            case 1024:
+                bitchuteUseProperties.setChecked(true);
+                break;
+
         }
         bitchuteRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
@@ -243,6 +263,12 @@ public class SettingsFragment extends Fragment {
                         break;
                     case R.id.bitchuteuse_webtorrentwebview:
                         MainActivity.masterData.setBitchutePlayerChoice(64);
+                        break;
+                    case R.id.bitchuteuse_chrome:
+                        MainActivity.masterData.setBitchutePlayerChoice(512);
+                        break;
+                    case R.id.bitchuteuse_properties:
+                        MainActivity.masterData.setBitchutePlayerChoice(1024);
                         break;
                 }
             }
@@ -295,7 +321,6 @@ public class SettingsFragment extends Fragment {
         MainActivity.masterData.setMuteErrors(muteErrors.isChecked());
         MainActivity.masterData.setBitchuteSearchBitchute(bcSearchBitchute.isChecked());
         MainActivity.masterData.setBitchuteSearchGoogle(bcSearchGoogle.isChecked());
-        MainActivity.masterData.setBitchuteSearchDuck(bcSearchDuck.isChecked());
         MainActivity.masterData.saveUserData();
     }
 }

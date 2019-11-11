@@ -54,7 +54,14 @@
                         android:layout_weight="1"
                         android:text="embed" />
 
-                    <Button
+                <Button
+                    android:id="@+id/properties_play_chrome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Chrome" />
+
+                <Button
                         android:id="@+id/properties_play_webtorrent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -91,6 +98,7 @@
 
             </LinearLayout>
             </HorizontalScrollView>
+
                 <TextView
                     android:id="@+id/video_name"
                     android:layout_width="match_parent"
