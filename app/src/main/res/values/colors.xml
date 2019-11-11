@@ -1,20 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Light Theme -->
-
-    <!-- Dark Theme -->
-
-    <!-- Black Theme -->
-
-    <!-- Miscellaneous -->
-
-    <!-- GigaGet theme -->
-
-    <!-- GigaGet download Theme colors -->
-
-    <!-- GigaGet Component colors -->
-
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#23000000</color>
     <color name="colorAccent">#D81B60</color>

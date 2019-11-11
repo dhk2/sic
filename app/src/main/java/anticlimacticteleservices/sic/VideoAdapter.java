@@ -93,6 +93,9 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         if (video.isYoutube()){
            hold.serviceIcon.setImageResource(R.drawable.youtubeicon);
         }
+        if (video.isBitchute() && video.isYoutube()){
+            hold.serviceIcon.setImageResource(R.drawable.ic_home_black_24dp);
+        }
         if (video.getThumbnailurl().isEmpty()){
             hold.image.setImageResource(R.drawable.bitchuteicon2 );
         }
