@@ -189,7 +189,7 @@ class Video implements Serializable,Comparable<Video>
     public String getYoutubeEmbeddedUrl(){
         return "https://www.youtube.com/embed/"+this.sourceID +"?autoplay=1&modestbranding=1";
     }
-    public String getBitchuteeEmbeddedUrl(){
+    public String getBitchuteEmbeddedUrl(){
         return "https://www.bitchute.com/embed/"+this.sourceID;
     }
 

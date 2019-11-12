@@ -245,7 +245,7 @@ public class fragment_video_properties extends Fragment {
                 String path ="";
                 Intent playerIntent = new Intent(Intent.ACTION_VIEW);
                 if (vid.isBitchute()) {
-                    path = vid.getMp4();
+                    path = vid.getBitchuteEmbeddedUrl();
                 } else {
                     path = vid.getYoutubeEmbeddedUrl();
                 }

@@ -94,7 +94,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
            hold.serviceIcon.setImageResource(R.drawable.youtubeicon);
         }
         if (video.isBitchute() && video.isYoutube()){
-            hold.serviceIcon.setImageResource(R.drawable.ic_home_black_24dp);
+            hold.serviceIcon.setImageResource(R.drawable.dualsource);
         }
         if (video.getThumbnailurl().isEmpty()){
             hold.image.setImageResource(R.drawable.bitchuteicon2 );
@@ -266,9 +266,9 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                     case 512:
                         playerIntent = new Intent(Intent.ACTION_VIEW);
                         if (vid.isBitchute()) {
-                            path = vid.getMp4();
+                            path = vid.getBitchuteEmbeddedUrl();
                         } else {
-                            path = vid.getYoutubeUrl();
+                            path = vid.getYoutubeEmbeddedUrl();
                         }
                         uri = Uri.parse(path);
 

@@ -1,12 +1,8 @@
 package anticlimacticteleservices.sic;
 
 import android.arch.persistence.room.Room;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import org.jsoup.Jsoup;
@@ -15,7 +11,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 //TODO move dissenter check outside of site specific sections
 //TODO transverse comment subthreads
 //TODO pull more useful data
@@ -66,15 +61,34 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                 commentDao = MainActivity.masterData.getCommentDao();
             }
         }
+        Document doctest = null;
         if (vid.isBitchute() && !vid.isYoutube()){
-            vid.setYoutubeID(vid.getSourceID());
-            System.out.println("<<>> need to find out if youtube version exists");
-            System.out.println((vid.getBitchuteUrl()));
-            System.out.println(vid.getEmbeddedUrl());
-            System.out.println(vid.getYoutubeUrl());
+
+            try {
+                doctest = Jsoup.connect(vid.getYoutubeUrl()).get();
+                vid.setBitchuteID(vid.getSourceID());
+
+                vid.setYoutubeID(vid.getSourceID());
+                System.out.println("<<>> need to find out if youtube version exists");
+                System.out.println((vid.getBitchuteUrl()));
+                System.out.println(vid.getBitchuteEmbeddedUrl());
+                System.out.println(vid.getEmbeddedUrl());
+                System.out.println(vid.getYoutubeEmbeddedUrl());
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+                Log.e("Videoscrape","unable to load youtubve version of bitchute video");
+            }
+
         }
-        if (vid.isYoutube() && !vid.isBitchute()){
-            vid.setBitchuteID(vid.getSourceID());
+        if (vid.isYoutube() && !vid.isBitchute()) {
+            try {
+                doctest = Jsoup.connect(vid.getBitchuteEmbeddedUrl()).get();
+                vid.setBitchuteID(vid.getSourceID());
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("Videoscrape", "unable to load bitchute version of youtube video");
+            }
         }
         if (vid.isBitchute()){
             Document doc = null;
