@@ -32,24 +32,26 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
            for (Channel c : MainActivity.masterData.getChannels()){
                if (((chan.getYoutubeID() == c.getYoutubeID()) && chan.isYoutube() )|| ( chan.isBitchute() &&(chan.getBitchuteID() == c.getBitchuteID()))){
                    dupeCount++;
-                   Log.v("Channel-Init","trying to add channel that is already in the list");
+                   Log.v("Channel-Init","trying to add duplicate channel "+chan.getTitle());
                    continue channels;
                }
            }
            try {
                 chan = new Channel(g);
+                channelRss=null;
+                channelPage=null;
                 if (chan.isBitchute()){
                     channelPage = Jsoup.connect(chan.getBitchuteUrl()).get();
                 //bitchute rss feeds don't work with the channel UID but only with the text name, need to get text name before parsing rss
                     chan = new Channel("https://www.bitchute.com" + channelPage.getElementsByClass("name").first().getElementsByTag("a").first().attr("href"));
                     channelRss= Jsoup.connect(chan.getBitchuteRssFeedUrl()).get();
                 }
-                else {
-                    System.out.println(chan);
-                    System.out.println("<"+chan.getBitchuteRssFeedUrl()+"><"+chan.getYoutubeUrl());
+                if (chan.isYoutube()) {
                     channelRss = Jsoup.connect(chan.getYoutubeRssFeedUrl()).get();
                     channelPage= Jsoup.connect(chan.getYoutubeUrl()).get();
                 }
+               System.out.println(chan);
+               System.out.println("bitchute rss feed:"+chan.getBitchuteRssFeedUrl());
                 chan.setTitle(channelRss.title());
                Log.v("Channel-Init","creating channel with title:"+channelRss.title());
                //System.out.println("g is:"+g +"\n   id is "+chan.getSourceID()+ "\n    url is "+chan.getBitchuteUrl()+"\n   youtube rss: "+chan.getYoutubeRssFeedUrl()+"\n  bitchute rss feed "+chan.getBitchuteRssFeedUrl());

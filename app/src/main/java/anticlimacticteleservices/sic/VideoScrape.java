@@ -84,7 +84,8 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
         if (vid.isYoutube() && !vid.isBitchute()) {
             try {
                 doctest = Jsoup.connect(vid.getBitchuteEmbeddedUrl()).get();
-                vid.setBitchuteID(vid.getSourceID());
+                System.out.println(doctest.title());
+                //vid.setBitchuteID(vid.getSourceID());
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.e("Videoscrape", "unable to load bitchute version of youtube video");

@@ -251,6 +251,7 @@ public class UserData {
     public boolean bitchuteUseVlc() {
         return bitchutePlayerChoice == 1;
     }
+    //went a different way
     public boolean bitchuteUseDefault() {return bitchutePlayerChoice ==2; }
     public boolean bitchuteUseNative() {return bitchutePlayerChoice ==8; }
     public boolean bitchuteUseExo() {return bitchutePlayerChoice ==16; }
@@ -407,8 +408,8 @@ public class UserData {
         fragmentID="home";
         //TODO rationalize the preferences betwixt userdata and mainactivity.
         editor = MainActivity.preferences.edit();
-        youtubePlayerChoice = MainActivity.preferences.getInt("youtubePlayerChoice", 4);
-        bitchutePlayerChoice = MainActivity.preferences.getInt("bitchutePlayerChoice", 64);
+        youtubePlayerChoice = MainActivity.preferences.getInt("youtubePlayerChoice", 1024);
+        bitchutePlayerChoice = MainActivity.preferences.getInt("bitchutePlayerChoice", 1024);
 
         feedLinks = MainActivity.preferences.getStringSet("feedlinks",feedLinks);
         feedAge = MainActivity.preferences.getLong("feedAge",7);
@@ -420,7 +421,7 @@ public class UserData {
         muteErrors = MainActivity.preferences.getBoolean("muteErrors",true);
         bitchuteSearchBitchute = MainActivity.preferences.getBoolean("bitchuteSearchBitchute",true);
         bitchuteSearchGoogle = MainActivity.preferences.getBoolean("bitchuteSearchGoogle",true);
-        bitchuteSearchDuck = MainActivity.preferences.getBoolean("bitchuteSearchDuck",false);
+  //      bitchuteSearchDuck = MainActivity.preferences.getBoolean("bitchuteSearchDuck",false);
         //shouldn't be needed
         if (youtubePlayerChoice==0)
             youtubePlayerChoice=4;

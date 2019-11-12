@@ -162,7 +162,14 @@ class Channel implements Serializable{
                 "Subscribers:"+this.subscribers+"\n"+
                 "date joined"+new Date(this.joined)+"\n"+
                 "Last Sync"+new Date(lastsync)+"\n"+
-                "description:"+this.description+"\n");
+                "description:"+this.description+"\n"+
+                "errors:"+this.errors+"\n"+
+                "archive:"+this.archive+"\n"+
+                "notify:"+this.notify+"\n"+
+                "localpath:"+this.localPath+"\n"+
+                "supported:"+this.supported+"\n"+
+                "subscribers:"+this.subscribers+"\n");
+
     }
     public boolean matches(String value){
         return youtubeID.equals(value) || bitchuteID.equals(value);

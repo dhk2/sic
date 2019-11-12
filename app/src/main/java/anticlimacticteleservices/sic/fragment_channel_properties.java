@@ -73,12 +73,14 @@ public class fragment_channel_properties extends Fragment {
         Spanned spanned = HtmlCompat.fromHtml(chan.getDescription(), HtmlCompat.FROM_HTML_MODE_COMPACT);
         description.setText(spanned);
         description.append(System.getProperty("line.separator"));
+        description.append(chan.toString());
+        /*
         description.append("Subscribers:"+chan.getSubscribers()+System.getProperty("line.separator"));
         description.append("last synch:"+new Date(chan.getLastsync())+System.getProperty("line.separator"));
         description.append("source url:"+chan.getUrl()+System.getProperty("line.separator"));
         description.append("Started:"+new Date(chan.getJoined())+System.getProperty("line.separator"));
         //description.append("youtube:"+chan.getSubscribers()+System.getProperty("line.separator"));
-
+*/
         ImageView image = v.findViewById(R.id.thumbNailView);
         if (!chan.getThumbnail().isEmpty()){
             Picasso.get().load(chan.getThumbnail()).resize(320,240).centerInside().into(image);
