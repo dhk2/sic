@@ -28,9 +28,11 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
         Document channelRss;
         channels:for (String g : params) {
            chan = new Channel(g);
+            Log.v("Channel-Init","trying to add channel:"+g);
            for (Channel c : MainActivity.masterData.getChannels()){
                if (((chan.getYoutubeID() == c.getYoutubeID()) && chan.isYoutube() )|| ( chan.isBitchute() &&(chan.getBitchuteID() == c.getBitchuteID()))){
                    dupeCount++;
+                   Log.v("Channel-Init","trying to add channel that is already in the list");
                    continue channels;
                }
            }
@@ -49,7 +51,8 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                     channelPage= Jsoup.connect(chan.getYoutubeUrl()).get();
                 }
                 chan.setTitle(channelRss.title());
-               System.out.println("g is:"+g +"\n   id is "+chan.getSourceID()+ "\n    url is "+chan.getBitchuteUrl()+"\n   youtube rss: "+chan.getYoutubeRssFeedUrl()+"\n  bitchute rss feed "+chan.getBitchuteRssFeedUrl());
+               Log.v("Channel-Init","creating channel with title:"+channelRss.title());
+               //System.out.println("g is:"+g +"\n   id is "+chan.getSourceID()+ "\n    url is "+chan.getBitchuteUrl()+"\n   youtube rss: "+chan.getYoutubeRssFeedUrl()+"\n  bitchute rss feed "+chan.getBitchuteRssFeedUrl());
                if (chan.isYoutube()) {
                     chan.setTitle(channelRss.title());
                     chan.setAuthor(channelRss.getElementsByTag("name").first().text());
@@ -91,6 +94,12 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                         }
                     }
                 }
+
+
+
+
+
+
                 if (chan.isBitchute()) {
                     try {
                         chan.setDescription(channelRss.getElementsByTag("description").first().text());

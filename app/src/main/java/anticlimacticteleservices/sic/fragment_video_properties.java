@@ -247,7 +247,7 @@ public class fragment_video_properties extends Fragment {
                 if (vid.isBitchute()) {
                     path = vid.getMp4();
                 } else {
-                    path = vid.getYoutubeUrl();
+                    path = vid.getYoutubeEmbeddedUrl();
                 }
                 uri = Uri.parse(path);
 

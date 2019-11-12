@@ -66,6 +66,16 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                 commentDao = MainActivity.masterData.getCommentDao();
             }
         }
+        if (vid.isBitchute() && !vid.isYoutube()){
+            vid.setYoutubeID(vid.getSourceID());
+            System.out.println("<<>> need to find out if youtube version exists");
+            System.out.println((vid.getBitchuteUrl()));
+            System.out.println(vid.getEmbeddedUrl());
+            System.out.println(vid.getYoutubeUrl());
+        }
+        if (vid.isYoutube() && !vid.isBitchute()){
+            vid.setBitchuteID(vid.getSourceID());
+        }
         if (vid.isBitchute()){
             Document doc = null;
             int commentcounter=0;
@@ -99,7 +109,7 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                     }
                 }
                 Log.v("Videoscrape",vid.getTitle()+" added "+commentcounter+" comments from bitchute url");
-                doc = Jsoup.connect("https://dissenter.com/discussion/begin?url="+vid.getYoutubeUrl()+"&cpp=69").get();
+  /*              doc = Jsoup.connect("https://dissenter.com/discussion/begin?url="+vid.getYoutubeUrl()+"&cpp=69").get();
                 posts = doc.getElementsByClass("comment-container");
                 for (Element p : posts){
                     Comment com = new Comment(p.attr("data-comment-id"));
@@ -116,6 +126,7 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                     }
                 }
                Log.v("Videoscrape",vid.getTitle()+" added "+commentcounter+" Comments after youtube url");
+               */
                 videoDao.update(vid);
                 if (!headless){
                     MainActivity.masterData.updateVideo(vid);

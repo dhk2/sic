@@ -186,7 +186,12 @@ class Video implements Serializable,Comparable<Video>
             return "https://www.bitchute.com/embed/"+this.sourceID;
         }
     }
-
+    public String getYoutubeEmbeddedUrl(){
+        return "https://www.youtube.com/embed/"+this.sourceID +"?autoplay=1&modestbranding=1";
+    }
+    public String getBitchuteeEmbeddedUrl(){
+        return "https://www.bitchute.com/embed/"+this.sourceID;
+    }
 
 //			Setters
 
