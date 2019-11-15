@@ -63,17 +63,15 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
         }
         Document doctest = null;
         if (vid.isBitchute() && !vid.isYoutube()){
-
             try {
-                doctest = Jsoup.connect(vid.getYoutubeUrl()).get();
-                vid.setBitchuteID(vid.getSourceID());
-
-                vid.setYoutubeID(vid.getSourceID());
-                System.out.println("<<>> need to find out if youtube version exists");
-                System.out.println((vid.getBitchuteUrl()));
-                System.out.println(vid.getBitchuteEmbeddedUrl());
-                System.out.println(vid.getEmbeddedUrl());
-                System.out.println(vid.getYoutubeEmbeddedUrl());
+                doctest = Jsoup.connect(vid.getYoutubeEmbeddedUrl()).get();
+                System.out.println((">>>>>>"+doctest.title()+"<<<<<<<"));
+                if (doctest.title().equals("YouTube")){
+                    System.out.println(("no youtube version exists of video"));
+                }
+                else {
+                    vid.setYoutubeID(vid.getSourceID());
+                }
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -85,7 +83,7 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
             try {
                 doctest = Jsoup.connect(vid.getBitchuteEmbeddedUrl()).get();
                 System.out.println(doctest.title());
-                //vid.setBitchuteID(vid.getSourceID());
+                 vid.setBitchuteID(vid.getSourceID());
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.e("Videoscrape", "unable to load bitchute version of youtube video");
