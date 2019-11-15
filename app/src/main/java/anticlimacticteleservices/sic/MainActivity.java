@@ -3,13 +3,16 @@ package anticlimacticteleservices.sic;
 import android.Manifest;
 import android.app.ActionBar;
 import android.app.Dialog;
+import android.app.DownloadManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.arch.persistence.room.Room;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -17,6 +20,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.StrictMode;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -38,6 +42,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.squareup.picasso.Picasso;
@@ -157,6 +162,9 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
     protected void onCreate(Bundle savedInstanceState) {
         Log.v("Main-OC","started oncreate");
         super.onCreate(savedInstanceState);
+        //this is supposed to allow me to play local files in external players
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder(); StrictMode.setVmPolicy(builder.build());
+        registerReceiver(onDownloadComplete,new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         if (masterData == null) {
             Log.v("Main-OC","masterData is null");
             preferences = getSharedPreferences( getPackageName() + "_preferences", MODE_PRIVATE);
@@ -275,6 +283,35 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
             }
         }
     }
+
+    private BroadcastReceiver onDownloadComplete = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String path;
+            //Fetching the download id received with the broadcast
+            long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+            //Checking if the received broadcast is for our enqueued download by matching download id
+            System.out.println("download completed "+id+ "and "+masterData.downloadID);
+            if (masterData.downloadID == id) {
+                Toast.makeText(MainActivity.this, "Download Completed", Toast.LENGTH_SHORT).show();
+                path = Environment.DIRECTORY_DOWNLOADS+"/"+masterData.downloadSourceID+".mp4";
+                System.out.println(path);
+                System.out.println(masterData.downloadSourceID);
+                for (Video match : MainActivity.masterData.getVideos()) {
+                    if (match.getSourceID().equals(masterData.downloadSourceID)) {
+                        match.setLocalPath(path);
+                        System.out.println("matched wtih video "+match.getID()+" "+match.getSourceID());
+                        masterData.getVideoDao().update(match);
+                    }
+                }
+           }
+        }
+    };
+
+
+
+
+
     @Override
     public void onPause() {
         Log.v("Main-op","on pause started");
@@ -292,6 +329,7 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
     protected void onDestroy() {
         Log.v("Main-op","on destroy started");
         super.onDestroy();
+        unregisterReceiver(onDownloadComplete);
       /*  masterData.sicDatabase.close();
         masterData.channelDatabase.close();
         masterData.commentDatabase.close();

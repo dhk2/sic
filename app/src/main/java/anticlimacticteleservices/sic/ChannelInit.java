@@ -87,6 +87,10 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                         for (Video match : MainActivity.masterData.getVideos()) {
                             if (match.getSourceID().equals(nv.getSourceID())) {
                                 unique = false;
+                                if (match.getYoutubeID()==""){
+                                    match.setYoutubeID(nv.getSourceID());
+                                }
+
                                 break;
                             }
                         }
@@ -94,6 +98,7 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                             MainActivity.masterData.addVideo(nv);
                             newVideoCount++;
                         }
+                        //  video is already in database
                     }
                 }
 
@@ -136,6 +141,9 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                             for (Video match : MainActivity.masterData.getVideos()) {
                                 if (match.getSourceID().equals(nv.getSourceID())) {
                                     unique = false;
+                                    if (match.getBitchuteID()==""){
+                                        match.setBitchuteID(nv.getSourceID());
+                                    }
                                     break;
                                 }
                             }

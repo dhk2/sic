@@ -297,6 +297,7 @@ class Video implements Serializable,Comparable<Video>
                 "Comments:" + commentCount + "\n" +
                 "Hash tags:" + hashtags  + "\n" +
                 "Duration:" + duration +"\n"+
+                "local path:"+localPath+"\n"+
                 "Category:" + category+ "\n");
 
     }
@@ -320,6 +321,7 @@ class Video implements Serializable,Comparable<Video>
                 "youtube sourceID:" + youtubeID + "<p>" +
                 "Comments:" + commentCount + "<p>" +
                 "Hash tags:" + hashtags  + "<p>" +
+                "local path:"+localPath+"<p>"+
                 "Duration:" + duration +"<p>"+
                 "Category:" + category+ "<p>");
     }

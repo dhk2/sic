@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -60,7 +62,9 @@ public class UserData {
         System.out.println("setting video dao in masterdata"+value.toString());
         this.channelDao = value;
     }
-
+    public long downloadID=0;
+    public long downloadVideoID=0;
+    public String downloadSourceID;
     //fragment manager management hooks.
     FragmentManager fragmentManager;
     Fragment fragment;
@@ -233,7 +237,7 @@ public class UserData {
 
     private int youtubePlayerChoice;
     private int bitchutePlayerChoice;
-
+    public boolean newpipeInstalled,chromeInstalled,youtubeInstalled,vlcInstalled;
     public boolean youtubeUseNewpipe() {return youtubePlayerChoice == 32;}
     public boolean youtubeUseExoView() {
         return youtubePlayerChoice == 16;
@@ -427,6 +431,32 @@ public class UserData {
             youtubePlayerChoice=4;
         if (bitchutePlayerChoice==0)
             bitchutePlayerChoice=64;
+        youtubeInstalled=false;
+        newpipeInstalled=false;
+        chromeInstalled=false;
+        vlcInstalled=false;
+
+        PackageManager pm = context.getPackageManager();
+        List<ApplicationInfo> list = pm.getInstalledApplications(0);
+        for (int i = 0; i < list.size(); i++) {
+
+            if (list.get(i).packageName.equals("org.videolan.vlc")){
+                System.out.println(list.get(i).packageName);
+                vlcInstalled=true;
+            }
+            if (list.get(i).packageName.equals("org.schabi.newpipe")){
+                System.out.println(list.get(i).packageName);
+                newpipeInstalled=true;
+            }
+            if (list.get(i).packageName.equals("com.google.android.youtube")){
+                System.out.println(list.get(i).packageName);
+                youtubeInstalled=true;
+            }
+            if (list.get(i).packageName.equals("com.android.chrome")){
+                System.out.println(list.get(i).packageName);
+                chromeInstalled=true;
+            }
+        }
 
         channelDatabase = Room.databaseBuilder(context , ChannelDatabase.class, "channel")
              //TODO get rid of main thread queries

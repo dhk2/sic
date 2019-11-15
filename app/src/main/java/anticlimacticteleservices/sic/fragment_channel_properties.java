@@ -106,6 +106,13 @@ public class fragment_channel_properties extends Fragment {
                 }
                 if (subscribed.isChecked()){
                     MainActivity.masterData.addChannel(chan);
+                    if (chan.isBitchute()){
+                        new ChannelInit().execute(chan.getBitchuteUrl());
+                    }
+                    if (chan.isYoutube()){
+                        new ChannelInit().execute(chan.getYoutubeUrl());
+                    }
+
                 }
                 MainActivity.masterData.getChannelDao().update(chan);
                 MainActivity.masterData.fragmentManager.popBackStack();

@@ -1,10 +1,12 @@
 package anticlimacticteleservices.sic;
 
 import android.app.Dialog;
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.text.HtmlCompat;
@@ -21,9 +23,12 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static android.content.Context.DOWNLOAD_SERVICE;
 
 
 /**
@@ -114,22 +119,66 @@ public class fragment_video_properties extends Fragment {
         TextView title = v.findViewById(R.id.video_name);
         title.setText(vid.getTitle());
         Button dialogButton = v.findViewById(R.id.closeButton);
-        Button playVlc= v.findViewById(R.id.properties_play_vlc);
+        Button playBitchuteVlc= v.findViewById(R.id.properties_play_bc_vlc);
+        Button playYoutubeVlc= v.findViewById(R.id.properties_play_yt_vlc);
         Button playExo=v.findViewById(R.id.properties_play_exo);
         Button playWebTorrent= v.findViewById(R.id.properties_play_webtorrent);
-        Button playEmbedded = v.findViewById(R.id.properties_play_embedded);
-        Button playSystem = v.findViewById(R.id.properties_play_default);
+        Button playYoutubeEmbedded = v.findViewById(R.id.properties_play_yt_embedded);
+        Button playBitchuteEmbedded = v.findViewById(R.id.properties_play_bc_embedded);
+        Button playBitchuteSystem = v.findViewById(R.id.properties_play_bc_default);
+        Button playYoutubeSystem = v.findViewById(R.id.properties_play_yt_default);
+        Button playLocalSystem=v.findViewById(R.id.properties_play_local_default);
         Button playYoutube = v.findViewById(R.id.properties_play_youtube);
         Button playNewpipe = v.findViewById(R.id.properties_play_newpipe);
-        Button playChrome = v.findViewById(R.id.properties_play_chrome);
+        Button playBitchuteChrome = v.findViewById(R.id.properties_play_bc_chrome);
+        Button playYoutubeChrome = v.findViewById(R.id.properties_play_yt_chrome);
+        Button download = v.findViewById(R.id.properties_download);
+        System.out.println(MainActivity.masterData.youtubeInstalled);
+        System.out.println((MainActivity.masterData.chromeInstalled));
+        System.out.println((MainActivity.masterData.newpipeInstalled));
         // turn off bitchute options if not bitchute
         if (!vid.isBitchute()){
             playExo.setVisibility(View.GONE);
             playWebTorrent.setVisibility(View.GONE);
+            playBitchuteChrome.setVisibility(View.GONE);
+            playBitchuteEmbedded.setVisibility(View.GONE);
+            playBitchuteSystem.setVisibility((View.GONE));
+            playBitchuteVlc.setVisibility((View.GONE));
         }
         if (!vid.isYoutube()){
             playNewpipe.setVisibility(View.GONE);
             playYoutube.setVisibility(View.GONE);
+            playYoutubeChrome.setVisibility(View.GONE);
+            playYoutubeEmbedded.setVisibility(View.GONE);
+            playYoutubeSystem.setVisibility((View.GONE));
+            playYoutubeVlc.setVisibility((View.GONE));
+        }
+        if (vid.getMp4().equals("")){
+            playExo.setVisibility(View.GONE);
+            download.setVisibility(View.GONE);
+            playBitchuteSystem.setVisibility((View.GONE));
+            playBitchuteVlc.setVisibility((View.GONE));
+
+        }
+        if (vid.getMagnet().equals("")){
+            playWebTorrent.setVisibility(View.GONE);
+        }
+        if (!MainActivity.masterData.vlcInstalled){
+            playYoutubeVlc.setVisibility(View.GONE);
+            playBitchuteVlc.setVisibility(View.GONE);
+        }
+        if (!MainActivity.masterData.newpipeInstalled){
+            playNewpipe.setVisibility(View.GONE);
+        }
+        if (!MainActivity.masterData.chromeInstalled){
+            playYoutubeChrome.setVisibility(View.GONE);
+            playBitchuteChrome.setVisibility(View.GONE);
+        }
+        if (!MainActivity.masterData.youtubeInstalled){
+            playYoutube.setVisibility(View.GONE);
+        }
+        if (null == vid.getLocalPath()){
+            playLocalSystem.setVisibility(View.GONE);
         }
         dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,7 +186,7 @@ public class fragment_video_properties extends Fragment {
                 MainActivity.masterData.fragmentManager.popBackStack();
             }
         });
-        playVlc.setOnClickListener(new View.OnClickListener() {
+        playYoutubeVlc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Uri uri;
@@ -145,18 +194,31 @@ public class fragment_video_properties extends Fragment {
                 String path ="";
                 Intent playerIntent = new Intent(Intent.ACTION_VIEW);
                 playerIntent.setPackage("org.videolan.vlc");
-                if (vid.isBitchute()) {
-                    path = vid.getMp4();
-                }
-                if (vid.isYoutube()){
-                    path = vid.getYoutubeUrl();
-                }
+                path = vid.getYoutubeUrl();
                 uri = Uri.parse(path);
                 playerIntent.setDataAndTypeAndNormalize(uri, "video/*");
                 playerIntent.putExtra("title", vid.getTitle());
                 v.getContext().startActivity(playerIntent);
             }
         });
+
+        playBitchuteVlc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri uri;
+                int vlcRequestCode = 42;
+                String path ="";
+                Intent playerIntent = new Intent(Intent.ACTION_VIEW);
+                playerIntent.setPackage("org.videolan.vlc");
+                path = vid.getMp4();
+                uri= Uri.parse(path);
+                playerIntent.setDataAndTypeAndNormalize(uri, "video/*");
+                playerIntent.putExtra("title", vid.getTitle());
+                v.getContext().startActivity(playerIntent);
+            }
+        });
+
+
         playNewpipe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -196,7 +258,19 @@ public class fragment_video_properties extends Fragment {
                 transaction.commitAllowingStateLoss();
             }
         });
-        playEmbedded.setOnClickListener(new View.OnClickListener() {
+        playBitchuteEmbedded.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.masterData.setWebViewOption(0);
+                FragmentTransaction transaction;
+                fragment_webviewplayer wwfragment = fragment_webviewplayer.newInstance("",vid);
+                transaction = MainActivity.masterData.getFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragment, wwfragment);
+                transaction.addToBackStack(null);
+                transaction.commitAllowingStateLoss();
+            }
+        });
+        playYoutubeEmbedded.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 MainActivity.masterData.setWebViewOption(0);
@@ -220,17 +294,26 @@ public class fragment_video_properties extends Fragment {
                 transaction.commitAllowingStateLoss();
             }
         });
-        playSystem.setOnClickListener(new View.OnClickListener() {
+        playYoutubeSystem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Uri uri;
                 String path ="";
                 Intent playerIntent = new Intent(Intent.ACTION_VIEW);
-                if (vid.isBitchute()) {
-                    path = vid.getMp4();
-                } else {
-                    path = vid.getYoutubeUrl();
-                }
+                path = vid.getYoutubeUrl();
+                uri = Uri.parse(path);
+                playerIntent.setData(uri);
+                playerIntent.putExtra("title", vid.getTitle());
+                v.getContext().startActivity(playerIntent);
+            }
+        });
+        playBitchuteSystem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri uri;
+                String path ="";
+                Intent playerIntent = new Intent(Intent.ACTION_VIEW);
+                path = vid.getMp4();
                 uri = Uri.parse(path);
                 playerIntent.setData(uri);
                 playerIntent.putExtra("title", vid.getTitle());
@@ -238,23 +321,73 @@ public class fragment_video_properties extends Fragment {
             }
         });
 
-        playChrome.setOnClickListener(new View.OnClickListener() {
+        playLocalSystem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri uri;
+                String path ="";
+                File file=new File(Environment.DIRECTORY_DOWNLOADS,vid.getSourceID()+".mp4");
+                Intent playerIntent = new Intent(Intent.ACTION_VIEW);
+                path = vid.getLocalPath();
+                uri = Uri.fromFile(file);
+                playerIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                playerIntent.setData(uri);
+                playerIntent.putExtra("title", vid.getTitle());
+                playerIntent.setDataAndTypeAndNormalize(uri, "video/*");
+                v.getContext().startActivity(playerIntent);
+            }
+        });
+
+        playYoutubeChrome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Uri uri;
                 String path ="";
                 Intent playerIntent = new Intent(Intent.ACTION_VIEW);
-                if (vid.isBitchute()) {
-                    path = vid.getBitchuteEmbeddedUrl();
-                } else {
-                    path = vid.getYoutubeEmbeddedUrl();
-                }
+                path = vid.getYoutubeEmbeddedUrl();
                 uri = Uri.parse(path);
-
                 playerIntent.setPackage( "com.android.chrome" );
                 playerIntent.setData(uri);
                 playerIntent.putExtra("title", vid.getTitle());
                 v.getContext().startActivity(playerIntent);
+            }
+        });
+        playBitchuteChrome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri uri;
+                String path ="";
+                Intent playerIntent = new Intent(Intent.ACTION_VIEW);
+                path = vid.getBitchuteEmbeddedUrl();
+                uri = Uri.parse(path);
+                playerIntent.setPackage( "com.android.chrome" );
+                playerIntent.setData(uri);
+                playerIntent.putExtra("title", vid.getTitle());
+                v.getContext().startActivity(playerIntent);
+            }
+        });
+        download.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri target = Uri.parse(vid.getMp4());
+                vid.setLocalPath(Environment.DIRECTORY_DOWNLOADS+"/"+vid.getSourceID()+".mp4");
+                System.out.println(vid.getLocalPath());
+                System.out.println(requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS));
+                DownloadManager downloadManager = (DownloadManager) MainActivity.masterData.context.getApplicationContext().getSystemService(DOWNLOAD_SERVICE);
+                DownloadManager.Request request = new DownloadManager.Request(target);
+                request.allowScanningByMediaScanner();
+                //request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
+                //request.setAllowedOverRoaming(false);
+                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                request.setTitle(vid.getAuthor());
+                request.setDescription(vid.getTitle());
+                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,vid.getSourceID()+".mp4");
+                request.setVisibleInDownloadsUi(true);
+                MainActivity.masterData.downloadVideoID = vid.getID();
+                MainActivity.masterData.downloadSourceID = vid.getSourceID();
+                MainActivity.masterData.downloadID = downloadManager.enqueue(request);
+
+
             }
         });
 

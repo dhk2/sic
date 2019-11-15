@@ -220,6 +220,7 @@ channelloop:for (Channel chan :allChannels){
                                 System.out.println("new youtube video mirrors bitchute video "+match.getAuthor()+ " "+nv.getSourceID());
                                 if (!match.isYoutube()) {
                                     match.setYoutubeID(nv.getSourceID());
+                                    videoDao.update(match);
                                 }
                                 //continue channelloop;
                             }
