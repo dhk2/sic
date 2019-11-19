@@ -26,6 +26,7 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
     Log.v("Channel-Init",MainActivity.masterData.getChannels().size()+" channels, init channel"+params[0]);
         Document channelPage;
         Document channelRss;
+
         channels:for (String g : params) {
            chan = new Channel(g);
             Log.v("Channel-Init","trying to add channel:"+g);
@@ -90,6 +91,13 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                                 if (match.getYoutubeID()==""){
                                     match.setYoutubeID(nv.getSourceID());
                                 }
+                                if (match.getAuthorID()>0){
+                                    for (Channel c : MainActivity.masterData.getChannels()){
+                                        if (match.getAuthorID() == c.getID()){
+                                            c.setYoutubeID(chan.getYoutubeID());
+                                        }
+                                    }
+                                }
 
                                 break;
                             }
@@ -98,6 +106,7 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                             MainActivity.masterData.addVideo(nv);
                             newVideoCount++;
                         }
+
                         //  video is already in database
                     }
                 }
@@ -144,8 +153,16 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                                     if (match.getBitchuteID()==""){
                                         match.setBitchuteID(nv.getSourceID());
                                     }
+                                    if (match.getAuthorID()>0){
+                                        for (Channel c : MainActivity.masterData.getChannels()){
+                                            if (match.getAuthorID() == c.getID()){
+                                                c.setBitchuteID(chan.getBitchuteID());
+                                            }
+                                        }
+                                    }
                                     break;
                                 }
+
                             }
                             if (unique) {
                                 MainActivity.masterData.addVideo(nv);

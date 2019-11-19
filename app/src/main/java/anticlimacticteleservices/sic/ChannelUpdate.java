@@ -1,6 +1,7 @@
 package anticlimacticteleservices.sic;
 import android.app.ActivityManager;
 import android.app.Application;
+import android.app.DownloadManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -18,6 +19,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -37,6 +39,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static android.content.Context.DOWNLOAD_SERVICE;
 import static android.content.Context.MODE_PRIVATE;
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -311,7 +314,27 @@ channelloop:for (Channel chan :allChannels){
                             createNotification(nv);
                        }
                        if (chan.isArchive()){
-                           new Util.DownloadVideo().execute(nv.getMp4());
+                           new VideoScrape().execute(nv);
+                           Uri target = Uri.parse(nv.getMp4());
+                           nv.setLocalPath(Environment.DIRECTORY_DOWNLOADS+"/"+nv.getSourceID()+".mp4");
+                           System.out.println(nv.getLocalPath());
+                           System.out.println(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS));
+                           DownloadManager downloadManager = (DownloadManager) MainActivity.masterData.context.getApplicationContext().getSystemService(DOWNLOAD_SERVICE);
+                           DownloadManager.Request request = new DownloadManager.Request(target);
+                           request.allowScanningByMediaScanner();
+                           //request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
+                           //request.setAllowedOverRoaming(false);
+                           request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                           request.setTitle(nv.getAuthor());
+                           request.setDescription(nv.getTitle());
+                           request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,nv.getSourceID()+".mp4");
+                           request.setVisibleInDownloadsUi(true);
+                           MainActivity.masterData.downloadVideoID = nv.getID();
+                           MainActivity.masterData.downloadSourceID = nv.getSourceID();
+                           MainActivity.masterData.downloadID = downloadManager.enqueue(request);
+
+
+
                        }
                     }
                 }
