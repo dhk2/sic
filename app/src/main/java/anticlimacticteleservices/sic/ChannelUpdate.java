@@ -204,6 +204,7 @@ channelloop:for (Channel chan :allChannels){
                         //crash out if unable to reach Youtube
                         if (e.getMessage().indexOf("Unable to resolve host")>0) {
                             System.out.println("site appears to be down");
+                            chan.incrementErrors(); 
                             updateError = e.toString();
                             break channelloop;
                         }
@@ -225,7 +226,7 @@ channelloop:for (Channel chan :allChannels){
                                     match.setYoutubeID(nv.getSourceID());
                                     videoDao.update(match);
                                 }
-                                //continue channelloop;
+                                continue channelloop;
                             }
                         }
                         Date pd = new Date(1);
@@ -265,6 +266,7 @@ channelloop:for (Channel chan :allChannels){
                         //crash out if unable to reach bitchute
                         if (e.getMessage().indexOf("Unable to resolve host")>0) {
                             System.out.println("site appears to be down");
+                            chan.incrementErrors();
                             updateError = e.toString();
                             break channelloop;
                         }
@@ -288,7 +290,7 @@ channelloop:for (Channel chan :allChannels){
                                 if (!match.isBitchute()) {
                                     match.setBitchuteID(nv.getSourceID());
                                 }
-                                //continue channelloop;
+                                continue channelloop;
                             }
                         }
                         Date pd=new Date(1);
@@ -313,42 +315,23 @@ channelloop:for (Channel chan :allChannels){
                         //if (true){
                             createNotification(nv);
                        }
-                       if (chan.isArchive()){
-                           new VideoScrape().execute(nv);
-                           Uri target = Uri.parse(nv.getMp4());
-                           nv.setLocalPath(Environment.DIRECTORY_DOWNLOADS+"/"+nv.getSourceID()+".mp4");
-                           System.out.println(nv.getLocalPath());
-                           System.out.println(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS));
-                           DownloadManager downloadManager = (DownloadManager) MainActivity.masterData.context.getApplicationContext().getSystemService(DOWNLOAD_SERVICE);
-                           DownloadManager.Request request = new DownloadManager.Request(target);
-                           request.allowScanningByMediaScanner();
-                           //request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
-                           //request.setAllowedOverRoaming(false);
-                           request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                           request.setTitle(nv.getAuthor());
-                           request.setDescription(nv.getTitle());
-                           request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,nv.getSourceID()+".mp4");
-                           request.setVisibleInDownloadsUi(true);
-                           MainActivity.masterData.downloadVideoID = nv.getID();
-                           MainActivity.masterData.downloadSourceID = nv.getSourceID();
-                           MainActivity.masterData.downloadID = downloadManager.enqueue(request);
-
-
-
-                       }
                     }
                 }
             }
         }
         if (headless) {
             for (Video v : allVideos) {
-                if (v.getMp4().isEmpty() && v.getUpCount().isEmpty()) {
+                if (v.getMp4().isEmpty() && v.isBitchute()) {
                     new VideoScrape().execute(v);
                 }
             }
         }
         else{
-
+            for (Video v : allVideos) {
+                if (v.getMp4().isEmpty() && v.isBitchute()) {
+                    new VideoScrape().execute(v);
+                }
+            }
         }
         Log.v("Channel-Update",dupecount+" duplicate videos discarded,"+mirror+" videos mirrored," +newcount+" new videos added");
         return true;

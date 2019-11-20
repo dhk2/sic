@@ -318,7 +318,7 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
         super.onPause();
 // not sure if this is the best
  /*       for (Video v : MainActivity.masterData.getVideos()){
-            if (v.getMp4().isEmpty() && v.getUpCount().isEmpty()){
+            if (v.getMp4().isEmpty() && v.isBitchute()){
                 new VideoScrape().execute(v);
             }
         }

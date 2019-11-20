@@ -65,7 +65,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         Video video = videos.get(position);
 
         final CustomViewHolder holder = hold;
-        if (video.getMp4().isEmpty() && video.getUpCount().isEmpty()){
+        if (video.getMp4().isEmpty() && video.isBitchute()){
             System.out.println("getting extra info for video"+video.getTitle());
             new VideoScrape().execute(video);
         }

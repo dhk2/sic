@@ -1,8 +1,11 @@
 package anticlimacticteleservices.sic;
 
+import android.app.DownloadManager;
 import android.arch.persistence.room.Room;
 import android.content.Context;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.util.Log;
 
 import org.jsoup.Jsoup;
@@ -11,6 +14,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+
+import static android.content.Context.DOWNLOAD_SERVICE;
 //TODO move dissenter check outside of site specific sections
 //TODO transverse comment subthreads
 //TODO pull more useful data
@@ -18,9 +23,11 @@ import java.io.IOException;
 public class VideoScrape extends AsyncTask<Video,Video,Video> {
     static CommentDao commentDao;
     static VideoDao videoDao;
+    static ChannelDao channelDao;
     Video vid;
     SicDatabase sicDatabase;
     CommentDatabase commentDatabase;
+    ChannelDatabase channelDatabase;
     Context context;
     Boolean headless=true;
     @Override
@@ -50,6 +57,11 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                         .fallbackToDestructiveMigration()
                         .build();
                 videoDao = sicDatabase.videoDao();
+                channelDatabase = Room.databaseBuilder(context , ChannelDatabase.class, "channel")
+                        .allowMainThreadQueries()
+                        .fallbackToDestructiveMigration()
+                        .build();
+                channelDao = channelDatabase.ChannelDao();
                 commentDatabase = Room.databaseBuilder(context , CommentDatabase.class, "comment")
                         .allowMainThreadQueries()
                         .fallbackToDestructiveMigration()
@@ -59,6 +71,7 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
             else {
                 videoDao = MainActivity.masterData.getVideoDao();
                 commentDao = MainActivity.masterData.getCommentDao();
+                channelDao = MainActivity.masterData.getChannelDao();
             }
         }
         Document doctest = null;
@@ -122,6 +135,12 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                     }
                 }
                 Log.v("Videoscrape",vid.getTitle()+" added "+commentcounter+" comments from bitchute url");
+
+
+
+
+
+
   /*              doc = Jsoup.connect("https://dissenter.com/discussion/begin?url="+vid.getYoutubeUrl()+"&cpp=69").get();
                 posts = doc.getElementsByClass("comment-container");
                 for (Element p : posts){
@@ -140,13 +159,32 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                 }
                Log.v("Videoscrape",vid.getTitle()+" added "+commentcounter+" Comments after youtube url");
                */
+                if ((channelDao.getChannelById(vid.getAuthorID()).isArchive()) && !vid.getMp4().isEmpty() && (null == vid.getLocalPath())){
+                    Uri target = Uri.parse(vid.getMp4());
+                    vid.setLocalPath(Environment.DIRECTORY_DOWNLOADS+"/"+vid.getSourceID()+".mp4");
+                    System.out.println(vid.getLocalPath());
+                    System.out.println(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS));
+                    DownloadManager downloadManager = (DownloadManager) MainActivity.masterData.context.getApplicationContext().getSystemService(DOWNLOAD_SERVICE);
+                    DownloadManager.Request request = new DownloadManager.Request(target);
+                    request.allowScanningByMediaScanner();
+                    //request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
+                    //request.setAllowedOverRoaming(false);
+                    request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                    request.setTitle(vid.getAuthor());
+                    request.setDescription(vid.getTitle());
+                    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,vid.getSourceID()+".mp4");
+                    request.setVisibleInDownloadsUi(true);
+                    MainActivity.masterData.downloadVideoID = vid.getID();
+                    MainActivity.masterData.downloadSourceID = vid.getSourceID();
+                    MainActivity.masterData.downloadID = downloadManager.enqueue(request);
+                }
                 videoDao.update(vid);
                 if (!headless){
                     MainActivity.masterData.updateVideo(vid);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.e("Videoscrape","network failure in background video updater. aborting this run");
+                Log.e("Videoscrape","network failure in bitchute background video updater. aborting this run "+vid.getBitchuteEmbeddedUrl()+" "+vid.getTitle());
                 return null;
             } catch (NullPointerException e){
                 e.printStackTrace();
@@ -185,7 +223,8 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                 videoDao.update(vid);
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.e("Videoscrape","network failure in background video updater. aborting this run");
+                Log.e("Videoscrape","network failure in youtube background video updater. aborting this run "+vid.getYoutubeEmbeddedUrl()+" "+vid.getTitle());
+
                 return null;
             } catch (NullPointerException e){
                 e.printStackTrace();
