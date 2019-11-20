@@ -162,8 +162,6 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                 if ((channelDao.getChannelById(vid.getAuthorID()).isArchive()) && !vid.getMp4().isEmpty() && (null == vid.getLocalPath())){
                     Uri target = Uri.parse(vid.getMp4());
                     vid.setLocalPath(Environment.DIRECTORY_DOWNLOADS+"/"+vid.getSourceID()+".mp4");
-                    System.out.println(vid.getLocalPath());
-                    System.out.println(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS));
                     DownloadManager downloadManager = (DownloadManager) MainActivity.masterData.context.getApplicationContext().getSystemService(DOWNLOAD_SERVICE);
                     DownloadManager.Request request = new DownloadManager.Request(target);
                     request.allowScanningByMediaScanner();
@@ -178,8 +176,9 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                     MainActivity.masterData.downloadSourceID = vid.getSourceID();
                     MainActivity.masterData.downloadID = downloadManager.enqueue(request);
                 }
-                videoDao.update(vid);
-                if (!headless){
+                if (headless) {
+                    videoDao.update(vid);
+                }else {
                     MainActivity.masterData.updateVideo(vid);
                 }
             } catch (IOException e) {

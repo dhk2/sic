@@ -72,9 +72,11 @@ public class WebTorrentJavascript {
             "        Android.debug('setting up interval')\n"+
             "        setInterval(onProgress, 500)\n" +
             "        onProgress()\n";
-    static String scriptinclude ="    <script src=\"https://cdn.jsdelivr.net/webtorrent/latest/webtorrent.min.js\"></script>\n" +
+    static String scriptinclude ="    " +
+            "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.22.1/es6-shim.min.js\"></script>" +
+            "<script src=\"https://cdn.jsdelivr.net/webtorrent/latest/webtorrent.min.js\"></script>\n" +
             "    <script src=\"https://cdn.jsdelivr.net/npm/web-streams-polyfill@2.0.2/dist/ponyfill.min.js\"></script>\n" +
-            "    <script src=\"https://cdn.jsdelivr.net/npm/streamsaver@2.0.3/StreamSaver.min.js\"></script>\n"+
+//            "    <script src=\"https://cdn.jsdelivr.net/npm/streamsaver@2.0.3/StreamSaver.min.js\"></script>\n"+
             "    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js\"></script>";
     static String playerhtml="<!DOCTYPE html>\n" +
             "<html>\n" +

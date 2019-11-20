@@ -44,6 +44,7 @@
 
                         <Button
                             android:id="@+id/properties_play_exo"
+                            style="@style/Widget.AppCompat.Button.Small"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -52,13 +53,16 @@
 
                         <Button
                             android:id="@+id/properties_play_yt_embedded"
+                            style="@style/Widget.AppCompat.Button.Small"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:backgroundTint="#7E7956"
                             android:text="embed" />
+
                         <Button
                             android:id="@+id/properties_play_bc_embedded"
+                            style="@style/Widget.AppCompat.Button.Small"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -67,6 +71,7 @@
 
                         <Button
                             android:id="@+id/properties_play_yt_chrome"
+                            style="@style/Widget.AppCompat.Button.Small"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -76,6 +81,7 @@
                         <Button
                             android:id="@+id/properties_play_bc_chrome"
                             android:layout_width="wrap_content"
+                            style="@style/Widget.AppCompat.Button.Small"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:backgroundTint="#1054CA"
@@ -84,6 +90,7 @@
                         <Button
                             android:id="@+id/properties_play_webtorrent"
                             android:layout_width="wrap_content"
+                            style="@style/Widget.AppCompat.Button.Small"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:backgroundTint="#1054CA"
@@ -91,6 +98,7 @@
 
                         <Button
                             android:id="@+id/properties_play_yt_vlc"
+                            style="@style/Widget.AppCompat.Button.Small"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -99,6 +107,7 @@
 
                         <Button
                             android:id="@+id/properties_play_bc_vlc"
+                            style="@style/Widget.AppCompat.Button.Small"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -107,6 +116,7 @@
 
                         <Button
                         android:id="@+id/properties_play_bc_default"
+                            style="@style/Widget.AppCompat.Button.Small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -115,6 +125,7 @@
 
                         <Button
                             android:id="@+id/properties_play_yt_default"
+                            style="@style/Widget.AppCompat.Button.Small"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -123,6 +134,7 @@
 
                         <Button
                             android:id="@+id/properties_play_local_default"
+                            style="@style/Widget.AppCompat.Button.Small"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -130,6 +142,7 @@
 
                         <Button
                             android:id="@+id/properties_play_newpipe"
+                            style="@style/Widget.AppCompat.Button.Small"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -138,6 +151,7 @@
 
                         <Button
                             android:id="@+id/properties_play_youtube"
+                            style="@style/Widget.AppCompat.Button.Small"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -146,6 +160,7 @@
 
                         <Button
                             android:id="@+id/properties_download"
+                            style="@style/Widget.AppCompat.Button.Small"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"

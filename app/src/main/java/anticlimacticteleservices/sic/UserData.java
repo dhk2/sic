@@ -156,9 +156,11 @@ public class UserData {
     public void setVideos(List<Video> value) {this.videos = value;}
     public void updateVideo(Video value){
         for (Video v : videos) {
-            if (v.getSourceID().equals(value.getSourceID())){
+            if (v.getID() == (value.getID())){
                 v = value;
+                videoDao.update(v);
                 break;
+
             }
         }
     }
