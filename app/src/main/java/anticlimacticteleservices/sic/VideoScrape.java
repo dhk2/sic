@@ -3,6 +3,7 @@ package anticlimacticteleservices.sic;
 import android.app.DownloadManager;
 import android.arch.persistence.room.Room;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -75,10 +76,11 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
             }
         }
         Document doctest = null;
+        System.out.println(vid.toCompactString());
         if (vid.isBitchute() && !vid.isYoutube()){
             try {
                 doctest = Jsoup.connect(vid.getYoutubeEmbeddedUrl()).get();
-                System.out.println((">>>>>>"+doctest.title()+"<<<<<<<"));
+                System.out.println(("looking for youtube version of "+vid.getTitle()+" from " + vid.getAuthor()+" results in "+doctest.title()));
                 if (doctest.title().equals("YouTube")){
                     System.out.println(("no youtube version exists of video"));
                 }
@@ -95,7 +97,7 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
         if (vid.isYoutube() && !vid.isBitchute()) {
             try {
                 doctest = Jsoup.connect(vid.getBitchuteEmbeddedUrl()).get();
-                System.out.println(doctest.title());
+                System.out.println(("looking for bitchute version of "+vid.getTitle()+" from " + vid.getAuthor()+" results in "+doctest.title()));
                  vid.setBitchuteID(vid.getSourceID());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -137,49 +139,51 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                 Log.v("Videoscrape",vid.getTitle()+" added "+commentcounter+" comments from bitchute url");
 
 
+                if (vid.getAuthorID()>0) {
+                    boolean isDownloading = false;
+                    if ((channelDao.getChannelById(vid.getAuthorID()).isArchive()) && !vid.getMp4().isEmpty() && (null == vid.getLocalPath())) {
 
-
-
-
-  /*              doc = Jsoup.connect("https://dissenter.com/discussion/begin?url="+vid.getYoutubeUrl()+"&cpp=69").get();
-                posts = doc.getElementsByClass("comment-container");
-                for (Element p : posts){
-                    Comment com = new Comment(p.attr("data-comment-id"));
-                    com.setText(p.getElementsByClass("comment-body").text());
-                    com.setThumbnail(p.getElementsByClass("profile-picture mr-3").attr("src"));
-                    com.setAuthor(p.getElementsByClass("profile-name").text());
-                    com.setUpVote(p.getElementsByClass("stat-upvotes").text());
-                    com.setDownVote(p.getElementsByClass("stat-downvotes").text());
-                    com.setFeedID(vid.getID());
-                    Comment test = commentDao.dupeCheck(vid.getID(),com.getText(),com.getAuthor());
-                    if (null == test){
-                        commentDao.insert(com);
-                        commentcounter++;
+                        Uri target = Uri.parse(vid.getMp4());
+                        vid.setLocalPath(Environment.DIRECTORY_DOWNLOADS + "/" + vid.getSourceID() + ".mp4");
+                        DownloadManager downloadManager = (DownloadManager) MainActivity.masterData.context.getApplicationContext().getSystemService(DOWNLOAD_SERVICE);
+                        //added to prevent multiple downloads of the same file issue
+                        DownloadManager.Query query = new DownloadManager.Query();
+                        query.setFilterByStatus(
+                                DownloadManager.STATUS_PAUSED|
+                                        DownloadManager.STATUS_PENDING|
+                                        DownloadManager.STATUS_RUNNING|
+                                        DownloadManager.STATUS_SUCCESSFUL
+                        );
+                        Cursor cur = downloadManager.query(query);
+                        int col = cur.getColumnIndex(
+                                DownloadManager.COLUMN_LOCAL_FILENAME);
+                        for(cur.moveToFirst(); !cur.isAfterLast(); cur.moveToNext()) {
+                            isDownloading = isDownloading || (vid.getLocalPath() == cur.getString(col));
+                        }
+                        cur.close();
+                        if (isDownloading){
+                            System.out.println("attempting to download currently downloading file "+vid.getLocalPath());
+                        }
+                        else {
+                            DownloadManager.Request request = new DownloadManager.Request(target);
+                            request.allowScanningByMediaScanner();
+                            //request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
+                            //request.setAllowedOverRoaming(false);
+                            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                            request.setTitle(vid.getAuthor());
+                            request.setDescription(vid.getTitle());
+                            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, vid.getSourceID() + ".mp4");
+                            request.setVisibleInDownloadsUi(true);
+                            MainActivity.masterData.downloadVideoID = vid.getID();
+                            MainActivity.masterData.downloadSourceID = vid.getSourceID();
+                            MainActivity.masterData.downloadID = downloadManager.enqueue(request);
+                        }
                     }
-                }
-               Log.v("Videoscrape",vid.getTitle()+" added "+commentcounter+" Comments after youtube url");
-               */
-                if ((channelDao.getChannelById(vid.getAuthorID()).isArchive()) && !vid.getMp4().isEmpty() && (null == vid.getLocalPath())){
-                    Uri target = Uri.parse(vid.getMp4());
-                    vid.setLocalPath(Environment.DIRECTORY_DOWNLOADS+"/"+vid.getSourceID()+".mp4");
-                    DownloadManager downloadManager = (DownloadManager) MainActivity.masterData.context.getApplicationContext().getSystemService(DOWNLOAD_SERVICE);
-                    DownloadManager.Request request = new DownloadManager.Request(target);
-                    request.allowScanningByMediaScanner();
-                    //request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
-                    //request.setAllowedOverRoaming(false);
-                    request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                    request.setTitle(vid.getAuthor());
-                    request.setDescription(vid.getTitle());
-                    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,vid.getSourceID()+".mp4");
-                    request.setVisibleInDownloadsUi(true);
-                    MainActivity.masterData.downloadVideoID = vid.getID();
-                    MainActivity.masterData.downloadSourceID = vid.getSourceID();
-                    MainActivity.masterData.downloadID = downloadManager.enqueue(request);
-                }
-                if (headless) {
-                    videoDao.update(vid);
-                }else {
-                    MainActivity.masterData.updateVideo(vid);
+                    if (headless) {
+                        videoDao.update(vid);
+                    } else {
+                        MainActivity.masterData.updateVideo(vid);
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
