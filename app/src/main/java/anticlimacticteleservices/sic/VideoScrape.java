@@ -86,6 +86,12 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                 }
                 else {
                     vid.setYoutubeID(vid.getSourceID());
+                    if (headless){
+                        videoDao.update(vid);
+                    }
+                    else{
+                        MainActivity.masterData.updateVideo(vid);
+                    }
                 }
             }
             catch (IOException e) {
@@ -94,11 +100,37 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
             }
 
         }
-        if (vid.isYoutube() && !vid.isBitchute()) {
+        if (vid.isYoutube() && !vid.isBitchute() && vid.getAuthorID()>0) {
+            String testID="";
             try {
-                doctest = Jsoup.connect(vid.getBitchuteEmbeddedUrl()).get();
+                doctest = Jsoup.connect(vid.getBitchuteTestUrl()).get();
+                System.out.println(doctest);
                 System.out.println(("looking for bitchute version of "+vid.getTitle()+" from " + vid.getAuthor()+" results in "+doctest.title()));
                  vid.setBitchuteID(vid.getSourceID());
+                 if (headless){
+                     videoDao.update(vid);
+                 }
+                 else{
+                     MainActivity.masterData.updateVideo(vid);
+                 }
+                 Channel parent = channelDao.getChannelById(vid.getAuthorID());
+                 if (parent.getBitchuteID().isEmpty()){
+                     System.out.println("need to set bitchute id for channel imported from youtube");
+                     testID = doctest.getElementsByClass("image-container").first().getElementsByTag("a").first().attr("href");
+                     System.out.println(testID.length()+">"+testID);
+                     testID=testID.substring(0,testID.length()-1);
+                     System.out.println(testID.length()+">"+testID);
+                    testID = testID.substring(testID.lastIndexOf("/")+1);
+                     System.out.println(testID.length()+">"+testID);
+                    parent.setBitchuteID(testID);
+                    channelDao.update(parent);
+                    if (headless){
+                        channelDao.update(parent);
+                    }
+                    else {
+                        MainActivity.masterData.updateChannel(parent);
+                    }
+                 }
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.e("Videoscrape", "unable to load bitchute version of youtube video");

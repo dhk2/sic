@@ -164,6 +164,18 @@ public class UserData {
             }
         }
     }
+
+    public void updateChannel(Channel value){
+        for (Channel c : channels) {
+            if (c.getID() == (value.getID())){
+                c = value;
+                channelDao.update(c);
+                break;
+
+            }
+        }
+    }
+
     public void addVideo(Video value) {
 
         boolean unique=true;

@@ -401,6 +401,9 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
         @Override
         protected String doInBackground(String... params) {
             String thumbnail = "";
+            //temporary fix to stop it blocking videoscrqape
+            return "done";
+            /*
             try {
                 Log.v("Main-Bitchute-homepage","Loading videos from main page " + params[0]);
                 doc = Jsoup.connect(params[0]).get();
@@ -411,6 +414,7 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
                     Date pd = new Date();
                     nv.setHackDateString(r.getElementsByClass("video-card-published").first().text());
                     nv.setTitle(r.getElementsByClass("video-card-title").first().text());
+                    nv.setAuthorID(-1l);
                     nv.setThumbnailurl(r.getElementsByTag("img").first().attr("data-src").toString());
                     nv.setViewCount(r.getElementsByClass(    "video-views").first().text());
                     //TODO calculate duration time into milliseconds  r.getElementsByClass("video-duration").first().text()
@@ -431,6 +435,8 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
 
             }
             return "done";
+
+             */
         }
         @Override
         protected void onPostExecute(String result) {

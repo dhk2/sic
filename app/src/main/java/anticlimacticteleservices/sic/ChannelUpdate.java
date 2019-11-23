@@ -216,6 +216,11 @@ channelloop:for (Channel chan :allChannels){
                         for (Video match : allVideos) {
                             if (match.getSourceID().equals(nv.getSourceID()) && match.isYoutube()) {
                                 dupecount++;
+                                if (match.getAuthorID()==0){
+                                    match.setAuthorID(chan.getID());
+                                    videoDao.update(match);
+                                    continue youtubeLoop;
+                                }
                                // System.out.println("video duped "+match.getAuthor()+ " "+nv.getSourceID());
                                 continue channelloop;
                             }
@@ -281,6 +286,11 @@ channelloop:for (Channel chan :allChannels){
                             if (match.getBitchuteID().equals(nv.getSourceID())&& match.isBitchute()) {
                               //  System.out.println("video duped "+nv.getSourceID()+"\n"+match.toDebugString());
                                 dupecount++;
+                                if (match.getAuthorID()==0){
+                                    match.setAuthorID(chan.getID());
+                                    videoDao.update(match);
+                                    continue bitchuteLoop;
+                                }
                                 continue channelloop;
                             }
                             if (match.getSourceID().equals(nv.getSourceID())&& match.isYoutube()) {

@@ -343,6 +343,7 @@ class Video implements Serializable,Comparable<Video>
 
     public boolean isBitchute(){        return (this.bitchuteID.length() > 0);    }
     public String getBitchuteUrl() {return "https://www.bitchute.com/video/"+this.bitchuteID;}
+    public String getBitchuteTestUrl() {return "https://www.bitchute.com/video/"+this.sourceID;}
     public boolean isYoutube(){return (this.youtubeID.length()>0); }
     public String getYoutubeUrl(){
         return "https://www.youtube.com/watch?v="+this.youtubeID;
