@@ -65,10 +65,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         Video video = videos.get(position);
 
         final CustomViewHolder holder = hold;
-        if (video.getMp4().isEmpty() && video.isBitchute()){
-            System.out.println("getting extra info for video"+video.getTitle());
-            new VideoScrape().execute(video);
-        }
+        new VideoScrape().execute(video);
         comments = MainActivity.masterData.getCommentDao().getCommentsByFeedId(video.getID());
         if (comments.size()>0){
             holder.name.setText(video.getTitle()+" ("+comments.size()+")");
@@ -77,13 +74,16 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
             holder.name.setText(video.getTitle());
         }
         String iconString ="";
-        if (!"".equals(video.getViewCount())) {
+        if (!(null == video.getLocalPath())){
+            iconString = iconString+"\uD83D\uDCBE buytt";
+        }
+        if (!video.getViewCount().isEmpty()) {
             iconString= "\uD83D\uDC41" + video.getViewCount();
         }
-        if (!"".equals(video.getUpCount())){
+        if (!video.getUpCount().isEmpty()){
             iconString=iconString+"\uD83D\uDC4D"+video.getUpCount();
         }
-        if (!"".equals(video.getDownCount())){
+        if (!video.getDownCount().isEmpty()){
             iconString=iconString+"\uD83D\uDC4E"+video.getDownCount();
         }
         holder.videoViewCount.setText(iconString);
@@ -178,6 +178,10 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                         if (vid.isYoutube()){
                             path = vid.getYoutubeUrl();
                         }
+                        if (!(null == vid.getLocalPath())){
+                            path = vid.getLocalPath();
+                        }
+                        System.out.println(path);
                         uri = Uri.parse(path);
                         playerIntent.setDataAndTypeAndNormalize(uri, "video/*");
                         playerIntent.putExtra("title", vid.getTitle());

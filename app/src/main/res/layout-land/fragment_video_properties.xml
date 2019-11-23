@@ -40,63 +40,149 @@
                     tools:srcCompat="@tools:sample/avatars" />
 
                 <Button
-                    android:id="@+id/properties_play_exo"
+                    android:id="@+id/properties_play_local_exo"
+                    style="@style/Widget.AppCompat.Button.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="exo " />
+                    android:text="exo" />
 
                 <Button
-                    android:id="@+id/properties_play_embedded"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="embed" />
-                <Button
-                    android:id="@+id/properties_play_chrome"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Chrome" />
-                <Button
-                    android:id="@+id/properties_play_webtorrent"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="p2p" />
-
-                <Button
-                    android:id="@+id/properties_play_vlc"
+                    android:id="@+id/properties_play_local_vlc"
+                    style="@style/Widget.AppCompat.Button.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="vlc" />
 
+
                 <Button
-                    android:id="@+id/properties_play_default"
+                    android:id="@+id/properties_play_local_default"
+                    style="@style/Widget.AppCompat.Button.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="system" />
 
                 <Button
-                    android:id="@+id/properties_play_newpipe"
+                    android:id="@+id/properties_play_exo"
+                    style="@style/Widget.AppCompat.Button.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:backgroundTint="#1054CA"
+                    android:text="exo" />
+
+                <Button
+                    android:id="@+id/properties_play_yt_embedded"
+                    style="@style/Widget.AppCompat.Button.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:backgroundTint="#7E7956"
+                    android:text="embed" />
+
+                <Button
+                    android:id="@+id/properties_play_bc_embedded"
+                    style="@style/Widget.AppCompat.Button.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:backgroundTint="#1054CA"
+                    android:text="embed" />
+
+                <Button
+                    android:id="@+id/properties_play_yt_chrome"
+                    style="@style/Widget.AppCompat.Button.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:backgroundTint="#7E7956"
+                    android:text="Chrome" />
+
+                <Button
+                    android:id="@+id/properties_play_bc_chrome"
+                    android:layout_width="wrap_content"
+                    style="@style/Widget.AppCompat.Button.Small"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:backgroundTint="#1054CA"
+                    android:text="Chrome" />
+
+
+
+                <Button
+                    android:id="@+id/properties_play_yt_vlc"
+                    style="@style/Widget.AppCompat.Button.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:backgroundTint="#7E7956"
+                    android:text="vlc" />
+
+                <Button
+                    android:id="@+id/properties_play_bc_vlc"
+                    style="@style/Widget.AppCompat.Button.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:backgroundTint="#1054CA"
+                    android:text="vlc" />
+
+                <Button
+                    android:id="@+id/properties_play_bc_default"
+                    style="@style/Widget.AppCompat.Button.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:backgroundTint="#1054CA"
+                    android:text="system" />
+
+                <Button
+                    android:id="@+id/properties_play_yt_default"
+                    style="@style/Widget.AppCompat.Button.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:backgroundTint="#7E7956"
+                    android:text="system" />
+
+
+
+                <Button
+                    android:id="@+id/properties_play_newpipe"
+                    style="@style/Widget.AppCompat.Button.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:backgroundTint="#7E7956"
                     android:text="newpipe" />
 
                 <Button
                     android:id="@+id/properties_play_youtube"
+                    style="@style/Widget.AppCompat.Button.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:backgroundTint="#7E7956"
                     android:text="youtube" />
+
+                <Button
+                    android:id="@+id/properties_play_webtorrent"
+                    android:layout_width="wrap_content"
+                    style="@style/Widget.AppCompat.Button.Small"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:backgroundTint="#1054CA"
+                    android:text="p2p" />
+
                 <Button
                     android:id="@+id/properties_download"
+                    style="@style/Widget.AppCompat.Button.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:backgroundTint="#1054CA"
                     android:text="Download" />
 
                 <Button

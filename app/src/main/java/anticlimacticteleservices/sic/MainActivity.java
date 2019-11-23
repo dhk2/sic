@@ -297,13 +297,15 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
                 path = Environment.DIRECTORY_DOWNLOADS+"/"+masterData.downloadSourceID+".mp4";
                 System.out.println(path);
                 System.out.println(masterData.downloadSourceID);
-                for (Video match : MainActivity.masterData.getVideos()) {
+   /*             for (Video match : MainActivity.masterData.getVideos()) {
                     if (match.getSourceID().equals(masterData.downloadSourceID)) {
                         match.setLocalPath(path);
                         System.out.println("matched wtih video "+match.getID()+" "+match.getSourceID());
                         masterData.getVideoDao().update(match);
                     }
                 }
+
+    */
            }
         }
     };

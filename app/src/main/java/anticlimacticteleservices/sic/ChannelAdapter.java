@@ -75,6 +75,9 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
         if (channel.isYoutube()) {
             hold.serviceIcon.setImageResource(R.drawable.youtubeicon);
         }
+        if (channel.isYoutube() && channel.isBitchute()) {
+            hold.serviceIcon.setImageResource(R.drawable.dualsource);
+        }
         hold.name.setText(channel.getTitle());
         hold.description.setText(channel.getDescription());
         status="Subscribe";

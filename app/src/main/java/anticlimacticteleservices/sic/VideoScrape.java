@@ -14,6 +14,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.File;
 import java.io.IOException;
 
 import static android.content.Context.DOWNLOAD_SERVICE;
@@ -104,7 +105,7 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
             String testID="";
             try {
                 doctest = Jsoup.connect(vid.getBitchuteTestUrl()).get();
-                System.out.println(doctest);
+                //System.out.println(doctest);
                 System.out.println(("looking for bitchute version of "+vid.getTitle()+" from " + vid.getAuthor()+" results in "+doctest.title()));
                  vid.setBitchuteID(vid.getSourceID());
                  if (headless){
@@ -176,40 +177,21 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                     if ((channelDao.getChannelById(vid.getAuthorID()).isArchive()) && !vid.getMp4().isEmpty() && (null == vid.getLocalPath())) {
 
                         Uri target = Uri.parse(vid.getMp4());
-                        vid.setLocalPath(Environment.DIRECTORY_DOWNLOADS + "/" + vid.getSourceID() + ".mp4");
+                        File fpath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                        vid.setLocalPath(fpath.getAbsolutePath()+"/"+vid.getSourceID()+".mp4");
                         DownloadManager downloadManager = (DownloadManager) MainActivity.masterData.context.getApplicationContext().getSystemService(DOWNLOAD_SERVICE);
-                        //added to prevent multiple downloads of the same file issue
-                        DownloadManager.Query query = new DownloadManager.Query();
-                        query.setFilterByStatus(
-                                DownloadManager.STATUS_PAUSED|
-                                        DownloadManager.STATUS_PENDING|
-                                        DownloadManager.STATUS_RUNNING|
-                                        DownloadManager.STATUS_SUCCESSFUL
-                        );
-                        Cursor cur = downloadManager.query(query);
-                        int col = cur.getColumnIndex(
-                                DownloadManager.COLUMN_LOCAL_FILENAME);
-                        for(cur.moveToFirst(); !cur.isAfterLast(); cur.moveToNext()) {
-                            isDownloading = isDownloading || (vid.getLocalPath() == cur.getString(col));
-                        }
-                        cur.close();
-                        if (isDownloading){
-                            System.out.println("attempting to download currently downloading file "+vid.getLocalPath());
-                        }
-                        else {
-                            DownloadManager.Request request = new DownloadManager.Request(target);
-                            request.allowScanningByMediaScanner();
-                            //request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
-                            //request.setAllowedOverRoaming(false);
-                            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                            request.setTitle(vid.getAuthor());
-                            request.setDescription(vid.getTitle());
-                            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, vid.getSourceID() + ".mp4");
-                            request.setVisibleInDownloadsUi(true);
-                            MainActivity.masterData.downloadVideoID = vid.getID();
-                            MainActivity.masterData.downloadSourceID = vid.getSourceID();
-                            MainActivity.masterData.downloadID = downloadManager.enqueue(request);
-                        }
+                        DownloadManager.Request request = new DownloadManager.Request(target);
+                        request.allowScanningByMediaScanner();
+                        //request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
+                        //request.setAllowedOverRoaming(false);
+                        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                        request.setTitle(vid.getAuthor());
+                        request.setDescription(vid.getTitle());
+                        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, vid.getSourceID() + ".mp4");
+                        request.setVisibleInDownloadsUi(true);
+                        MainActivity.masterData.downloadVideoID = vid.getID();
+                        MainActivity.masterData.downloadSourceID = vid.getSourceID();
+                        MainActivity.masterData.downloadID = downloadManager.enqueue(request);
                     }
                     if (headless) {
                         videoDao.update(vid);

@@ -43,13 +43,38 @@
                         android:orientation="horizontal">
 
                         <Button
+                            android:id="@+id/properties_play_local_exo"
+                            style="@style/Widget.AppCompat.Button.Small"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="exo" />
+
+                        <Button
+                            android:id="@+id/properties_play_local_vlc"
+                            style="@style/Widget.AppCompat.Button.Small"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="vlc" />
+
+
+                        <Button
+                            android:id="@+id/properties_play_local_default"
+                            style="@style/Widget.AppCompat.Button.Small"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="system" />
+
+                        <Button
                             android:id="@+id/properties_play_exo"
                             style="@style/Widget.AppCompat.Button.Small"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:backgroundTint="#1054CA"
-                            android:text="exo " />
+                            android:text="exo" />
 
                         <Button
                             android:id="@+id/properties_play_yt_embedded"
@@ -87,14 +112,7 @@
                             android:backgroundTint="#1054CA"
                             android:text="Chrome" />
 
-                        <Button
-                            android:id="@+id/properties_play_webtorrent"
-                            android:layout_width="wrap_content"
-                            style="@style/Widget.AppCompat.Button.Small"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:backgroundTint="#1054CA"
-                            android:text="p2p" />
+
 
                         <Button
                             android:id="@+id/properties_play_yt_vlc"
@@ -132,13 +150,7 @@
                             android:backgroundTint="#7E7956"
                             android:text="system" />
 
-                        <Button
-                            android:id="@+id/properties_play_local_default"
-                            style="@style/Widget.AppCompat.Button.Small"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="system" />
+
 
                         <Button
                             android:id="@+id/properties_play_newpipe"
@@ -157,6 +169,15 @@
                             android:layout_weight="1"
                             android:backgroundTint="#7E7956"
                             android:text="youtube" />
+
+                        <Button
+                            android:id="@+id/properties_play_webtorrent"
+                            android:layout_width="wrap_content"
+                            style="@style/Widget.AppCompat.Button.Small"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:backgroundTint="#1054CA"
+                            android:text="p2p" />
 
                         <Button
                             android:id="@+id/properties_download"

@@ -127,6 +127,8 @@ public class fragment_video_properties extends Fragment {
         Button playBitchuteEmbedded = v.findViewById(R.id.properties_play_bc_embedded);
         Button playBitchuteSystem = v.findViewById(R.id.properties_play_bc_default);
         Button playYoutubeSystem = v.findViewById(R.id.properties_play_yt_default);
+        Button playVlcLocal = v.findViewById(R.id.properties_play_local_vlc);
+        Button playExoLocal = v.findViewById(R.id.properties_play_local_exo);
         Button playLocalSystem=v.findViewById(R.id.properties_play_local_default);
         Button playYoutube = v.findViewById(R.id.properties_play_youtube);
         Button playNewpipe = v.findViewById(R.id.properties_play_newpipe);
@@ -153,6 +155,14 @@ public class fragment_video_properties extends Fragment {
             playYoutubeSystem.setVisibility((View.GONE));
             playYoutubeVlc.setVisibility((View.GONE));
         }
+        if (null == vid.getLocalPath()){
+            playLocalSystem.setVisibility(View.GONE);
+            playExoLocal.setVisibility(View.GONE);
+            playVlcLocal.setVisibility(View.GONE);
+        }
+        else{
+            playExo.setVisibility(View.GONE);
+        }
         if (vid.getMp4().equals("")){
             playExo.setVisibility(View.GONE);
             download.setVisibility(View.GONE);
@@ -166,6 +176,7 @@ public class fragment_video_properties extends Fragment {
         if (!MainActivity.masterData.vlcInstalled){
             playYoutubeVlc.setVisibility(View.GONE);
             playBitchuteVlc.setVisibility(View.GONE);
+            playVlcLocal.setVisibility(View.GONE);
         }
         if (!MainActivity.masterData.newpipeInstalled){
             playNewpipe.setVisibility(View.GONE);
@@ -177,9 +188,7 @@ public class fragment_video_properties extends Fragment {
         if (!MainActivity.masterData.youtubeInstalled){
             playYoutube.setVisibility(View.GONE);
         }
-        if (null == vid.getLocalPath()){
-            playLocalSystem.setVisibility(View.GONE);
-        }
+
         dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -212,12 +221,29 @@ public class fragment_video_properties extends Fragment {
                 playerIntent.setPackage("org.videolan.vlc");
                 path = vid.getMp4();
                 uri= Uri.parse(path);
+                System.out.println(path);
                 playerIntent.setDataAndTypeAndNormalize(uri, "video/*");
                 playerIntent.putExtra("title", vid.getTitle());
                 v.getContext().startActivity(playerIntent);
             }
         });
 
+        playVlcLocal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri uri;
+                int vlcRequestCode = 42;
+                String path ="";
+                Intent playerIntent = new Intent(Intent.ACTION_VIEW);
+                playerIntent.setPackage("org.videolan.vlc");
+                path = vid.getLocalPath();
+                uri= Uri.parse(path);
+                System.out.println(path);
+                playerIntent.setDataAndTypeAndNormalize(uri, "video/*");
+                playerIntent.putExtra("title", vid.getTitle());
+                v.getContext().startActivity(playerIntent);
+            }
+        });
 
         playNewpipe.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -258,6 +284,19 @@ public class fragment_video_properties extends Fragment {
                 transaction.commitAllowingStateLoss();
             }
         });
+
+        playExoLocal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction transaction;
+                fragment_exoplayer efragment = fragment_exoplayer.newInstance("",vid);
+                transaction = MainActivity.masterData.getFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragment, efragment);
+                transaction.addToBackStack(null);
+                transaction.commitAllowingStateLoss();
+            }
+        });
+
         playBitchuteEmbedded.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -370,9 +409,13 @@ public class fragment_video_properties extends Fragment {
             @Override
             public void onClick(View v) {
                 Uri target = Uri.parse(vid.getMp4());
-                vid.setLocalPath(Environment.DIRECTORY_DOWNLOADS+"/"+vid.getSourceID()+".mp4");
+                File fpath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                vid.setLocalPath(fpath.getAbsolutePath()+"/"+vid.getSourceID()+".mp4");
+                MainActivity.masterData.updateVideo(vid);
                 System.out.println(vid.getLocalPath());
                 System.out.println(requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS));
+
+                System.out.println(fpath.getAbsolutePath());
                 DownloadManager downloadManager = (DownloadManager) MainActivity.masterData.context.getApplicationContext().getSystemService(DOWNLOAD_SERVICE);
                 DownloadManager.Request request = new DownloadManager.Request(target);
                 request.allowScanningByMediaScanner();

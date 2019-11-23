@@ -97,8 +97,12 @@ public class fragment_exoplayer extends Fragment {
         }
 
 
-
-        uri = uri.parse(video.getMp4());
+        if (null == video.getLocalPath()) {
+            uri = uri.parse(video.getMp4());
+        }
+        else {
+            uri = uri.parse(video.getLocalPath());
+        }
         System.out.println(uri.getPath());
         DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(),"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36");
         MediaSource mediaSource = new ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
