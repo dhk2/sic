@@ -149,11 +149,31 @@
 
             </LinearLayout>
 
-            <CheckBox
-                android:id="@+id/muteerrors"
+
+            <LinearLayout
+                android:id="@+id/configswitchsettingslayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Mute errors" />
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/muteerrors"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mute errors" />
+
+                <CheckBox
+                    android:id="@+id/hidewatched"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Hide Watched videos" />
+
+            </LinearLayout>
+
+
+
+
 
             <LinearLayout
                 android:id="@+id/syncsettingslayout"

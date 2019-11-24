@@ -145,6 +145,22 @@ public class UserData {
         }
     }
 
+    public void refreshChannels(){
+        channels = channelDao.getChannels();
+    }
+
+    public void refreshVideos(){
+        videos = videoDao.getVideos();
+    }
+
+    public void removeVideo(Long ID){
+        for (int i=0;i<videos.size();i++){
+            if (videos.get(i).getID() == ID){
+                videos.remove(i);
+                break;
+            }
+        }
+    }
     private List<Video>videos = new ArrayList<Video>();
     public void sortVideos(){
         Collections.sort(videos);
@@ -437,6 +453,7 @@ public class UserData {
         backgroundSync = MainActivity.preferences.getBoolean("backgroundSync",true);
         wifionly = MainActivity.preferences.getBoolean("wifiOnly",false);
         muteErrors = MainActivity.preferences.getBoolean("muteErrors",true);
+        hideWatched = MainActivity.preferences.getBoolean("hideWatched",true);
         bitchuteSearchBitchute = MainActivity.preferences.getBoolean("bitchuteSearchBitchute",true);
         bitchuteSearchGoogle = MainActivity.preferences.getBoolean("bitchuteSearchGoogle",true);
   //      bitchuteSearchDuck = MainActivity.preferences.getBoolean("bitchuteSearchDuck",false);
@@ -489,8 +506,12 @@ public class UserData {
                 .fallbackToDestructiveMigration()
                 .build();
         videoDao = sicDatabase.videoDao();
-        if (null != videoDao){
-            setVideos(videoDao.getVideos());
+        if (null != videoDao) {
+            if (hideWatched) {
+                videos = videoDao.getUnWatchedVideos();
+            } else {
+                videos = videoDao.getVideos();
+            }
         }
         else{
             System.out.println("VideoDAO failure, this can't end well");
@@ -514,6 +535,7 @@ public class UserData {
         editor.putBoolean("backgroundSync",backgroundSync);
         editor.putBoolean("wifiOnly",wifionly);
         editor.putBoolean("muteErrors",muteErrors);
+        editor.putBoolean("hideWatched",hideWatched);
         editor.putBoolean("bitchuteSearchBitchute",bitchuteSearchBitchute);
         editor.putBoolean("bitchuteSearchGoogle",bitchuteSearchGoogle);
         editor.putBoolean("bitchuteSearchDuck",bitchuteSearchDuck);
@@ -557,6 +579,10 @@ public class UserData {
         this.muteErrors = muteErrors;
     }
     private boolean bitchuteSearchGoogle,bitchuteSearchDuck,bitchuteSearchBitchute;
+
+    public boolean hideWatched;
+    public boolean isHideWatched(){return hideWatched;}
+    public void setHideWatched(boolean hideWatched){this.hideWatched = hideWatched;}
 
     public boolean isBitchuteSearchGoogle() {
         return bitchuteSearchGoogle;

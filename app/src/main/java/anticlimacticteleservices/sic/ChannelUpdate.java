@@ -1,32 +1,19 @@
 package anticlimacticteleservices.sic;
-import android.app.ActivityManager;
-import android.app.Application;
-import android.app.DownloadManager;
 import android.app.Notification;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
-
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -39,9 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static android.content.Context.DOWNLOAD_SERVICE;
 import static android.content.Context.MODE_PRIVATE;
-import static android.content.Context.NOTIFICATION_SERVICE;
 
 class ChannelUpdate extends AsyncTask<String, String, Boolean> {
     private final SimpleDateFormat bdf = new SimpleDateFormat("EEE', 'dd MMM yyyy HH:mm:SS' 'ZZZZ");
@@ -68,6 +53,7 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
     boolean mobileConnected;
     boolean forceRefresh;
     boolean muteErrors;
+    boolean hideWatched;
     int youtubePlayerChoice;
     int bitchutePlayerChoice;
 
@@ -81,7 +67,12 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
     protected void onPostExecute(Boolean aBoolean) {
         super.onPostExecute(aBoolean);
         if (!headless && null != MainActivity.masterData.getSwipeRefreshLayout()) {
-            MainActivity.masterData.setVideos(videoDao.getVideos());
+            if (hideWatched){
+                MainActivity.masterData.setVideos(videoDao.getUnWatchedVideos());
+            }
+            else {
+                MainActivity.masterData.setVideos(videoDao.getVideos());
+            }
             MainActivity.masterData.getSwipeRefreshLayout().setRefreshing(false);
         }
         if (newcount>0 || forceRefresh) {
@@ -126,6 +117,7 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
             youtubePlayerChoice = preferences.getInt("youtubePlayerChoice", 4);
             bitchutePlayerChoice = preferences.getInt("bitchutePlayerChoice", 8);
             muteErrors = preferences.getBoolean("muteErrors",true);
+            hideWatched = preferences.getBoolean("hideWatched",false);
         }
         else
         {
@@ -331,9 +323,9 @@ channelloop:for (Channel chan :allChannels){
         }
         if (headless) {
             for (Video v : allVideos) {
-                if (v.getMp4().isEmpty() && v.isBitchute()) {
+               // if (v.getMp4().isEmpty() && v.isBitchute()) {
                     new VideoScrape().execute(v);
-                }
+              //  }
             }
         }
         else{
@@ -342,6 +334,7 @@ channelloop:for (Channel chan :allChannels){
                     new VideoScrape().execute(v);
                 }
             }
+            MainActivity.masterData.refreshChannels();
         }
         Log.v("Channel-Update",dupecount+" duplicate videos discarded,"+mirror+" videos mirrored," +newcount+" new videos added");
         return true;

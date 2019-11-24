@@ -75,10 +75,10 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         }
         String iconString ="";
         if (!(null == video.getLocalPath())){
-            iconString = iconString+"\uD83D\uDCBE buytt";
+            iconString = iconString+"\uD83D\uDCBE";
         }
         if (!video.getViewCount().isEmpty()) {
-            iconString= "\uD83D\uDC41" + video.getViewCount();
+            iconString= iconString+"\uD83D\uDC41" + video.getViewCount();
         }
         if (!video.getUpCount().isEmpty()){
             iconString=iconString+"\uD83D\uDC4D"+video.getUpCount();
@@ -168,6 +168,11 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                 // 1=vlc, 2=system default, 4=webview, 8=internal player
             //    if( vid.isBitchute())switcher=8;
                 FragmentTransaction transaction; //= MainActivity.masterData.getFragmentManager().beginTransaction();
+                if ((!vid.isYoutube()) && (vid.getMp4().isEmpty())){
+                    if ((switcher == 1) || (switcher== 2) || (switcher == 16) ||(switcher == 128)) {
+                        switcher = 1024;
+                    }
+                }
 
                 switch(switcher){
                     case 1:

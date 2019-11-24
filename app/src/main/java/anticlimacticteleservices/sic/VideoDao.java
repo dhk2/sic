@@ -39,4 +39,11 @@ public interface VideoDao {
 
     @Query("SELECT * FROM feed_item WHERE watched=1 ORDER BY date DESC")
     List<Video> getWatchedVideos();
+
+    @Query("SELECT * FROM feed_item WHERE watched=0 ORDER BY date DESC")
+    List<Video> getUnWatchedVideos();
+
+
+
+
 }

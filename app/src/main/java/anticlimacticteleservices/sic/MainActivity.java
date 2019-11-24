@@ -95,10 +95,16 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
                         Log.v("Main-Navigation-Home","starting home navigation");
                         getSupportActionBar().hide();
                         //TODO remove masterdata and use direct DAO
-                        masterData.setVideos(masterData.getVideoDao().getVideos());
+                        if (masterData.isHideWatched()) {
+                            masterData.setVideos(masterData.getVideoDao().getUnWatchedVideos());
+                        }
+                        else {
+                            masterData.setVideos(masterData.getVideoDao().getVideos());
+                        }
+                        masterData.refreshChannels();
                         Log.v("Main-Navigation-Home","size of video database:"+masterData.getVideos().size());
                         vfragment = new VideoFragment();
-                        vfragment.setVideos(masterData.getVideoDao().getVideos());
+                        vfragment.setVideos(masterData.getVideos());
                         transaction = masterData.getFragmentManager().beginTransaction();
                         transaction.replace(R.id.fragment, vfragment);
                         transaction.addToBackStack(null);
@@ -120,9 +126,10 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
 
                         return true;
                     case R.id.navigation_channels:
+                        MainActivity.masterData.refreshChannels();
+                        MainActivity.masterData.refreshVideos();
                         masterData.setFragmentID("channels");
                         getSupportActionBar().hide();
-                        masterData.getChannels();
                         Log.v("Main-Navigation-Channel",masterData.getChannels().size()+"  "+ masterData.getChannels().size());
                         ChannelFragment cfragment = new ChannelFragment();
                         ((ChannelFragment) cfragment).setChannels(masterData.getChannels());
@@ -166,6 +173,9 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder(); StrictMode.setVmPolicy(builder.build());
         registerReceiver(onDownloadComplete,new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         if (masterData == null) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE );
+            }
             Log.v("Main-OC","masterData is null");
             preferences = getSharedPreferences( getPackageName() + "_preferences", MODE_PRIVATE);
             masterData = new UserData(getApplicationContext());
@@ -232,12 +242,26 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
                     //  message.loadData(,"html","utf-8");
                     ImageView image = dialog.findViewById(R.id.alertpicture);
                     image.setImageResource(R.mipmap.sicicon);
-                    Button dialogButton = dialog.findViewById(R.id.closebutton);
-                    dialogButton.setOnClickListener(new View.OnClickListener() {
+                    Button closeButton = dialog.findViewById(R.id.closebutton);
+                    Button settingsButton = dialog.findViewById(R.id.settingsbutton);
+                    closeButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             //TODO check again for empty videos in case of slow background update initially.
                             dialog.dismiss();
+                        }
+                    });
+                    settingsButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            masterData.setFragmentID("settings");
+                            getSupportActionBar().hide();
+                            dialog.dismiss();
+                            SettingsFragment settingsfragment = new SettingsFragment();
+                            transaction = masterData.getFragmentManager().beginTransaction();
+                            transaction.replace(R.id.fragment, settingsfragment);
+                            transaction.addToBackStack(null);
+                            transaction.commitAllowingStateLoss();
                         }
                     });
                     dialog.show();

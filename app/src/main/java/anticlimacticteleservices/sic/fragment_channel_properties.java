@@ -1,10 +1,14 @@
 package anticlimacticteleservices.sic;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.text.HtmlCompat;
 import android.text.Spanned;
 import android.view.LayoutInflater;
@@ -30,7 +34,7 @@ public class fragment_channel_properties extends Fragment {
     private Button cancel;
     private Channel mPassedChannel;
     private String mParam2;
-
+    private static final int PERMISSION_REQUEST_CODE = 1;
     private OnFragmentInteractionListener mListener;
 
     public fragment_channel_properties() {
@@ -101,6 +105,13 @@ public class fragment_channel_properties extends Fragment {
             public void onClick(View v) {
                 chan.setNotify(notify.isChecked());
                 chan.setArchive(archive.isChecked());
+                if (archive.isChecked()){
+
+                    if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+                        ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE );
+                    }
+
+                }
                 if (!subscribed.isChecked()) {
                     MainActivity.masterData.removeChannel(chan.getSourceID());
                 }

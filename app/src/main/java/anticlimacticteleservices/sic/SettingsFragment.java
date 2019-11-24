@@ -34,7 +34,7 @@ public class SettingsFragment extends Fragment {
     WebView webviewHandle;
     TextView feedAge;
     RadioButton useKittens,useDissenter;
-    CheckBox useComments,backgroundSync,wifiOnly,muteErrors,bcSearchGoogle,bcSearchBitchute;
+    CheckBox useComments,backgroundSync,wifiOnly,muteErrors,bcSearchGoogle,bcSearchBitchute,hideWatched;
 
 
     public SettingsFragment() {
@@ -80,7 +80,9 @@ public class SettingsFragment extends Fragment {
         useKittens.setChecked(MainActivity.masterData.isKittenComments());
         useDissenter.setChecked(MainActivity.masterData.isDissenterComments());
         muteErrors=view.findViewById(R.id.muteerrors);
+        hideWatched=view.findViewById(R.id.hidewatched);
         muteErrors.setChecked(MainActivity.masterData.isMuteErrors());
+        hideWatched.setChecked(MainActivity.masterData.isHideWatched());
         bcSearchBitchute=view.findViewById(R.id.searchbitchute);
         bcSearchGoogle=view.findViewById(R.id.searchgoogle);
         bcSearchBitchute.setChecked(MainActivity.masterData.isBitchuteSearchBitchute());
@@ -319,6 +321,7 @@ public class SettingsFragment extends Fragment {
         MainActivity.masterData.setBackgroundSync(backgroundSync.isChecked());
         MainActivity.masterData.setWifionly(wifiOnly.isChecked());
         MainActivity.masterData.setMuteErrors(muteErrors.isChecked());
+        MainActivity.masterData.setHideWatched(hideWatched.isChecked());
         MainActivity.masterData.setBitchuteSearchBitchute(bcSearchBitchute.isChecked());
         MainActivity.masterData.setBitchuteSearchGoogle(bcSearchGoogle.isChecked());
         MainActivity.masterData.saveUserData();

@@ -3,7 +3,7 @@ package anticlimacticteleservices.sic;
 import android.app.DownloadManager;
 import android.arch.persistence.room.Room;
 import android.content.Context;
-import android.database.Cursor;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -16,8 +16,11 @@ import org.jsoup.select.Elements;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.Date;
 
 import static android.content.Context.DOWNLOAD_SERVICE;
+import static android.content.Context.MODE_PRIVATE;
 //TODO move dissenter check outside of site specific sections
 //TODO transverse comment subthreads
 //TODO pull more useful data
@@ -32,6 +35,8 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
     ChannelDatabase channelDatabase;
     Context context;
     Boolean headless=true;
+    private static Long feedAge;
+    public static SharedPreferences preferences;
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
@@ -52,6 +57,14 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
             }
         }
         vid = videos[0];
+        if (headless){
+            preferences = context.getSharedPreferences( "anticlimacticteleservices.sic" + "_preferences", MODE_PRIVATE);
+            feedAge = preferences.getLong("feedAge",7);
+        }
+        else
+        {
+            feedAge = MainActivity.preferences.getLong("feedAge",7);
+        }
         if (null == videoDao){
             if (null == MainActivity.masterData){
                 sicDatabase = Room.databaseBuilder(context, SicDatabase.class, "mydb")
@@ -77,7 +90,30 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
             }
         }
         Document doctest = null;
-        System.out.println(vid.toCompactString());
+        Long pd = vid.getDate();
+
+        //TODO put in exception for archived channels here when implemented
+        if (pd+(feedAge*24*60*60*1000)<new Date().getTime()) {
+            System.out.println("out of feed range for " + vid.getTitle());
+            if (!(null == vid.getLocalPath())){
+                File file = new File(vid.getLocalPath());
+                file.delete();
+            }
+            videoDao.delete((vid));
+            if (!headless){
+                MainActivity.masterData.removeVideo(vid.getID());
+            }
+            return null;
+        }
+        if (vid.getAuthorID()==0){
+            System.out.println("author id is zero on video");
+            for (Channel Cdog : MainActivity.masterData.getChannels()){
+                if (vid.getAuthor().equals(Cdog.getAuthor())){
+                    vid.setAuthorID(Cdog.getID());
+                    videoDao.update(vid);
+                }
+            }
+        }
         if (vid.isBitchute() && !vid.isYoutube()){
             try {
                 doctest = Jsoup.connect(vid.getYoutubeEmbeddedUrl()).get();

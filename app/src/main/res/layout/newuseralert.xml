@@ -15,8 +15,22 @@
         android:text="close"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.749"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/alerttext" />
+        app:layout_constraintTop_toBottomOf="@+id/alerttext"
+        app:layout_constraintVertical_bias="0.405" />
+
+    <Button
+        android:id="@+id/settingsbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="settings"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/closebutton"
+        app:layout_constraintHorizontal_bias="0.243"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/alerttext"
+        app:layout_constraintVertical_bias="0.383" />
 
     <ImageView
         android:id="@+id/alertpicture"
@@ -25,13 +39,15 @@
         android:scaleType="center"
         android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/alerttext"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@mipmap/sic_round" />
 
     <TextView
         android:id="@+id/alerttext"
         android:layout_width="wrap_content"
-        android:layout_height="600dp"
+        android:layout_height="wrap_content"
         android:text="No Channels configured for your video feed. You can import subscriptions from Bitchute or Youtube by going to the settings section and hitting the import button.
 \n You could also manually search and add channels in the discover section, but realistically it's better to maintain subscriptions at the site"
         app:layout_constraintEnd_toEndOf="parent"

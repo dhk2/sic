@@ -37,6 +37,8 @@ class Channel implements Serializable{
     private long joined;
     @ColumnInfo(name = "last_sync")
     private long lastsync;
+    @ColumnInfo(name = "last_check")
+    private long lastCheck;
     @ColumnInfo (name = "notify")
     private boolean notify;
     @ColumnInfo (name = "archive")
@@ -60,6 +62,7 @@ class Channel implements Serializable{
         this.bitchuteID="";
         this.lastsync=new Date().getTime();
         this.joined=lastsync;
+        this.lastCheck=lastsync-(6*60*60*1000);
         this.subscribers="";
         this.notify = false;
         this.archive = false;
@@ -92,6 +95,7 @@ class Channel implements Serializable{
         }
         lastsync = new Date().getTime();
         joined = lastsync;
+        this.lastCheck=lastsync-(6*60*60*1000);
         this.notify = false;
         this.archive = false;
         this.errors=0;
@@ -184,6 +188,7 @@ class Channel implements Serializable{
     public long getLastsync() {
         return this.lastsync;
     }
+
     public String getSubscribers() {
         return this.subscribers;
     }
@@ -300,5 +305,13 @@ class Channel implements Serializable{
     }
     public void setSupported(boolean supported) {
         this.supported = supported;
+    }
+
+    public long getLastCheck() {
+        return lastCheck;
+    }
+    public void setLastCheck(Long bob){lastCheck=bob;}
+    public void updateLastCheck() {
+        lastCheck =new Date().getTime();
     }
 }

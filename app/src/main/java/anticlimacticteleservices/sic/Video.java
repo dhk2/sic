@@ -86,6 +86,7 @@ class Video implements Serializable,Comparable<Video>
         this.hackDateString="";
         this.youtubeID ="";
         this.bitchuteID ="";
+        this.authorID=0;
     }
 
     public Video(String location)
@@ -121,6 +122,7 @@ class Video implements Serializable,Comparable<Video>
         this.category = "";
         this.currentPosition=0l;
         this.hackDateString="";
+        this.authorID=0;
 
     }
 
