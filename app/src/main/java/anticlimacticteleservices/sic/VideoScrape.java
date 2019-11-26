@@ -210,29 +210,33 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
 
                 if (vid.getAuthorID()>0) {
                     boolean isDownloading = false;
-                    if ((channelDao.getChannelById(vid.getAuthorID()).isArchive()) && !vid.getMp4().isEmpty() && (null == vid.getLocalPath())) {
+                    Channel parent = channelDao.getChannelById(vid.getAuthorID());
 
-                        Uri target = Uri.parse(vid.getMp4());
-                        File fpath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-                        vid.setLocalPath(fpath.getAbsolutePath()+"/"+vid.getSourceID()+".mp4");
-                        DownloadManager downloadManager = (DownloadManager) MainActivity.masterData.context.getApplicationContext().getSystemService(DOWNLOAD_SERVICE);
-                        DownloadManager.Request request = new DownloadManager.Request(target);
-                        request.allowScanningByMediaScanner();
-                        //request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
-                        //request.setAllowedOverRoaming(false);
-                        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                        request.setTitle(vid.getAuthor());
-                        request.setDescription(vid.getTitle());
-                        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, vid.getSourceID() + ".mp4");
-                        request.setVisibleInDownloadsUi(true);
-                        MainActivity.masterData.downloadVideoID = vid.getID();
-                        MainActivity.masterData.downloadSourceID = vid.getSourceID();
-                        MainActivity.masterData.downloadID = downloadManager.enqueue(request);
-                    }
-                    if (headless) {
-                        videoDao.update(vid);
-                    } else {
-                        MainActivity.masterData.updateVideo(vid);
+                    if (null != parent) {
+                        if ((parent.isArchive()) && !vid.getMp4().isEmpty() && (null == vid.getLocalPath())) {
+
+                            Uri target = Uri.parse(vid.getMp4());
+                            File fpath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                            vid.setLocalPath(fpath.getAbsolutePath() + "/" + vid.getSourceID() + ".mp4");
+                            DownloadManager downloadManager = (DownloadManager) MainActivity.masterData.context.getApplicationContext().getSystemService(DOWNLOAD_SERVICE);
+                            DownloadManager.Request request = new DownloadManager.Request(target);
+                            request.allowScanningByMediaScanner();
+                            //request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
+                            //request.setAllowedOverRoaming(false);
+                            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                            request.setTitle(vid.getAuthor());
+                            request.setDescription(vid.getTitle());
+                            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, vid.getSourceID() + ".mp4");
+                            request.setVisibleInDownloadsUi(true);
+                            MainActivity.masterData.downloadVideoID = vid.getID();
+                            MainActivity.masterData.downloadSourceID = vid.getSourceID();
+                            MainActivity.masterData.downloadID = downloadManager.enqueue(request);
+                        }
+                        if (headless) {
+                            videoDao.update(vid);
+                        } else {
+                            MainActivity.masterData.updateVideo(vid);
+                        }
                     }
                 }
             } catch (IOException e) {

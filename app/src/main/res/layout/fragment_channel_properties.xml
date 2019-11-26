@@ -4,112 +4,106 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/bgColor"
     android:layout_margin="4dp">
 
 
-    <LinearLayout
-        android:id="@+id/linearLayout1"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#FFFFFF"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/thumbNailView"
-            android:layout_width="match_parent"
-            android:layout_height="240dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginBottom="2dp"
-            android:background="#FFFFFF"
-            tools:srcCompat="@tools:sample/avatars" />
-
-        <TextView
-            android:id="@+id/channel_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="TextView"
-            android:textAlignment="center"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/linearlayoutcheckboxes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:background="#ffffff"
+            android:orientation="vertical">
 
-            <CheckBox
-                android:id="@+id/channel_archive"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Archive" />
-
-            <CheckBox
-                android:id="@+id/subscribecheckbox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="subscribe" />
-
-            <CheckBox
-                android:id="@+id/channel_notify"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Notify" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/linearlayoutbuttons"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/closeButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Save" />
-
-            <Button
-                android:id="@+id/cancel_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginBottom="2dp"
-                android:text="@android:string/cancel" />
-        </LinearLayout>
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/channel_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_marginTop="4dp"
+                android:text="TextView"
+                android:textAlignment="center"
+                android:textSize="24sp"
+                android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/channel_property_description"
-                    android:layout_width="match_parent"
+            <ImageView
+                android:id="@+id/thumbNailView"
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="2dp"
+                android:background="#FFFFFF"
+                tools:srcCompat="@tools:sample/avatars" />
+
+            <LinearLayout
+                android:id="@+id/linearlayoutcheckboxes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#00FFFFFF"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/channel_archive"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginEnd="4dp"
-                    android:autoLink="web|email"
-                    android:background="#FFFFFF"
-                    android:paddingLeft="4dp"
-                    android:textAlignment="textStart"
-                    android:textIsSelectable="true" />
-            </LinearLayout>
-        </ScrollView>
+                    android:layout_weight="1"
+                    android:text="Archive" />
 
-    </LinearLayout>
+                <CheckBox
+                    android:id="@+id/subscribecheckbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="subscribe" />
+
+                <CheckBox
+                    android:id="@+id/channel_notify"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Notify" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearlayoutbuttons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/closeButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Save" />
+
+                <Button
+                    android:id="@+id/cancel_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@android:string/cancel" />
+
+                <Button
+                    android:id="@+id/channelvideos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Videos" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/channel_property_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="4dp"
+                android:autoLink="web|email"
+                android:background="#FFFFFF"
+                android:paddingLeft="4dp"
+                android:textAlignment="textStart"
+                android:textIsSelectable="true" />
+
+        </LinearLayout>
+    </ScrollView>
 
 </android.support.constraint.ConstraintLayout>

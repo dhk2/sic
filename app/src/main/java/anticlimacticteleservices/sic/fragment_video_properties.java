@@ -1,14 +1,18 @@
 package anticlimacticteleservices.sic;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.text.HtmlCompat;
 import android.text.Html;
 import android.text.Spanned;
@@ -44,7 +48,7 @@ public class fragment_video_properties extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String PassedVideo = "video";
     private static final String ARG_PARAM2 = "param2";
-
+    private static final int PERMISSION_REQUEST_CODE = 1;
     // TODO: Rename and change types of parameters
     private Video mVideo;
     private String mParam2;
@@ -118,7 +122,8 @@ public class fragment_video_properties extends Fragment {
         Picasso.get().load(vid.getThumbnail()).into(image);
         TextView title = v.findViewById(R.id.video_name);
         title.setText(vid.getTitle());
-        Button dialogButton = v.findViewById(R.id.closeButton);
+        Button closeButton = v.findViewById(R.id.closeButton);
+        Button channelButton = v.findViewById(R.id.gotochannel);
         Button playBitchuteVlc= v.findViewById(R.id.properties_play_bc_vlc);
         Button playYoutubeVlc= v.findViewById(R.id.properties_play_yt_vlc);
         Button playExo=v.findViewById(R.id.properties_play_exo);
@@ -189,10 +194,23 @@ public class fragment_video_properties extends Fragment {
             playYoutube.setVisibility(View.GONE);
         }
 
-        dialogButton.setOnClickListener(new View.OnClickListener() {
+        closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 MainActivity.masterData.fragmentManager.popBackStack();
+            }
+        });
+        channelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (vid.getAuthorID()>0) {
+                    Channel chan = MainActivity.masterData.getChannelDao().getChannelById(vid.getAuthorID());
+                    fragment_channel_properties cpfragment = fragment_channel_properties.newInstance(chan, "");
+                    FragmentTransaction transaction = MainActivity.masterData.getFragmentManager().beginTransaction();
+                    transaction.replace(R.id.fragment, cpfragment);
+                    transaction.addToBackStack(null);
+                    transaction.commitAllowingStateLoss();
+                }
             }
         });
         playYoutubeVlc.setOnClickListener(new View.OnClickListener() {
@@ -408,28 +426,32 @@ public class fragment_video_properties extends Fragment {
         download.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Uri target = Uri.parse(vid.getMp4());
-                File fpath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-                vid.setLocalPath(fpath.getAbsolutePath()+"/"+vid.getSourceID()+".mp4");
-                MainActivity.masterData.updateVideo(vid);
-                System.out.println(vid.getLocalPath());
-                System.out.println(requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS));
+                if (ContextCompat.checkSelfPermission(MainActivity.masterData.context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE );
+                }
+                else {
+                    Uri target = Uri.parse(vid.getMp4());
+                    File fpath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                    vid.setLocalPath(fpath.getAbsolutePath() + "/" + vid.getSourceID() + ".mp4");
+                    MainActivity.masterData.updateVideo(vid);
+                    System.out.println(vid.getLocalPath());
+                    System.out.println(requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS));
 
-                System.out.println(fpath.getAbsolutePath());
-                DownloadManager downloadManager = (DownloadManager) MainActivity.masterData.context.getApplicationContext().getSystemService(DOWNLOAD_SERVICE);
-                DownloadManager.Request request = new DownloadManager.Request(target);
-                request.allowScanningByMediaScanner();
-                //request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
-                //request.setAllowedOverRoaming(false);
-                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                request.setTitle(vid.getAuthor());
-                request.setDescription(vid.getTitle());
-                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,vid.getSourceID()+".mp4");
-                request.setVisibleInDownloadsUi(true);
-                MainActivity.masterData.downloadVideoID = vid.getID();
-                MainActivity.masterData.downloadSourceID = vid.getSourceID();
-                MainActivity.masterData.downloadID = downloadManager.enqueue(request);
-
+                    System.out.println(fpath.getAbsolutePath());
+                    DownloadManager downloadManager = (DownloadManager) MainActivity.masterData.context.getApplicationContext().getSystemService(DOWNLOAD_SERVICE);
+                    DownloadManager.Request request = new DownloadManager.Request(target);
+                    request.allowScanningByMediaScanner();
+                    //request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
+                    //request.setAllowedOverRoaming(false);
+                    request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                    request.setTitle(vid.getAuthor());
+                    request.setDescription(vid.getTitle());
+                    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, vid.getSourceID() + ".mp4");
+                    request.setVisibleInDownloadsUi(true);
+                    MainActivity.masterData.downloadVideoID = vid.getID();
+                    MainActivity.masterData.downloadSourceID = vid.getSourceID();
+                    MainActivity.masterData.downloadID = downloadManager.enqueue(request);
+                }
 
             }
         });

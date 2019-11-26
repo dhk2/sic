@@ -203,16 +203,27 @@
                 <WebView
                     android:id="@+id/videopropertieswebview"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content" >
 
-                <Button
-                    android:id="@+id/closeButton"
-                    android:layout_width="398dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:text="Close" />
+                </WebView>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/closeButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Close" />
+
+                    <Button
+                        android:id="@+id/gotochannel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Channel" />
+                </LinearLayout>
             </LinearLayout>
         </ScrollView>
 

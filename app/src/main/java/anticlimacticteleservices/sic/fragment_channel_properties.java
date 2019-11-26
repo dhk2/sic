@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.text.HtmlCompat;
 import android.text.Spanned;
@@ -18,6 +19,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -32,6 +34,7 @@ public class fragment_channel_properties extends Fragment {
     private static final String ARG_PARAM2 = "param2";
     private Button save;
     private Button cancel;
+    private Button channelVideos;
     private Channel mPassedChannel;
     private String mParam2;
     private static final int PERMISSION_REQUEST_CODE = 1;
@@ -91,6 +94,7 @@ public class fragment_channel_properties extends Fragment {
         }
         save = v.findViewById(R.id.closeButton);
         cancel = v.findViewById(R.id.cancel_button);
+        channelVideos=v.findViewById(R.id.channelvideos);
         TextView name = v.findViewById(R.id.channel_name);
         name.setText(chan.getTitle());
         CheckBox archive =v.findViewById(R.id.channel_archive);
@@ -133,6 +137,23 @@ public class fragment_channel_properties extends Fragment {
             @Override
             public void onClick(View v) {
                 MainActivity.masterData.fragmentManager.popBackStack();
+            }
+        });
+        channelVideos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<Video> channelVideos = new ArrayList<Video>();
+                channelVideos = (ArrayList<Video>) MainActivity.masterData.getVideoDao().getVideosByAuthorId(chan.getID());
+                if (!channelVideos.isEmpty()) {
+                    Fragment fragment = new VideoFragment();
+                    ((VideoFragment) fragment).setVideos(channelVideos);
+                    FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
+                    transaction.replace(R.id.fragment, fragment);
+                    transaction.addToBackStack(null);
+                    transaction.commitAllowingStateLoss();
+                } else {
+                    Toast.makeText(MainActivity.masterData.context,  "no videos for channel in feed currently", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         return v;

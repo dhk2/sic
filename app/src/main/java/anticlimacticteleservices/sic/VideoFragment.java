@@ -57,6 +57,7 @@ public class VideoFragment extends Fragment {
                             if (MainActivity.masterData.getFragmentID().equals("home")) {
                                 MainActivity.masterData.setSwipeRefreshLayout(swipeRefreshLayout);
                                 MainActivity.masterData.setForceRefresh(true);
+                                vfVideos = MainActivity.masterData.getVideoDao().getVideos();
                                 new ChannelUpdate().execute();
                             } else {
                                 swipeRefreshLayout.setRefreshing(false);

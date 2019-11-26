@@ -173,9 +173,7 @@ public class MainActivity extends AppCompatActivity implements fragment_exoplaye
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder(); StrictMode.setVmPolicy(builder.build());
         registerReceiver(onDownloadComplete,new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         if (masterData == null) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE );
-            }
+
             Log.v("Main-OC","masterData is null");
             preferences = getSharedPreferences( getPackageName() + "_preferences", MODE_PRIVATE);
             masterData = new UserData(getApplicationContext());
