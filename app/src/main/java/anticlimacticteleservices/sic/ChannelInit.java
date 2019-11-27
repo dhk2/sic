@@ -29,11 +29,17 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
 
         channels:for (String g : params) {
            chan = new Channel(g);
+           int channelVideoCount =0;
             Log.v("Channel-Init","trying to add channel:"+g);
            for (Channel c : MainActivity.masterData.getChannels()){
-               if (((chan.getYoutubeID() == c.getYoutubeID()) && chan.isYoutube() )|| ( chan.isBitchute() &&(chan.getBitchuteID() == c.getBitchuteID()))){
+               if (chan.getYoutubeID() == c.getYoutubeID() && !c.getYoutubeID().isEmpty() ){
                    dupeCount++;
-                   Log.v("Channel-Init","trying to add duplicate channel "+chan.getTitle());
+                   Log.v("Channel-Init","trying to add duplicate youtube channel "+chan.getTitle());
+                   continue channels;
+               }
+               if (chan.getBitchuteID() == c.getBitchuteID() && !c.getBitchuteID().isEmpty()){
+                   dupeCount++;
+                   Log.v("Channel-Init","trying to add duplicate bitchute channel "+chan.getTitle());
                    continue channels;
                }
            }
@@ -56,6 +62,59 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                 chan.setTitle(channelRss.title());
                Log.v("Channel-Init","creating channel with title:"+channelRss.title());
                //System.out.println("g is:"+g +"\n   id is "+chan.getSourceID()+ "\n    url is "+chan.getBitchuteUrl()+"\n   youtube rss: "+chan.getYoutubeRssFeedUrl()+"\n  bitchute rss feed "+chan.getBitchuteRssFeedUrl());
+               if (chan.isBitchute()) {
+                   try {
+                       chan.setDescription(channelRss.getElementsByTag("description").first().text());
+                       chan.setThumbnail(channelPage.getElementsByAttribute("data-src").last().attr("data-src"));
+                       Elements videos = channelRss.getElementsByTag("item");
+                       System.out.println(videos.size());
+                       for (Element video : videos) {
+                           Video nv=new Video(video.getElementsByTag("link").first().text());
+                           nv.setTitle(video.getElementsByTag("title").first().text());
+                           nv.setDescription(video.getElementsByTag("description").first().text());
+                           // System.out.println(nv);
+                           nv.setThumbnail(video.getElementsByTag("enclosure").first().attr("url"));
+                           Date pd=new Date(1);
+                           try {
+                               pd = bdf.parse(video.getElementsByTag("pubDate").first().text());
+                               nv.setDate(pd);
+                           } catch (ParseException ex) {
+                               Log.v("Exception", ex.getLocalizedMessage());
+                           }
+                           //TODO put in exception for archived channels here when implemented
+                           if (pd.getTime()+(MainActivity.masterData.getFeedAge()*24*60*60*1000)<new Date().getTime()) {
+                               System.out.println("out of feed range for " + chan.getTitle());
+                               break;
+                           }
+                           nv.setAuthor(channelRss.title());
+                           nv.setAuthorID(chan.getID());
+                           //System.out.println(nv);
+                           boolean unique=true;
+                           for (Video match : MainActivity.masterData.getVideos()) {
+                               if (match.getSourceID().equals(nv.getSourceID())) {
+                                   unique = false;
+                                   if (match.getBitchuteID()==""){
+                                       match.setBitchuteID(nv.getSourceID());
+                                   }
+                                   if (match.getAuthorID()>0){
+                                       Channel tester = MainActivity.masterData.getChannelDao().getChannelById(match.getAuthorID());
+                                       tester.setBitchuteID(chan.getSourceID());
+                                       MainActivity.masterData.updateChannel(tester);
+                                   }
+                                   continue channels;
+                               }
+                           }
+                           if (unique) {
+                               MainActivity.masterData.addVideo(nv);
+                               newVideoCount++;
+                               channelVideoCount++;
+                           }
+                       }
+                   } catch (NullPointerException e) {
+                       System.out.println("null pointer issue" + e);
+                       e.printStackTrace();
+                   }
+               }
                if (chan.isYoutube()) {
                     chan.setTitle(channelRss.title());
                     chan.setAuthor(channelRss.getElementsByTag("name").first().text());
@@ -71,11 +130,16 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                             Log.e("Exception parsing date", ex.getLocalizedMessage());
                             System.out.println(entry);
                         }
-                        if (pd.getTime()+(MainActivity.masterData.getFeedAge()*24*60*60*1000)<new Date().getTime()){
-                            System.out.println("out of feed range for "+chan.getTitle()+Long.toString(MainActivity.masterData.getFeedAge()));
-                            break;
+                        if ((pd.getTime()+(MainActivity.masterData.getFeedAge()*24*60*60*1000)<new Date().getTime())){
+                            if (channelVideoCount>1) {
+                                System.out.println("out of feed range for " + chan.getTitle() + Long.toString(MainActivity.masterData.getFeedAge()));
+                                break;
+                            }
                         }
                         Video nv = new Video(entry.getElementsByTag("link").first().attr("href"));
+                        if (channelVideoCount <=1){
+                            nv.setKeep(true);
+                        }
                         nv.setDate(pd);
                         nv.setAuthor(chan.getAuthor());
                         nv.setAuthorID(chan.getID());
@@ -84,93 +148,71 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                         nv.setDescription(entry.getElementsByTag("media:description").first().text());
                         nv.setRating(entry.getElementsByTag("media:starRating").first().attr("average"));
                         nv.setViewCount(entry.getElementsByTag("media:statistics").first().attr("views"));
+                        if (chan.isBitchute()){
+                            nv.setBitchuteID(nv.getSourceID());
+                        }
                         boolean unique = true;
                         for (Video match : MainActivity.masterData.getVideos()) {
+                            // Video from channel already in database
                             if (match.getSourceID().equals(nv.getSourceID())) {
                                 unique = false;
-                                if (match.getYoutubeID()==""){
+
+                                //for videos from a bitchute channel that need to be linked to the youtube channel
+                                if (match.getYoutubeID().isEmpty()){
+                                    Channel tester = new Channel();
                                     match.setYoutubeID(nv.getSourceID());
-                                }
-                                if (match.getAuthorID()>0){
-                                    for (Channel c : MainActivity.masterData.getChannels()){
-                                        if (match.getAuthorID() == c.getID()){
-                                            c.setYoutubeID(chan.getYoutubeID());
+                                    MainActivity.masterData.updateVideo(match);
+                                    if (match.getAuthorID()>0) {
+                                        tester = MainActivity.masterData.getChannelDao().getChannelById(match.getAuthorID());
+                                    }
+                                    else {
+                                        //TODO add a more exhaustive search to find the matching channel
+                                    }
+                                    if (!tester.isYoutube()) {
+                                        if (match.getAuthorID() > 0) {
+                                            tester.setYoutubeID(chan.getYoutubeID());
+                                            MainActivity.masterData.updateChannel(tester);
+                                            Log.v("Channel-Init", "Adding youtube id:" + chan.getYoutubeID() + " to channel " + tester.getTitle() + " (" + chan.getBitchuteID() + ")");
+                                        } else {
+                                            Log.v("Channel-Init", "Unable to add id:" + chan.getYoutubeID() + " to channel " + tester.getTitle() + " (" + chan.getBitchuteID() + ") because missing channel id ");
                                         }
                                     }
                                 }
-
-                                break;
+                                continue channels;
                             }
                         }
                         if (unique) {
+                            if (chan.getBitchuteID().isEmpty()){
+
+                                String testID="";
+                                try {
+                                    Document doctest = Jsoup.connect(nv.getBitchuteTestUrl()).get();
+                                    //System.out.println(doctest);
+                                    System.out.println(("looking for bitchute version of "+nv.getTitle()+" from " + nv.getAuthor()+" results in "+doctest.title()));
+                                    nv.setBitchuteID(nv.getSourceID());
+                                    MainActivity.masterData.updateVideo(nv);
+                                    if (chan.getBitchuteID().isEmpty()){
+                                        System.out.println("need to set bitchute id for channel imported from youtube");
+                                        testID = doctest.getElementsByClass("image-container").first().getElementsByTag("a").first().attr("href");
+                                        System.out.println(testID.length()+">"+testID);
+                                        testID=testID.substring(0,testID.length()-1);
+                                        System.out.println(testID.length()+">"+testID);
+                                        testID = testID.substring(testID.lastIndexOf("/")+1);
+                                        System.out.println(testID.length()+">"+testID);
+                                        chan.setBitchuteID(testID);
+                                    }
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                    Log.e("channel-init", "unable to load bitchute version of youtube video");
+                                }
+                            }
                             MainActivity.masterData.addVideo(nv);
                             newVideoCount++;
+                            channelVideoCount++;
                         }
-
-                        //  video is already in database
                     }
                 }
 
-
-
-
-
-
-                if (chan.isBitchute()) {
-                    try {
-                        chan.setDescription(channelRss.getElementsByTag("description").first().text());
-                        chan.setThumbnail(channelPage.getElementsByAttribute("data-src").last().attr("data-src"));
-                        Elements videos = channelRss.getElementsByTag("item");
-                        System.out.println(videos.size());
-                        for (Element video : videos) {
-                            Video nv=new Video(video.getElementsByTag("link").first().text());
-                            nv.setTitle(video.getElementsByTag("title").first().text());
-                            nv.setDescription(video.getElementsByTag("description").first().text());
-                           // System.out.println(nv);
-                            nv.setThumbnail(video.getElementsByTag("enclosure").first().attr("url"));
-                            Date pd=new Date(1);
-                            try {
-                                pd = bdf.parse(video.getElementsByTag("pubDate").first().text());
-                                nv.setDate(pd);
-                            } catch (ParseException ex) {
-                                Log.v("Exception", ex.getLocalizedMessage());
-                            }
-                            //TODO put in exception for archived channels here when implemented
-                            if (pd.getTime()+(MainActivity.masterData.getFeedAge()*24*60*60*1000)<new Date().getTime()) {
-                                System.out.println("out of feed range for " + chan.getTitle());
-                                break;
-                            }
-                            nv.setAuthor(channelRss.title());
-                            nv.setAuthorID(chan.getID());
-                            //System.out.println(nv);
-                            boolean unique=true;
-                            for (Video match : MainActivity.masterData.getVideos()) {
-                                if (match.getSourceID().equals(nv.getSourceID())) {
-                                    unique = false;
-                                    if (match.getBitchuteID()==""){
-                                        match.setBitchuteID(nv.getSourceID());
-                                    }
-                                    if (match.getAuthorID()>0){
-                                        for (Channel c : MainActivity.masterData.getChannels()){
-                                            if (match.getAuthorID() == c.getID()){
-                                                c.setBitchuteID(chan.getBitchuteID());
-                                            }
-                                        }
-                                    }
-                                    break;
-                                }
-
-                            }
-                            if (unique) {
-                                MainActivity.masterData.addVideo(nv);
-                                newVideoCount++;
-                            }
-                        }
-                    } catch (NullPointerException e) {
-                        System.out.println("null pointer issue" + e);
-                        e.printStackTrace();
-                    }
-                }
                  MainActivity.masterData.addChannel(chan);
                     Log.v("Channel-Init",MainActivity.masterData.getChannels().size()+" added channel "+chan.getTitle());
                     newChannelCount++;

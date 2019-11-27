@@ -62,6 +62,12 @@ class Video implements Serializable,Comparable<Video>
     private String bitchuteID;
     @ColumnInfo(name = "youtube_id")
     private String youtubeID;
+    @ColumnInfo(name = "errors")
+    private Long errors;
+    @ColumnInfo(name = "keep")
+    private Boolean keep;
+    @ColumnInfo(name = "last_scrape")
+    private Long lastScrape;
 
     public Video()
     {
@@ -87,6 +93,9 @@ class Video implements Serializable,Comparable<Video>
         this.youtubeID ="";
         this.bitchuteID ="";
         this.authorID=0;
+        this.errors=0l;
+        this.keep=false;
+        this.lastScrape=date;
     }
 
     public Video(String location)
@@ -123,6 +132,9 @@ class Video implements Serializable,Comparable<Video>
         this.currentPosition=0l;
         this.hackDateString="";
         this.authorID=0;
+        this.errors=0l;
+        this.keep=false;
+        this.lastScrape=date;
 
     }
 
@@ -300,6 +312,9 @@ class Video implements Serializable,Comparable<Video>
                 "Hash tags:" + hashtags  + "\n" +
                 "Duration:" + duration +"\n"+
                 "local path:"+localPath+"\n"+
+                "errors:"+errors+"\n"+
+                "keep:"+keep+"\n"+
+                "last scrape:"+lastScrape+"\n"+
                 "Category:" + category+ "\n");
 
     }
@@ -325,6 +340,9 @@ class Video implements Serializable,Comparable<Video>
                 "Hash tags:" + hashtags  + "<p>" +
                 "local path:"+localPath+"<p>"+
                 "Duration:" + duration +"<p>"+
+                "Errors:" + errors +"<p>"+
+                "keep:" + keep +"<p>"+
+                "lastScrape:" + lastScrape +"<p>"+
                 "Category:" + category+ "<p>");
     }
     public String toCompactString(){
@@ -456,5 +474,31 @@ class Video implements Serializable,Comparable<Video>
 
     public void setYoutubeID(String youtubeID) {
         this.youtubeID = youtubeID;
+    }
+
+    public Long getErrors() {
+        return errors;
+    }
+    public void incrementErrors(){
+        errors++;
+    }
+    public void setErrors(Long errors) {
+        this.errors = errors;
+    }
+
+    public Boolean getKeep() {
+        return keep;
+    }
+
+    public void setKeep(Boolean keep) {
+        this.keep = keep;
+    }
+
+    public Long getLastScrape() {
+        return lastScrape;
+    }
+
+    public void setLastScrape(Long lastScrape) {
+        this.lastScrape = lastScrape;
     }
 }

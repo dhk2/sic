@@ -249,6 +249,9 @@ public class fragment_video_properties extends Fragment {
         playVlcLocal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (MainActivity.masterData.useComments && MainActivity.masterData.isDissenterComments()){
+                    Util.writeSubtitles(MainActivity.masterData.context, vid);
+                }
                 Uri uri;
                 int vlcRequestCode = 42;
                 String path ="";

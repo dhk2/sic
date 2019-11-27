@@ -66,14 +66,19 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
     @Override
     protected void onPostExecute(Boolean aBoolean) {
         super.onPostExecute(aBoolean);
+
         if (!headless && null != MainActivity.masterData.getSwipeRefreshLayout()) {
-            if (hideWatched){
-                MainActivity.masterData.setVideos(videoDao.getUnWatchedVideos());
+            MainActivity.masterData.getSwipeRefreshLayout().setRefreshing(false);
+            if (null==videoDao){
+                updateError="Network offline";
             }
             else {
-                MainActivity.masterData.setVideos(videoDao.getVideos());
+                if (hideWatched) {
+                    MainActivity.masterData.setVideos(videoDao.getUnWatchedVideos());
+                } else {
+                    MainActivity.masterData.setVideos(videoDao.getVideos());
+                }
             }
-            MainActivity.masterData.getSwipeRefreshLayout().setRefreshing(false);
         }
         if (newcount>0 || forceRefresh) {
             Toast.makeText(context, newcount + " new videos added", Toast.LENGTH_SHORT).show();
@@ -89,7 +94,7 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
 
     @Override
     protected Boolean doInBackground(String... params) {
-
+        Boolean videoExists = false;
         if (null == MainActivity.masterData) {
             context = SicSync.context;
             headless=true;
@@ -109,6 +114,8 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
         } else {
             wifiConnected = false;
             mobileConnected = false;
+            System.out.println("offline according to system");
+            return null;
         }
         if (headless){
             preferences = context.getSharedPreferences( "anticlimacticteleservices.sic" + "_preferences", MODE_PRIVATE);
@@ -185,7 +192,7 @@ channelloop:for (Channel chan :allChannels){
             int days = (int) ((diff / (1000*60*60*24)));
             //System.out.println(chan.getTitle()+"synched days:"+days+" hours:"+hours+" minutes:"+minutes);
             //TODO implement variable refresh rate by channel here
-            if (minutes>5 || forceRefresh){
+            if (minutes>(5*(chan.getErrors()+1)) || forceRefresh){
                 chan.setLastsync(new Date());
                 channelDao.update(chan);
                 if (chan.isYoutube()){
@@ -204,27 +211,31 @@ channelloop:for (Channel chan :allChannels){
                     }
                     Elements videos = doc.getElementsByTag("entry");
         youtubeLoop:for (Element entry : videos) {
+                        videoExists=false;
                         Video nv = new Video(entry.getElementsByTag("link").first().attr("href"));
                         //TODO use sql query on source id to find duplicate instead of iterating.
+
                         for (Video match : allVideos) {
                             if (match.getSourceID().equals(nv.getSourceID()) && match.isYoutube()) {
                                 dupecount++;
+                                videoExists=true;
                                 if (match.getAuthorID()==0){
                                     match.setAuthorID(chan.getID());
-                                    videoDao.update(match);
-                                    continue youtubeLoop;
+                                    //continue youtubeLoop;
                                 }
-                               // System.out.println("video duped "+match.getAuthor()+ " "+nv.getSourceID());
-                                continue channelloop;
+                                nv=match;
+                                //continue channelloop;
                             }
                             if (match.getSourceID().equals(nv.getSourceID()) && match.isBitchute()) {
                                 mirror++;
                                 System.out.println("new youtube video mirrors bitchute video "+match.getAuthor()+ " "+nv.getSourceID());
                                 if (!match.isYoutube()) {
                                     match.setYoutubeID(nv.getSourceID());
-                                    videoDao.update(match);
+                                    nv=match;
+                                    videoExists=true;
+
                                 }
-                                continue channelloop;
+                                //continue channelloop;
                             }
                         }
                         Date pd = new Date(1);
@@ -250,7 +261,12 @@ channelloop:for (Channel chan :allChannels){
                         if (chan.isBitchute()){
                             nv.setBitchuteID(nv.getSourceID());
                         }
-                        videoDao.insert(nv);
+                        if (headless){
+                            videoDao.update(nv);
+                        }
+                        else{
+                            MainActivity.masterData.updateVideo(nv);
+                        }
 
                         if (chan.isNotify()){
                             createNotification(nv);
@@ -283,17 +299,22 @@ channelloop:for (Channel chan :allChannels){
                                 dupecount++;
                                 if (match.getAuthorID()==0){
                                     match.setAuthorID(chan.getID());
-                                    videoDao.update(match);
-                                    continue bitchuteLoop;
+                                    if (headless){
+                                        videoDao.update(match);
+                                    }
+                                    else{
+                                        MainActivity.masterData.updateVideo(match);
+                                    }
+                                    //continue bitchuteLoop;
                                 }
-                                continue channelloop;
+                                //continue channelloop;
                             }
                             if (match.getSourceID().equals(nv.getSourceID())&& !match.isBitchute()) {
                                 //  System.out.println("video duped "+nv.getSourceID()+"\n"+match.toDebugString());
                                 mirror++;
                                 System.out.println("new bitchute video mirrored on youtube"+match.getAuthor()+ " "+nv.getSourceID());
                                     match.setBitchuteID(nv.getSourceID());
-                                continue bitchuteLoop;
+                                //continue bitchuteLoop;
                             }
                         }
                         Date pd=new Date(1);
@@ -315,7 +336,12 @@ channelloop:for (Channel chan :allChannels){
                         if (chan.isYoutube()){
                             nv.setYoutubeID(nv.getSourceID());
                         }
-                        videoDao.insert(nv);
+                        if (headless) {
+                            videoDao.update(nv);
+                        }
+                        else {
+                            MainActivity.masterData.updateVideo(nv);
+                        }
                         newcount++;
                         if (chan.isNotify()){
                             createNotification(nv);

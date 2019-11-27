@@ -2,6 +2,8 @@ package anticlimacticteleservices.sic;
 
 //import android.app.Fragment;
 import android.app.Dialog;
+import android.content.ClipDescription;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -67,6 +69,7 @@ public class SettingsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         final Button importBitchute = view.findViewById(R.id.load_bitchute);
         final Button importYoutube = view.findViewById(R.id.load_youtube);
+        final Button subscribeToUrl = view.findViewById(R.id.subscribetourl);
         feedAge = view.findViewById(R.id.feed_age);
         feedAge.setText(Long.toString(MainActivity.masterData.getFeedAge()));
         backgroundSync = view.findViewById(R.id.backgroundsyncenabled);
@@ -87,6 +90,24 @@ public class SettingsFragment extends Fragment {
         bcSearchGoogle=view.findViewById(R.id.searchgoogle);
         bcSearchBitchute.setChecked(MainActivity.masterData.isBitchuteSearchBitchute());
         bcSearchGoogle.setChecked(MainActivity.masterData.isBitchuteSearchGoogle());
+
+        subscribeToUrl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                if (clipboard.hasPrimaryClip()) {
+                    android.content.ClipDescription description = clipboard.getPrimaryClipDescription();
+                    android.content.ClipData data = clipboard.getPrimaryClip();
+                    if (data != null && description != null ) {
+                        new ChannelInit().execute(String.valueOf(data.getItemAt(0).getText()));
+                        System.out.println(String.valueOf(data.getItemAt(0).getText()));
+                    }
+                }
+
+
+            }
+        });
         importBitchute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -174,7 +195,20 @@ public class SettingsFragment extends Fragment {
         //RadioButton bitchuteUseKodi = view.findViewById(R.id.bitchuteuse_kodi);
         //RadioButton bitchuteUseNewpipe = view.findViewById(R.id.bitchuteuse_newpipe);
         RadioButton bitchuteUseWebtorrentWebview = view.findViewById(R.id.bitchuteuse_webtorrentwebview);
-
+        if (!MainActivity.masterData.youtubeInstalled){
+            youtubeUseYoutube.setVisibility((View.GONE));
+        }
+        if (!MainActivity.masterData.vlcInstalled){
+            youtubeUseVlc.setVisibility(View.GONE);
+            bitchuteUseVlc.setVisibility(View.GONE);
+        }
+        if (!MainActivity.masterData.chromeInstalled){
+            youtubeUseChrome.setVisibility(View.GONE);
+            bitchuteUseChrome.setVisibility(View.GONE);
+        }
+        if (!MainActivity.masterData.newpipeInstalled){
+            youtubeUseNewpipe.setVisibility(View.GONE);
+        }
         switch(MainActivity.masterData.getYoutubePlayerChoice()){
             case 1:
                 youtubeUseVlc.setChecked(true);

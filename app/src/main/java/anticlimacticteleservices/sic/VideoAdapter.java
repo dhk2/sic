@@ -185,6 +185,9 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
                         }
                         if (!(null == vid.getLocalPath())){
                             path = vid.getLocalPath();
+                            if (MainActivity.masterData.useComments && MainActivity.masterData.isDissenterComments()){
+                                Util.writeSubtitles(MainActivity.masterData.context, vid);
+                            }
                         }
                         System.out.println(path);
                         uri = Uri.parse(path);
