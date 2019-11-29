@@ -77,6 +77,8 @@ class Channel implements Serializable{
         profileImage="";
         author="";
         subscribers="";
+        bitchuteID="";
+        youtubeID="";
         if (url.indexOf("youtube.com/feeds") > 0)
         {
             this.sourceID = url.substring(url.lastIndexOf("id=") + 3);
@@ -87,11 +89,10 @@ class Channel implements Serializable{
         }
         if (url.indexOf("youtube.com")>0){
             youtubeID= sourceID;
-            bitchuteID="";
+
         }
         if (url.indexOf("bitchute.com")>0) {
             bitchuteID = sourceID;
-            youtubeID="";
         }
         lastsync = new Date().getTime();
         joined = lastsync;
@@ -175,6 +176,13 @@ class Channel implements Serializable{
                 "subscribers:"+this.subscribers+"\n");
 
     }
+
+    public String toCompactString(){
+        return("title:"+this.title+"\n"+
+                "id:"+ID+" "+this.title+"("+url +")\n"+
+                "y:"+youtubeID+"b:"+bitchuteID+" Last Sync:"+new Date(lastsync)+" errors:"+this.errors+"\n");
+    }
+
     public boolean matches(String value){
         return youtubeID.equals(value) || bitchuteID.equals(value);
     }

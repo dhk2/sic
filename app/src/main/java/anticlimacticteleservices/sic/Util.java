@@ -69,7 +69,7 @@ public class Util {
         else {
             //running while app is running
             builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
-            builder.setMinimumLatency(300 * 1000); // Wait at least 5m
+            builder.setMinimumLatency(30 * 1000); // Wait at least 5m
             builder.setOverrideDeadline(60 * 60 * 1000); // Maximum delay 60m
         }
         builder.setPersisted(true);

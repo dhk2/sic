@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
+import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -127,9 +128,11 @@ public class UserData {
         for (Channel test : channels) {
             if (test.matches(value.getSourceID())){
                 unique=false;
+                Log.v("User-Data","attempted to add pre-existing channel "+value.toString());
             }
         }
         if (unique==true) {
+            Log.v("User-Data","adding channel "+value.toString());
             channels.add(value);
             feedLinks.add(value.getUrl());
             getChannelDao().insert(value);
@@ -174,7 +177,7 @@ public class UserData {
         for (Video v : videos) {
             if (v.getID() == (value.getID())){
                 v = value;
-                videoDao.update(v);
+                videoDao.update(value);
                 break;
 
             }
@@ -184,8 +187,9 @@ public class UserData {
     public void updateChannel(Channel value){
         for (Channel c : channels) {
             if (c.getID() == (value.getID())){
+
                 c = value;
-                channelDao.update(c);
+                channelDao.update(value);
                 break;
 
             }
@@ -203,7 +207,7 @@ public class UserData {
             }
         }
         if (unique){
-            System.out.println(videos.size()+"trying to add"+value);
+            System.out.println(videos.size()+"trying to add"+value.toCompactString());
             videos.add(value);
             videoDao.insert(value);
 

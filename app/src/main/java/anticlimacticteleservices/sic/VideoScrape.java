@@ -41,10 +41,12 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+        Log.v("Video-Scrape","Pre-execute");
     }
     @Override
     protected void onPostExecute(Video video) {
         super.onPostExecute(video);
+        Log.v("Video-Scrape","Post-execute");
     }
     @Override
     protected Video doInBackground(Video... videos) {
@@ -57,6 +59,8 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                 headless=false;
             }
         }
+        //TODO handle an array of videos
+        Log.d("Videoscrape","headless:"+headless);
         vid = videos[0];
         if (headless){
             preferences = context.getSharedPreferences( "anticlimacticteleservices.sic" + "_preferences", MODE_PRIVATE);
@@ -68,6 +72,7 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
             feedAge = MainActivity.masterData.feedAge;
             useComments = MainActivity.masterData.useComments;
         }
+        Log.d("Videoscrape","preferences loaded:"+feedAge);
         if (null == videoDao){
             if (null == MainActivity.masterData){
                 sicDatabase = Room.databaseBuilder(context, SicDatabase.class, "mydb")
@@ -91,13 +96,14 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                 commentDao = MainActivity.masterData.getCommentDao();
                 channelDao = MainActivity.masterData.getChannelDao();
             }
+            Log.d("Videoscrape","database connections made");
         }
         Document doctest = null;
         Long pd = vid.getDate();
-
+        Log.e("Videoscrape","initialized data for scrape:"+vid.toCompactString());
         //TODO put in exception for archived channels here when implemented
         if ((pd+(feedAge*24*60*60*1000)<new Date().getTime()) && !vid.getKeep()) {
-            System.out.println("removing ond video from feed " + vid.getTitle());
+            Log.e("Videoscrape","Removing expired video from feed \n"+vid.toCompactString());
             if (!(null == vid.getLocalPath())){
                 File file = new File(vid.getLocalPath());
                 file.delete();
@@ -109,23 +115,28 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
             return null;
         }
         if (vid.getAuthorID()==0){
-            System.out.println("author id is zero on video");
             for (Channel Cdog : MainActivity.masterData.getChannels()){
-                System.out.println("Authors:"+vid.getAuthor()+"><"+Cdog.getAuthor());
                 if (vid.getAuthor().equals(Cdog.getAuthor())){
                     vid.setAuthorID(Cdog.getID());
                     Log.e("Videoscrape","Setting author id to "+vid.getAuthorID()+" because it matches channel "+vid.getAuthor());
-                    videoDao.update(vid);
+
+                    if (headless){
+                        videoDao.update(vid);
+                    }
+                    else{
+                        MainActivity.masterData.updateVideo(vid);
+                    }
+                    break;
                 }
             }
         }
         //TODO add a way to manage retrying after error condition instead of just giving up
-        if (vid.isBitchute() && !vid.isYoutube() && vid.getErrors()==0){
+        if (vid.isBitchute() && !vid.isYoutube() && headless){
             try {
+                Log.e("Videoscrape","attempting to load youtube version of bitchute video "+vid.toCompactString());
                 doctest = Jsoup.connect(vid.getYoutubeEmbeddedUrl()).get();
-                System.out.println(("looking for youtube version of "+vid.getTitle()+" from " + vid.getAuthor()+" results in "+doctest.title()));
+
                 if (doctest.title().equals("YouTube")){
-                    System.out.println(("no youtube version exists of video"));
                 }
                 else {
                     vid.setYoutubeID(vid.getSourceID());
@@ -139,17 +150,17 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
             }
             catch (IOException e) {
                 e.printStackTrace();
-                Log.e("Videoscrape","unable to load youtubve version of bitchute video");
+                Log.e("Videoscrape","unable to load youtube version of bitchute video "+vid.toCompactString());
                 vid.incrementErrors();
             }
 
         }
-        if (vid.isYoutube() && !vid.isBitchute() && vid.getAuthorID()>0 && vid.getErrors()<1) {
+        if (vid.isYoutube() && !vid.isBitchute() && vid.getAuthorID()>0 && (headless || vid.getErrors()<1)) {
             String testID="";
             try {
+                Log.e("Videoscrape","attempting to load bitchute version of youtube video "+vid.toCompactString());
                 doctest = Jsoup.connect(vid.getBitchuteTestUrl()).get();
                 //System.out.println(doctest);
-                System.out.println(("looking for bitchute version of "+vid.getTitle()+" from " + vid.getAuthor()+" results in "+doctest.title()));
                  vid.setBitchuteID(vid.getSourceID());
                  if (headless){
                      videoDao.update(vid);
@@ -182,6 +193,7 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                 vid.incrementErrors();
             }
         }
+        Log.e("Videoscrape", "Starting bitchute processing");
         if (vid.isBitchute()){
             Document doc = null;
             int commentcounter=0;
@@ -241,30 +253,30 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                             MainActivity.masterData.downloadSourceID = vid.getSourceID();
                             MainActivity.masterData.downloadID = downloadManager.enqueue(request);
                         }
-                        if (headless) {
-                            videoDao.update(vid);
-                        } else {
-                            MainActivity.masterData.updateVideo(vid);
-                        }
+
                     }
+                }
+                if (headless) {
+                    videoDao.update(vid);
+                } else {
+                    MainActivity.masterData.updateVideo(vid);
                 }
             } catch (IOException e) {
                 vid.incrementErrors();
                 e.printStackTrace();
-                Log.e("Videoscrape","network failure in bitchute background video updater. aborting this run "+vid.getBitchuteEmbeddedUrl()+" "+vid.getTitle());
-                if (vid.getErrors()>5){
-                    vid.setBitchuteID("");
-                    if (headless) {
-                        videoDao.update(vid);
-                    } else {
-                        MainActivity.masterData.updateVideo(vid);
-                    }
+                Log.e("Videoscrape","network failure in bitchute scrape for "+vid.toCompactString());
+                vid.setBitchuteID("");
+                if (headless) {
+                    videoDao.update(vid);
+                } else {
+                    MainActivity.masterData.updateVideo(vid);
                 }
-                return null;
+                //return null;
             } catch (NullPointerException e){
                 e.printStackTrace();
             }
         }
+        Log.e("Videoscrape", "starting youtube processing");
         if (vid.isYoutube()){
             int commentcounter=0;
             Document doc = null;

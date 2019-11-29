@@ -10,7 +10,7 @@
         android:id="@+id/vrv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?attr/bgColor"
+        android:background="@drawable/item_selector"
         android:clipChildren="true"
         android:clipToPadding="true"
         android:paddingTop="8dp"

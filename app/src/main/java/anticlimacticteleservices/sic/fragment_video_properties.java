@@ -112,7 +112,7 @@ public class fragment_video_properties extends Fragment {
                 }
             }
         }
-        System.out.println(description);
+        //System.out.println(description);
         WebView descriptionWebView = null;
         descriptionWebView=v.findViewById(R.id.videopropertieswebview);
         WebViewClient webViewClient= new WebViewClient();
@@ -140,9 +140,6 @@ public class fragment_video_properties extends Fragment {
         Button playBitchuteChrome = v.findViewById(R.id.properties_play_bc_chrome);
         Button playYoutubeChrome = v.findViewById(R.id.properties_play_yt_chrome);
         Button download = v.findViewById(R.id.properties_download);
-        System.out.println(MainActivity.masterData.youtubeInstalled);
-        System.out.println((MainActivity.masterData.chromeInstalled));
-        System.out.println((MainActivity.masterData.newpipeInstalled));
         // turn off bitchute options if not bitchute
         if (!vid.isBitchute()){
             playExo.setVisibility(View.GONE);

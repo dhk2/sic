@@ -346,8 +346,14 @@ class Video implements Serializable,Comparable<Video>
                 "Category:" + category+ "<p>");
     }
     public String toCompactString(){
-        return(authorID+")"+ author +":"+title +"\n" +
-                "Source ID:"+sourceID+" B:"+bitchuteID+" Y:"+youtubeID+" mp4:"+mp4+" local:"+localPath+"url:"+url+"\n");
+        String bits ="";
+        if (keep)
+            bits=bits+" keep";
+        if (errors>0)
+            bits = bits+ " errors:"+errors;
+
+        return("["+ID+"] ("+authorID+")"+ author +":"+title +  "\n" +
+                "Source ID:"+sourceID+" B:"+bitchuteID+" Y:"+youtubeID+" mp4:"+mp4+" local:"+localPath+"url:"+url+"\n"+bits);
     }
 
 

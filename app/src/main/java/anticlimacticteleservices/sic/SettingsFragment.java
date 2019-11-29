@@ -5,6 +5,8 @@ import android.app.Dialog;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -70,6 +72,7 @@ public class SettingsFragment extends Fragment {
         final Button importBitchute = view.findViewById(R.id.load_bitchute);
         final Button importYoutube = view.findViewById(R.id.load_youtube);
         final Button subscribeToUrl = view.findViewById(R.id.subscribetourl);
+        final Button help = view.findViewById(R.id.help);
         feedAge = view.findViewById(R.id.feed_age);
         feedAge.setText(Long.toString(MainActivity.masterData.getFeedAge()));
         backgroundSync = view.findViewById(R.id.backgroundsyncenabled);
@@ -90,6 +93,18 @@ public class SettingsFragment extends Fragment {
         bcSearchGoogle=view.findViewById(R.id.searchgoogle);
         bcSearchBitchute.setChecked(MainActivity.masterData.isBitchuteSearchBitchute());
         bcSearchGoogle.setChecked(MainActivity.masterData.isBitchuteSearchGoogle());
+
+        help.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent playerIntent = new Intent(Intent.ACTION_VIEW);
+                String path = "https://github.com/dhk2/sic/wiki/Settings";
+                Uri uri = Uri.parse(path);
+                playerIntent.setData(uri);
+                v.getContext().startActivity(playerIntent);
+            }
+        });
+
 
         subscribeToUrl.setOnClickListener(new View.OnClickListener() {
             @Override

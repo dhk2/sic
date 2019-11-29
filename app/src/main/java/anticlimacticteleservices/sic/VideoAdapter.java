@@ -67,7 +67,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         final CustomViewHolder holder = hold;
         new VideoScrape().execute(video);
         comments = MainActivity.masterData.getCommentDao().getCommentsByFeedId(video.getID());
-        if (comments.size()>0){
+        if (comments.size()>0 && MainActivity.masterData.useComments){
             holder.name.setText(video.getTitle()+" ("+comments.size()+")");
         }
         else {
