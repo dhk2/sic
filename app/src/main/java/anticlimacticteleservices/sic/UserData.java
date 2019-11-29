@@ -128,11 +128,11 @@ public class UserData {
         for (Channel test : channels) {
             if (test.matches(value.getSourceID())){
                 unique=false;
-                Log.v("User-Data","attempted to add pre-existing channel "+value.toString());
+                Log.v("User-Data","attempted to add pre-existing channel "+value.toCompactString());
             }
         }
         if (unique==true) {
-            Log.v("User-Data","adding channel "+value.toString());
+            Log.v("User-Data","adding channel "+value.toCompactString());
             channels.add(value);
             feedLinks.add(value.getUrl());
             getChannelDao().insert(value);
@@ -185,15 +185,10 @@ public class UserData {
     }
 
     public void updateChannel(Channel value){
-        for (Channel c : channels) {
-            if (c.getID() == (value.getID())){
-
-                c = value;
-                channelDao.update(value);
-                break;
-
-            }
-        }
+        Log.v("User-Data","updating channel "+value.toCompactString());
+        channelDao.update(value);
+        channels = channelDao.getChannels();
+        Log.e("User-Data","updated channel "+value.toCompactString());
     }
 
     public void addVideo(Video value) {

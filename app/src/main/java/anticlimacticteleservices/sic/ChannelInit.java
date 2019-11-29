@@ -65,15 +65,15 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                     return null;
                 }
                 chan.setTitle(channelRss.title());
-               Log.v("Channel-Init","creating channel :"+chan.toString());
+               Log.v("Channel-Init","creating channel :"+chan.toCompactString());
                if (chan.isBitchute()) {
                    try {
                        chan.setDescription(channelRss.getElementsByTag("description").first().text());
                        chan.setThumbnail(channelPage.getElementsByAttribute("data-src").last().attr("data-src"));
                        MainActivity.masterData.addChannel(chan);
-                       System.out.println("bitchute channel added:"+chan.toString());
+                       chan = MainActivity.masterData.getChannelDao().getChannelsBySourceID(chan.getSourceID()).get(0);
                        Elements videos = channelRss.getElementsByTag("item");
-                       Log.v("User-Data","attempted to add "+videos.size()+ " videos to bitchute channel "+ chan.toString());
+                       Log.v("Channel-Init","attempting to add "+videos.size()+ " videos to bitchute channel "+ chan.toCompactString());
                        for (Element video : videos) {
                            Video nv=new Video(video.getElementsByTag("link").first().text());
                            nv.setTitle(video.getElementsByTag("title").first().text());
@@ -134,6 +134,7 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                     MainActivity.masterData.addChannel(chan);
                     //TODO something about more than one hit in the table
                     chan = MainActivity.masterData.getChannelDao().getChannelsBySourceID(chan.getSourceID()).get(0);
+                   Log.v("Channel-Init","attempting to add videos to youtube channel "+ chan.toCompactString());
                     Elements entries = channelRss.getElementsByTag("entry");
                     Date pd=new Date(1);
                     for (Element entry : entries) {
@@ -171,7 +172,7 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                                 unique = false;
 
                                 //for videos from a bitchute channel that need to be linked to the youtube channel
-                                if (match.getYoutubeID().isEmpty()){
+                                if (match.getBitchuteID().isEmpty()){
                                     Channel tester = new Channel();
                                     match.setYoutubeID(nv.getSourceID());
                                     MainActivity.masterData.updateVideo(match);
@@ -212,6 +213,8 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                                         testID = testID.substring(testID.lastIndexOf("/")+1);
                                         System.out.println(testID.length()+">"+testID);
                                         chan.setBitchuteID(testID);
+                                        Log.v("channel-init","attempting to update youtube channel with bitchute source id :"+chan.toCompactString());
+                                        MainActivity.masterData.updateChannel(chan);
                                     }
                                 } catch (IOException e) {
                                     e.printStackTrace();
