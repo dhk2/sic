@@ -1,10 +1,11 @@
 # Sharing Is Caring
+Download the apk from the release folder here, or at the play store
+https://github.com/dhk2/sic/blob/master/app/release/app-release.apk
+https://play.google.com/store/apps/details?id=anticlimacticteleservices.sic
 
-[sic] has goals of being a multi-social network feed collector allowing user control of the feeds content. 
+Dox are in the wiki
 
-Right now it's a Bitchute client that can also access Youtube for legacy support of that cousin that is really important to you but will never abandon their 23 followers on archaic platforms. Still filling out the scaffolding from the proof of concept release. Hoping to have beta functionality and release by september.
-
-Should have some form of working Webtorrent sharing by beta
+https://github.com/dhk2/sic/wiki
 
 Thanks so far
 https://square.github.io/picasso/ for the thumbnail image libary, so painlessly functional
