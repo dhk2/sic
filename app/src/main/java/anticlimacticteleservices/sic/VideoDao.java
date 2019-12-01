@@ -31,8 +31,8 @@ public interface VideoDao {
     @Query("SELECT COUNT(*) from feed_item")
     int countVideos();
 
-    @Query("Select * FROM feed_item WHERE source_id = :id")
-    List<Video> getVideosBySourceID(String id);
+    @Query("Select * FROM feed_item WHERE source_id = :sid")
+    List<Video> getVideosBySourceID(String sid);
 
     @Insert
     void insertAll(Video... feed_item);

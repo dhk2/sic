@@ -10,12 +10,13 @@
         android:id="@+id/vrv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/item_selector"
+        android:background="?attr/bgColor"
         android:clipChildren="true"
         android:clipToPadding="true"
         android:paddingTop="8dp"
         android:orientation="horizontal"
+        android:textColor="?attr/textColor"
         tools:layout_editor_absoluteX="-67dp"
         tools:layout_editor_absoluteY="270dp" />
-        android:textColor="?attr/textColor"
+
 </android.support.v4.widget.SwipeRefreshLayout>

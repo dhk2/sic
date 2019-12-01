@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.net.*;
 import java.io.*;
 import java.util.Date;
+import java.util.List;
 
 import android.app.*;
 import android.os.*;
@@ -21,19 +22,38 @@ class Search {
     private int searchCount = 0;
     private Document doc;
     private boolean searching;
+    public VideoFragment videoFragment;
+    public ChannelFragment channelFragment;
     final SimpleDateFormat bvsdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-    public Search(String term, boolean video, boolean youtube, boolean bitchute) {
+    public Search(String term, boolean video, boolean youtube, boolean bitchute,boolean feed) {
 
         searching = true;
       //  MainActivity.masterData.getMainActionBar().setTitle("Searching..........");
         String fixedTerm = term.replaceAll("\\s+", "+");
         if (video) {
+            videoFragment = new VideoFragment();
+            MainActivity.masterData.sortsVideos();
+            videoFragment.setVideos(MainActivity.masterData.getsVideos());
+            FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
+            transaction.replace(R.id.search_subfragment,videoFragment);
+            transaction.addToBackStack(null);
+            transaction.commitAllowingStateLoss();
             Log.v("Search","Performing video search");
             MainActivity.masterData.setsVideos(new ArrayList <Video>());
             final String location = "https://www.youtube.com/results?search_query=" + fixedTerm + "&sp=EgIQAQ%253D%253D";
             final String location2 = "https://search.bitchute.com/renderer?query=" + fixedTerm + "&use=bitchute-json&name=Search&login=bcadmin&key=7ea2d72b62aa4f762cc5a348ef6642b8&fqr.kind=video";
             final String location3 = "https://www.google.com/search?q="+fixedTerm+"+%22www.bitchute.com/video%22";
             final String location4 = "https://duckduckgo.com/?q="+fixedTerm+"+site%3Awww.bitchute.com%2Fvideo&ia=web";
+            if (feed){
+                List temp = new  <Video>ArrayList();
+                for (Video bob : MainActivity.masterData.getVideoDao().getVideos()) {
+                    if (bob.toHtmlString().toLowerCase().indexOf(term.toString().toLowerCase()) > 0) {
+                        temp.add(bob);
+                        videoFragment.addVideo(bob);
+                    }
+                }
+                MainActivity.masterData.setsVideos(temp);
+            }
             if (youtube){
                 searchCount++;
                 YoutubeVideoSearcher youtubeScraper = new YoutubeVideoSearcher();
@@ -63,6 +83,26 @@ class Search {
             final String location2 = "https://search.bitchute.com/renderer?query=" + fixedTerm + "&use=bitchute-json&name=Search&login=bcadmin&key=7ea2d72b62aa4f762cc5a348ef6642b8&fqa.kind=channel";
             final String location3 = "https://www.google.com/search?q="+fixedTerm+"+%22www.bitchute.com/channel%22&num=25";
             final String location4 = "https://duckduckgo.com/?q="+fixedTerm+"+site%3Awww.bitchute.com%2Fchannel&ia=web";
+            channelFragment = new ChannelFragment();
+            channelFragment.setChannels(MainActivity.masterData.getsChannels());
+            FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
+            transaction.replace(R.id.search_subfragment, channelFragment);
+            transaction.addToBackStack(null);
+            transaction.commitAllowingStateLoss();
+            MainActivity.masterData.getMainActionBar().hide();
+
+
+            if (feed){
+                List temp = new  <Channel>ArrayList();
+                for (Channel bob : MainActivity.masterData.getChannelDao().getChannels()) {
+                    if (bob.toString().toLowerCase().indexOf(term.toString().toLowerCase()) > 0) {
+                        channelFragment.addChannel(bob);
+                        temp.add(bob);
+                    }
+                }
+                MainActivity.masterData.setsChannels(temp);
+            }
+
             if (youtube) {
                 searchCount++;
                 YoutubeChannelSearcher youtubecScraper = new YoutubeChannelSearcher();
@@ -138,27 +178,19 @@ class Search {
         }
         @Override
         protected void onPostExecute(String result) {
-            System.out.println("searchCount:"+searchCount);
+            Log.v("Search","done searching Youtube videos");
+            videoFragment.setVideos(MainActivity.masterData.getsVideos());
             searchCount--;
             if (searchCount < 1) {
-                Log.v("Search-YVS ", MainActivity.masterData.getsVideos().size()+ "Creating video results fragment:");
-                searching = false;
-                VideoFragment fragment = new VideoFragment();
-                MainActivity.masterData.sortsVideos();
-                fragment.setVideos(MainActivity.masterData.getsVideos());
-                FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
-                transaction.replace(R.id.search_subfragment, fragment);
-                transaction.addToBackStack(null);
-                transaction.commitAllowingStateLoss();
                 MainActivity.masterData.getMainActionBar().hide();
             } else {
-                Log.v("search","Youtube search finished but searching isn't done yet "+MainActivity.masterData.getsVideos().size());
+                System.out.println("Bitchute search finished but searching isn't done yet");
             }
         }
         @Override
         protected void onPreExecute() {
             searching = true;
-            Log.v("Search","starting to scrape youtube");
+            Log.v("Search","starting to search youtube videos");
         }
     }
     private class BitchuteVideoSearcher extends AsyncTask<String, String, String> {
@@ -217,33 +249,13 @@ class Search {
             // execution of result of Long time consuming operation
             super.onPostExecute(result);
             System.out.println("searchCount:"+searchCount);
+            videoFragment.setVideos(MainActivity.masterData.getsVideos());
             searchCount--;
             if (searchCount < 1) {
-                Log.v("Search-BVS","done searching with "+MainActivity.masterData.getsVideos().size());
-                searching = false;
-                VideoFragment fragment = new VideoFragment();
-                MainActivity.masterData.sortsVideos();
-                fragment.setVideos(MainActivity.masterData.getsVideos());
-
-                FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
-                transaction.replace(R.id.search_subfragment, fragment);
-                transaction.addToBackStack(null);
-                transaction.commitAllowingStateLoss();
                 MainActivity.masterData.getMainActionBar().hide();
             } else {
                 System.out.println("Bitchute search finished but searching isn't done yet");
             }
-/*
-            //VideoAdapter searchResults = new VideoAdapter(sVideos);
-            VideoFragment fragment = new VideoFragment();
-            ((VideoFragment) fragment).setVideos(sVideos);
-
-            FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
-            transaction.replace(R.id.search_subfragment, fragment);
-            transaction.addToBackStack(null);
-            transaction.commit();
-
-*/
         }
 
 
@@ -308,33 +320,13 @@ class Search {
             // execution of result of Long time consuming operation
             super.onPostExecute(result);
             System.out.println("searchCount:"+searchCount);
+            videoFragment.setVideos(MainActivity.masterData.getsVideos());
             searchCount--;
             if (searchCount < 1) {
-                Log.v("Search-GVS","done searching with "+MainActivity.masterData.getsVideos().size());
-                searching = false;
-                VideoFragment fragment = new VideoFragment();
-                MainActivity.masterData.sortsVideos();
-                fragment.setVideos(MainActivity.masterData.getsVideos());
-
-                FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
-                transaction.replace(R.id.search_subfragment, fragment);
-                transaction.addToBackStack(null);
-                transaction.commitAllowingStateLoss();
                 MainActivity.masterData.getMainActionBar().hide();
             } else {
-                System.out.println("Google search finished but searching isn't done yet "+MainActivity.masterData.getsVideos().size());
+                System.out.println("Bitchute search finished but searching isn't done yet");
             }
-/*
-            //VideoAdapter searchResults = new VideoAdapter(sVideos);
-            VideoFragment fragment = new VideoFragment();
-            ((VideoFragment) fragment).setVideos(sVideos);
-
-            FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
-            transaction.replace(R.id.search_subfragment, fragment);
-            transaction.addToBackStack(null);
-            transaction.commit();
-
-*/
         }
 
 
@@ -497,16 +489,9 @@ class Search {
             super.onPostExecute(result);
             Log.v("Search-BCS ", MainActivity.masterData.getsChannels().size()+ "done searching");
             System.out.println("searchCount:"+searchCount);
+            channelFragment.setChannels(MainActivity.masterData.getsChannels());
             searchCount--;
             if (searchCount < 1) {
-                searching = false;
-                ChannelFragment fragment = new ChannelFragment();
-                fragment.setChannels(MainActivity.masterData.getsChannels());
-
-                FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
-                transaction.replace(R.id.search_subfragment, fragment);
-                transaction.addToBackStack(null);
-                transaction.commitAllowingStateLoss();
                 MainActivity.masterData.getMainActionBar().hide();
             } else {
                 System.out.println("Bitchute search finished but searching isn't done yet");
@@ -583,17 +568,8 @@ class Search {
             Log.v("Search-YCS ", MainActivity.masterData.getsChannels().size()+ "done searcing for channels");
             System.out.println("searchCount:"+searchCount);
             searchCount--;
+            channelFragment.setChannels(MainActivity.masterData.getsChannels());
             if (searchCount < 1) {
-                System.out.println("done searching for channels," );
-                searching = false;
-                ChannelFragment fragment = new ChannelFragment();
-
-                fragment.setChannels(MainActivity.masterData.getsChannels());
-
-                FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
-                transaction.replace(R.id.search_subfragment, fragment);
-                transaction.addToBackStack(null);
-                transaction.commitAllowingStateLoss();
                 MainActivity.masterData.getMainActionBar().hide();
             } else {
                 System.out.println("youtube search finished but searching isn't done yet");
@@ -646,16 +622,9 @@ class Search {
             super.onPostExecute(result);
             Log.v("Search-BGCS ", MainActivity.masterData.getsChannels().size()+ "done searcing for channels");
             System.out.println("searchCount:"+searchCount);
+            channelFragment.setChannels(MainActivity.masterData.getsChannels());
             searchCount--;
             if (searchCount < 1) {
-                searching = false;
-                ChannelFragment fragment = new ChannelFragment();
-                fragment.setChannels(MainActivity.masterData.getsChannels());
-
-                FragmentTransaction transaction = MainActivity.masterData.fragmentManager.beginTransaction();
-                transaction.replace(R.id.search_subfragment, fragment);
-                transaction.addToBackStack(null);
-                transaction.commitAllowingStateLoss();
                 MainActivity.masterData.getMainActionBar().hide();
 
             } else {

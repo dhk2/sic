@@ -63,9 +63,9 @@ public class ChannelFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_channel, container, false);
         channelRecyclerView =v.findViewById(R.id.crv);
-        //if (cfChannels.size()==0) {
+        if (cfChannels.size()==0) {
             cfChannels = MainActivity.masterData.getChannelDao().getChannels();
-        //}
+        }
    //     System.out.println("about to set cAdaptor");
         cAdapter = new ChannelAdapter(cfChannels);
 
@@ -93,6 +93,10 @@ public class ChannelFragment extends Fragment {
         cfChannels.addAll(channels);
         cAdapter.notifyDataSetChanged();
         System.out.println("Channels added "+cfChannels.size());
+    }
+    public void addChannel(Channel newChannel){
+        cfChannels.add(newChannel);
+        cAdapter.notifyDataSetChanged();
     }
     public void clearChannels() {
         cfChannels.clear();

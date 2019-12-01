@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -65,7 +66,9 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.CustomViewHo
         Video video = videos.get(position);
 
         final CustomViewHolder holder = hold;
-        new VideoScrape().execute(video);
+        if ((video.getLastScrape()+(MainActivity.masterData.scrapeInterval*60*1000))<new Date().getTime()) {
+            new VideoScrape().execute(video);
+        }
         comments = MainActivity.masterData.getCommentDao().getCommentsByFeedId(video.getID());
         if (comments.size()>0 && MainActivity.masterData.useComments){
             holder.name.setText(video.getTitle()+" ("+comments.size()+")");

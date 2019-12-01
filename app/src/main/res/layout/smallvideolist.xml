@@ -6,13 +6,13 @@
     cardview:cardCornerRadius="10dp"
     android:background="?attr/bgColor"
     cardview:cardElevation="3dp"
-    cardview:cardUseCompatPadding="true">
+    cardview:cardUseCompatPadding="true"
     android:focusable="true">
     <RelativeLayout
         android:id="@+id/RecView2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?attr/bgColor"
+        android:background="@drawable/item_selector"
         android:backgroundTint="#1AFFFFFF"
         android:foregroundTint="#1AFFFFFF">
 

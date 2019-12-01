@@ -50,6 +50,14 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
     }
     @Override
     protected Video doInBackground(Video... videos) {
+
+        System.out.println("vid-scrape elapsed minutes"+(new Date().getTime()-videos[0].getLastScrape())/60000);
+        if (((new Date().getTime()-videos[0].getLastScrape())/60000)<5) {
+            return null;
+        }
+        else {
+            System.out.println("made it past the scrape time check");
+        }
         if (null==context) {
             if (null == MainActivity.masterData) {
                 context = SicSync.context;
@@ -100,20 +108,25 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
         }
         Document doctest = null;
         Long pd = vid.getDate();
+
+        vid.setLastScrape(new Date().getTime());
+        videoDao.update(vid);
         Log.e("Videoscrape","initialized data for scrape:"+vid.toCompactString());
-        //TODO put in exception for archived channels here when implemented
         if ((pd+(feedAge*24*60*60*1000)<new Date().getTime()) && !vid.getKeep()) {
             Log.e("Videoscrape","Removing expired video from feed \n"+vid.toCompactString());
             if (!(null == vid.getLocalPath())){
                 File file = new File(vid.getLocalPath());
                 file.delete();
             }
-            videoDao.delete((vid));
-            if (!headless){
-                MainActivity.masterData.removeVideo(vid.getID());
+            if (headless) {
+                videoDao.delete((vid));
+            }
+            else{
+                MainActivity.masterData.removeVideo(vid);
             }
             return null;
         }
+        //probably not needed after fixing the id assignment issue, but shouldn't hurt.
         if (vid.getAuthorID()==0){
             for (Channel Cdog : MainActivity.masterData.getChannels()){
                 if (vid.getAuthor().equals(Cdog.getAuthor())){
@@ -131,12 +144,13 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
             }
         }
         //TODO add a way to manage retrying after error condition instead of just giving up
-        if (vid.isBitchute() && !vid.isYoutube() && headless){
+        if (vid.isBitchute() && !vid.isYoutube() && (headless || vid.getErrors()<1)){
             try {
                 Log.e("Videoscrape","attempting to load youtube version of bitchute video "+vid.toCompactString());
                 doctest = Jsoup.connect(vid.getYoutubeEmbeddedUrl()).get();
 
                 if (doctest.title().equals("YouTube")){
+                    //means page does not exist
                 }
                 else {
                     vid.setYoutubeID(vid.getSourceID());
@@ -333,6 +347,7 @@ public class VideoScrape extends AsyncTask<Video,Video,Video> {
                 e.printStackTrace();
             }
         }
+
         return null;
     }
 }

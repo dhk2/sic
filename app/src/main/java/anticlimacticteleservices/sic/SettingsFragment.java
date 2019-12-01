@@ -145,7 +145,8 @@ public class SettingsFragment extends Fragment {
                 webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
                 webView.setScrollbarFadingEnabled(false);
                 webView.loadUrl("https://www.bitchute.com/subscriptions/");
-                Button closeButton = dialog.findViewById(R.id.idclosebutton);
+                /*
+                Button closeButton = dialog.findViewById(R.id.closebutton);
                 closeButton.setText("close");
                 closeButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -154,6 +155,7 @@ public class SettingsFragment extends Fragment {
                         dialog.dismiss();
                     }
                 });
+                 */
             dialog.show();
             }
         });
@@ -178,7 +180,7 @@ public class SettingsFragment extends Fragment {
                 webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
                 webView.setScrollbarFadingEnabled(false);
                 webView.loadUrl("https://www.youtube.com/subscription_manager");
-                Button closeButton = dialog.findViewById(R.id.idclosebutton);
+      /*          Button closeButton = dialog.findViewById(R.id.idclosebutton);
                 closeButton.setText("close");
                 closeButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -187,6 +189,8 @@ public class SettingsFragment extends Fragment {
                         dialog.dismiss();
                     }
                 });
+
+       */
            dialog.show();
             }
         });

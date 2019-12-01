@@ -94,7 +94,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
                 status=(String)sub.getText();
                 if(status.equals("Unsubscribe")){
                     status="Subscribe";
-                    MainActivity.masterData.removeChannel(channel.getSourceID());
+                    MainActivity.masterData.removeChannel(channel);
                     sub.setText(status );
                 }
                 else {

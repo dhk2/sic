@@ -87,7 +87,7 @@ public class fragment_exoplayer extends Fragment {
                             description = description + c.toHtml();
                         }
                         if (MainActivity.masterData.isKittenComments()){
-                            description = description + "<img src=\"https://cataas.com/cat?"+ Integer.toString(ThreadLocalRandom.current().nextInt(1, 1001)) +"\" width=\"240\" ><p>";
+                            description = description + "<img src=\"https://cataas.com/cat?"+ ThreadLocalRandom.current().nextInt(1, 1001) +"\" width=\"240\" ><p>";
 
                         }
                     }

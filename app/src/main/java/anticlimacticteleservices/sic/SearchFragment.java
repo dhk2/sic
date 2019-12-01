@@ -1,6 +1,7 @@
 package anticlimacticteleservices.sic;
 
 //import android.app.Fragment;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +15,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -38,6 +40,7 @@ public class SearchFragment extends Fragment {
     private CheckBox bitchuteSearch;
     private RadioButton channelSearch;
     private RadioButton videoSearch;
+    private CheckBox feedSearch;
     private View inflated;
  //   private OnFragmentInteractionListener mListener;
     public SearchFragment() {
@@ -80,20 +83,19 @@ public class SearchFragment extends Fragment {
         bitchuteSearch = inflated.findViewById(R.id.search_bitchute);
         channelSearch = inflated.findViewById(R.id.radio_channel);
         videoSearch= inflated.findViewById(R.id.radio_video);
-        bitchuteSearch.setChecked(true);
+        feedSearch = inflated.findViewById(R.id.search_Feed);
+        feedSearch.setChecked(true);
         sText.requestFocus();
         sText.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
                         (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    Util.hideKeyboard(getActivity());
                     Search target;
                     String searchText = sText.getText().toString();
                     MainActivity.masterData.getMainActionBar().setTitle("Searching");
                     MainActivity.masterData.getMainActionBar().show();
-                    target = new Search(searchText, videoSearch.isChecked(),youtubeSearch.isChecked(),bitchuteSearch.isChecked());
-         //           Fragment subFragment = new VideoFragment();
-         //           ((VideoFragment) subFragment).setVideos(MainActivity.masterData.getsVideos());
-         //           getChildFragmentManager().beginTransaction().replace(R.id.search_subfragment, subFragment).commitAllowingStateLoss();
+                    target = new Search(searchText, videoSearch.isChecked(),youtubeSearch.isChecked(),bitchuteSearch.isChecked(),feedSearch.isChecked());
                     return true;
                 }
                 return false;
@@ -102,16 +104,13 @@ public class SearchFragment extends Fragment {
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Util.hideKeyboard(getActivity());
                 Search target;
                 String searchText = sText.getText().toString();
                 MainActivity.masterData.getMainActionBar().setTitle("Searching");
                 MainActivity.masterData.getMainActionBar().show();
-                target = new Search(searchText, videoSearch.isChecked(),youtubeSearch.isChecked(),bitchuteSearch.isChecked());
-      //          Fragment subFragment = new VideoFragment();
-      //          ((VideoFragment) subFragment).setVideos(MainActivity.masterData.getsVideos());
-      //          getChildFragmentManager().beginTransaction().replace(R.id.search_subfragment, subFragment).commitAllowingStateLoss();
-
-           }
+                target = new Search(searchText, videoSearch.isChecked(), youtubeSearch.isChecked(), bitchuteSearch.isChecked(),feedSearch.isChecked());
+            }
         });
     //if search results still exist from previous search display them.
         if (MainActivity.masterData.getsChannels().size()>0){
@@ -139,5 +138,6 @@ public class SearchFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
     }
+
 }
 

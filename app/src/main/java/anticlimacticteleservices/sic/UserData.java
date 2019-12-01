@@ -131,17 +131,17 @@ public class UserData {
                 Log.v("User-Data","attempted to add pre-existing channel "+value.toCompactString());
             }
         }
-        if (unique==true) {
+        if (unique) {
             Log.v("User-Data","adding channel "+value.toCompactString());
             channels.add(value);
             feedLinks.add(value.getUrl());
             getChannelDao().insert(value);
         }
     }
-    public void removeChannel(String ID){
-
+    public void removeChannel(Channel target){
+        channelDao.delete(target);
         for (int i=0;i<channels.size();i++){
-            if (channels.get(i).matches(ID)){
+            if (channels.get(i).equals(target)){
                 channels.remove(i);
                 break;
             }
@@ -156,9 +156,10 @@ public class UserData {
         videos = videoDao.getVideos();
     }
 
-    public void removeVideo(Long ID){
+    public void removeVideo(Video target){
+        videoDao.delete(target);
         for (int i=0;i<videos.size();i++){
-            if (videos.get(i).getID() == ID){
+            if (videos.get(i).equals(target)){
                 videos.remove(i);
                 break;
             }
@@ -245,7 +246,7 @@ public class UserData {
                 unique=false;
             }
         }
-        if (unique==true) {
+        if (unique) {
             sChannels.add(value);
         }
     }
@@ -254,7 +255,7 @@ public class UserData {
     public List<Channel> getsChannels() {
         return sChannels;
     }
-    public void setsChannels(ArrayList<Channel> value) {
+    public void setsChannels(List<Channel> value) {
         this.sChannels = value;
     }
 
@@ -356,6 +357,10 @@ public class UserData {
     public void setWifionly(boolean wifionly) {
         this.wifionly = wifionly;
     }
+    public Long scrapeInterval;
+    public Long backgroundUpdateInterval;
+    public Long activeUpdateInterval;
+    public Long channelUpdateInterval;
 
     private Set<String> feedLinks =new HashSet<String>();
     public void removeFeedLink(String deadLink){
@@ -453,14 +458,18 @@ public class UserData {
         wifionly = MainActivity.preferences.getBoolean("wifiOnly",false);
         muteErrors = MainActivity.preferences.getBoolean("muteErrors",true);
         hideWatched = MainActivity.preferences.getBoolean("hideWatched",true);
+        scrapeInterval = MainActivity.preferences.getLong("scrapeInterval",720);
+        backgroundUpdateInterval = MainActivity.preferences.getLong("backgroundUpdateInterval",60);
+        activeUpdateInterval = MainActivity.preferences.getLong("activeUpdateInterval",60);
+        channelUpdateInterval = MainActivity.preferences.getLong("channelUpdateInterval", 60);
         bitchuteSearchBitchute = MainActivity.preferences.getBoolean("bitchuteSearchBitchute",true);
         bitchuteSearchGoogle = MainActivity.preferences.getBoolean("bitchuteSearchGoogle",true);
   //      bitchuteSearchDuck = MainActivity.preferences.getBoolean("bitchuteSearchDuck",false);
         //shouldn't be needed
         if (youtubePlayerChoice==0)
-            youtubePlayerChoice=4;
+            youtubePlayerChoice=1024;
         if (bitchutePlayerChoice==0)
-            bitchutePlayerChoice=64;
+            bitchutePlayerChoice=1024;
         youtubeInstalled=false;
         newpipeInstalled=false;
         chromeInstalled=false;
@@ -498,7 +507,7 @@ public class UserData {
             channels = ((ArrayList<Channel>) channelDao.getChannels());
         }
         else{
-            System.out.println("ChannelDAO failed to load channels");
+            Log.e("User-Data","ChannelDAO failed to load channels");
         }
         sicDatabase = Room.databaseBuilder(con, SicDatabase.class, "mydb")
                 .allowMainThreadQueries()
@@ -513,7 +522,7 @@ public class UserData {
             }
         }
         else{
-            System.out.println("VideoDAO failure, this can't end well");
+            Log.e("User-Data","VideoDAO failure, this can't end well");
         }
         commentDatabase = Room.databaseBuilder(context , CommentDatabase.class, "comment")
                 .allowMainThreadQueries()
@@ -538,6 +547,13 @@ public class UserData {
         editor.putBoolean("bitchuteSearchBitchute",bitchuteSearchBitchute);
         editor.putBoolean("bitchuteSearchGoogle",bitchuteSearchGoogle);
         editor.putBoolean("bitchuteSearchDuck",bitchuteSearchDuck);
+        editor.putBoolean("bitchuteSearchDuck",bitchuteSearchDuck);
+        editor.putBoolean("bitchuteSearchDuck",bitchuteSearchDuck);
+        editor.putBoolean("bitchuteSearchDuck",bitchuteSearchDuck);
+        editor.putLong("scrapeInterval",scrapeInterval);
+        editor.putLong("backgroundUpdateInterval",backgroundUpdateInterval);
+        editor.putLong("channelUpdateInterval",channelUpdateInterval);
+        editor.putLong("activeUpdateInterval",activeUpdateInterval);
         editor.commit();
         return true;
     }

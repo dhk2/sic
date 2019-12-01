@@ -25,6 +25,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -56,6 +57,11 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
     boolean hideWatched;
     int youtubePlayerChoice;
     int bitchutePlayerChoice;
+    long scrapeInterval;
+    long updateInterval;
+    long channelUpdateInterval;
+    int tooEarly=0;
+    int tooOld=0;
 
     public static SharedPreferences preferences;
     @Override
@@ -69,29 +75,15 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
 
         if (!headless && null != MainActivity.masterData.getSwipeRefreshLayout()) {
             MainActivity.masterData.getSwipeRefreshLayout().setRefreshing(false);
-            if (null==videoDao){
-                updateError="Network offline";
-            }
-            else {
-                if (hideWatched) {
-                    MainActivity.masterData.setVideos(videoDao.getUnWatchedVideos());
-                } else {
-                    MainActivity.masterData.setVideos(videoDao.getVideos());
-                }
-            }
         }
         if (newcount>0 || forceRefresh) {
             Toast.makeText(context, newcount + " new videos added", Toast.LENGTH_SHORT).show();
         }
-        if (updateError !="" && !muteErrors){
+        if (!updateError.isEmpty() && !muteErrors){
             Toast.makeText(context, newcount + updateError, Toast.LENGTH_LONG).show();
-        }
-        if (!headless ||  backgroundSync) {
-            Util.scheduleJob(context);
         }
 
     }
-
     @Override
     protected Boolean doInBackground(String... params) {
         Log.v("Channel-Update","starting on channel update");
@@ -129,6 +121,10 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
             bitchutePlayerChoice = preferences.getInt("bitchutePlayerChoice", 8);
             muteErrors = preferences.getBoolean("muteErrors",true);
             hideWatched = preferences.getBoolean("hideWatched",false);
+            updateInterval = preferences.getLong("backgroundUpdateInterval",60);
+            channelUpdateInterval = preferences.getLong("channelUpdateInterval", 60);
+            scrapeInterval = preferences.getLong("scrapeInterval",60);
+
         }
         else
         {
@@ -139,6 +135,9 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
             bitchutePlayerChoice = MainActivity.preferences.getInt("bitchutePlayerChoice", 8);
             muteErrors = MainActivity.preferences.getBoolean("muteErrors",true);
             hideWatched = MainActivity.preferences.getBoolean("hideWatched",false);
+            updateInterval = MainActivity.preferences.getLong("activeUpdateInterval",60);
+            channelUpdateInterval = MainActivity.preferences.getLong("channelUpdateInterval", 60);
+            scrapeInterval = MainActivity.preferences.getLong("scrapeInterval",60);
         }
         Log.v("Update-Channel", "status loaded wifi:"+wifiConnected+" mobile:"+mobileConnected+" background sync:"+backgroundSync+" wifi only:"+wifiOnly+" headless"+headless);
         if (headless && wifiOnly && !wifiConnected){
@@ -192,110 +191,76 @@ class ChannelUpdate extends AsyncTask<String, String, Boolean> {
 
 channelloop:for (Channel chan :allChannels){
             Long diff = new Date().getTime()- chan.getLastsync();
-            int minutes = (int) ((diff / (1000*60)) % 60);
-            int hours   = (int) ((diff / (1000*60*60)) % 24);
-            int days = (int) ((diff / (1000*60*60*24)));
-            //System.out.println(chan.getTitle()+"synched days:"+days+" hours:"+hours+" minutes:"+minutes);
             //TODO implement variable refresh rate by channel here
-            if (minutes>(5*(chan.getErrors()+1)) || forceRefresh){
-                allVideos =(ArrayList)videoDao.getVideos();
+            if ((diff>channelUpdateInterval*60*1000) || forceRefresh){
                 Log.v("Channel-Update", "Checking "+chan.getAuthor()+" for new videos");
                 chan.setLastsync(new Date());
                 channelDao.update(chan);
                 if (chan.isYoutube()){
                     try {
-                        System.out.println(chan.toCompactString());
                         doc = Jsoup.connect(chan.getYoutubeRssFeedUrl()).get();
                     } catch (IOException e) {
                         e.printStackTrace();
-                        //crash out if unable to reach Youtube
+                        chan.incrementErrors();
+                        updateError = e.toString();
                         if (e.getMessage().indexOf("Unable to resolve host")>0) {
-                            chan.incrementErrors();
-                            updateError = e.toString();
-                            //break channelloop;
+                            Log.e("Channel-Update","unable to reach youtube, exiting update");
+                            return false;
                         }
                     }
-                    Elements videos = doc.getElementsByTag("entry");
-        youtubeLoop:for (Element entry : videos) {
-                        videoExists=false;
-                        nv = new Video(entry.getElementsByTag("link").first().attr("href"));
-                      //  Log.v("Channel-Update","creating new youtube video :"+nv.toCompactString());
-                        //TODO use sql query on source id to find duplicate instead of iterating.
-
-                        for (Video match : allVideos) {
-                            if (match.getSourceID().equals(nv.getSourceID())) {
-                                if (match.isYoutube()) {
-                                    dupecount++;
-                                    videoExists = true;
-                                    //TODO fix the root cause of blank authorIDs
-                                    if (match.getAuthorID() == 0) {
-                                        match.setAuthorID(chan.getID());
-                                        Log.v("Channel-Update","Fixing missing channel ID in youtubevideo :"+match.toCompactString());
-                                        if (headless) {
-                                            videoDao.update(match);
-                                        } else {
-                                            MainActivity.masterData.updateVideo(match);
-                                        }
-                                        continue youtubeLoop;
-                                    }
+                    if (null == doc){
+                        updateError = "failure loading youtube rss feed ";
+                        Log.e("Channel-Update", "null document load for youtube RSS feed for "+chan.toCompactString());
+                    }
+                    else {
+                        Elements videos = doc.getElementsByTag("entry");
+            youtubeLoop:for (Element entry : videos) {
+                            nv = new Video(entry.getElementsByTag("link").first().attr("href"));
+                            Log.v("Channel-Update","creating new youtube video :"+nv.toCompactString());
+                            List matches = videoDao.getVideosBySourceID(nv.getSourceID());
+                            if (matches.isEmpty()) {
+                                System.out.println("failed to find a match for "+nv.getSourceID());
+                                Date pd;
+                                try {
+                                    pd = ydf.parse(entry.getElementsByTag("published").first().text());
+                                } catch (ParseException ex) {
+                                    Log.v("Channel-Update", "Exception parsing date:" + ex.getLocalizedMessage() + entry);
+                                    continue youtubeLoop;
+                                }
+                                //TODO put in exception for archived/supported channels here when implemented
+                                if (pd.getTime() + (feedAge * 24 * 60 * 60 * 1000) < new Date().getTime()) {
+                                    tooOld++;
                                     break youtubeLoop;
                                 }
-                                if (match.isBitchute()) {
-                                    nv=match;
-                                    videoExists=true;
-                                    mirror++;
-                                    nv.setYoutubeID(nv.getSourceID());
-                                }
-                            }
-                        }
-                        Date pd = new Date(1);
-                        try {
-                            pd = ydf.parse(entry.getElementsByTag("published").first().text());
-                        } catch (ParseException ex) {
-                            Log.v("Exception parsing date", ex.getLocalizedMessage());
-                            System.out.println(entry);
-                        }
-                        //TODO put in exception for archived channels here when implemented
-                        if (pd.getTime()+(feedAge*24*60*60*1000)<new Date().getTime()) {
-                            System.out.println("out of feed range for youtube channel " + chan.getTitle());
-                            continue youtubeLoop;
-                        }
-                        Log.v("Channel-Update", "Starting youtube video parsing for : "+nv.toCompactString()+" for new video");
-                        nv.setDate(pd);
-                        nv.setAuthorID(chan.getID());
-                        nv.setAuthor(chan.getAuthor());
-                        nv.setTitle(entry.getElementsByTag("title").first().html());
-                        nv.setThumbnail(entry.getElementsByTag("media:thumbnail").first().attr("url"));
-                        nv.setDescription(entry.getElementsByTag("media:description").first().text());
-                        nv.setRating(entry.getElementsByTag("media:starRating").first().attr("average"));
-                        nv.setViewCount(entry.getElementsByTag("media:statistics").first().attr("views"));
-                        if (nv.getID()>0) {
-                            Log.v("Channel-Update", "updating video db "+nv.getID()+ " with : "+nv.toCompactString()+" for new video");
-                            for (Video v : allVideos) {
-                                if (v.getID() == (nv.getID())){
-                                    v = nv;
-                                    break;
-                                }
-                            }
-                            if (headless) {
-                                videoDao.update(nv);
-                            } else {
-                                MainActivity.masterData.updateVideo(nv);
-                            }
-                        } else {
-                            Log.v("Channel-Update", "inserting youtube : "+nv.getSourceID()+ " with : "+nv.toCompactString()+" for new video");
-                            allVideos.add(nv);
-                            if (headless) {
+                                Log.v("Channel-Update", "Starting youtube video parsing for : "+nv.toCompactString());
+                                nv.setDate(pd);
+                                nv.setAuthorID(chan.getID());
+                                nv.setAuthor(chan.getAuthor());
+                                nv.setTitle(entry.getElementsByTag("title").first().html());
+                                nv.setThumbnail(entry.getElementsByTag("media:thumbnail").first().attr("url"));
+                                nv.setDescription(entry.getElementsByTag("media:description").first().text());
+                                nv.setRating(entry.getElementsByTag("media:starRating").first().attr("average"));
+                                nv.setViewCount(entry.getElementsByTag("media:statistics").first().attr("views"));
+                                Log.v("Channel-Update", "inserting youtube video: " + nv.toCompactString());
+                                allVideos.add(nv);
                                 videoDao.insert(nv);
+                                newcount++;
+                                if (chan.isNotify()) {
+                                    createNotification(nv);
+                                }
                             } else {
-                                MainActivity.masterData.addVideo(nv);
-                            }
-                            newcount++;
-                            if (chan.isNotify()) {
-                                createNotification(nv);
+                                dupecount++;
+                                Video match = (Video) matches.get(0);
+                                Log.v("channel-update","duplicate video for "+nv.getSourceID()+" found :"+match.toCompactString());
+                                if (!match.isYoutube()) {
+                                    match.setYoutubeID(match.getSourceID());
+                                    videoDao.update(match);
+                                } else {
+                                    //no need to check the rest of the videos in this youtube rss feed if the latest is duplicated
+                                    break youtubeLoop;
+                                }
                             }
                         }
-
                     }
                 }
 
@@ -304,100 +269,58 @@ channelloop:for (Channel chan :allChannels){
                         doc = Jsoup.connect(chan.getBitchuteRssFeedUrl()).get();
                     } catch (IOException e) {
                         e.printStackTrace();
-                        Log.e("Channel-Update","network failure tying to get bitchute rss feeds in background "+e.getMessage());
+                        Log.e("Channel-Update","network failure tying to get bitchute rss feeds "+e.getMessage());
+                        chan.incrementErrors();
+                        updateError = e.toString();
                         //crash out if unable to reach bitchute
                         if (e.getMessage().indexOf("Unable to resolve host")>0) {
-                            System.out.println("site appears to be down");
-                            chan.incrementErrors();
-                            updateError = e.toString();
-                           // break channelloop;
+                            return false;
                         }
                     }
                     if (null==doc){
-                        Log.e("Channel-Update", "null document load for bitchuyte RSS feed");
-                        return false;
+                        updateError = "failure loading bitchute rss feed ";
+                        Log.e("Channel-Update", "null document load for bitchute RSS feed for "+chan.toCompactString());
+                        continue channelloop;
                     }
                     Elements videos = doc.getElementsByTag("item");
        bitchuteLoop:for (Element video : videos) {
 
                         nv = new Video(video.getElementsByTag("link").first().text());
-                        for (Video match : allVideos) {
-                            if (match.getBitchuteID().equals(nv.getSourceID())) {
-                              //  System.out.println("video duped "+nv.getSourceID()+"\n"+match.toDebugString());
-                                dupecount++;
-                                if (match.getAuthorID()==0){
-                                    match.setAuthorID(chan.getID());
-                                    Log.v("Channel-Update","Fixing missing channel ID in bitchute :"+match.toCompactString());
-                                    if (headless){
-                                        videoDao.update(match);
-                                    }
-                                    else{
-                                        MainActivity.masterData.updateVideo(match);
-                                    }
-                                    continue bitchuteLoop;
-                                }
+
+                        List matches = videoDao.getVideosBySourceID(nv.getSourceID());
+                        if (matches.isEmpty()) {
+                            Date pd;
+                            try {
+                                pd = bdf.parse(video.getElementsByTag("pubDate").first().text());
+                            } catch (ParseException e) {
+                                Log.e("Channel-Update", "date parsing error "+e.getLocalizedMessage()+video);
                                 continue bitchuteLoop;
                             }
-                            if (match.getSourceID().equals(nv.getSourceID())&& !match.isBitchute()) {
-                                //  System.out.println("video duped "+nv.getSourceID()+"\n"+match.toDebugString());
-                                mirror++;
-                                videoExists=true;
-                                System.out.println("new bitchute video mirrored from existing youtube"+match.getAuthor()+ " "+nv.getSourceID());
-                                match.setBitchuteID(nv.getSourceID());
-                                if (headless){
-                                    videoDao.update(match);
-                                }
-                                else{
-                                    MainActivity.masterData.updateVideo(match);
-                                }
-                                continue bitchuteLoop;
+                            if (pd.getTime() + (feedAge * 24 * 60 * 60 * 1000) < new Date().getTime()) {
+                                tooOld++;
+                                break bitchuteLoop;
                             }
-                            continue bitchuteLoop;
-                        }
-                        Date pd=new Date(1);
-                        try {
-                           pd = bdf.parse(video.getElementsByTag("pubDate").first().text());
-                        } catch (ParseException e) {
-                           Log.e("Channel-Update", "date parsing error "+e.getLocalizedMessage());
-                        }
-                        if (pd.getTime()+(feedAge*24*60*60*1000)<new Date().getTime()) {
-                           continue bitchuteLoop;
-                        }
-                        nv.setDate(pd);
-                        nv.setAuthorID(chan.getID());
-                        nv.setTitle(video.getElementsByTag("title").first().text());
-                        nv.setDescription(video.getElementsByTag("description").first().text());
-                        nv.setUrl(video.getElementsByTag("link").first().text());
-                        nv.setThumbnail(video.getElementsByTag("enclosure").first().attr("url"));
-                        nv.setAuthor(chan.getTitle());
-                       /*
-                        if (chan.isYoutube()){
-                            nv.setYoutubeID(nv.getSourceID());
-                        }   */
-                        if (nv.getID()>0) {
-                            Log.v("Channel-Update", "updating bitchute video : "+nv.toCompactString());
-                            for (Video v : allVideos) {
-                                if (v.getID() == (nv.getID())){
-                                    v = nv;
-                                    break;
-                                }
-                            }
-                            if (headless) {
-                                videoDao.update(nv);
-                            } else {
-                                MainActivity.masterData.updateVideo(nv);
-                            }
-                        } else {
-                            Log.v("Channel-Update", "inserting new bitchute video : "+nv.toCompactString());
+                            nv.setDate(pd);
+                            nv.setAuthorID(chan.getID());
+                            nv.setTitle(video.getElementsByTag("title").first().text());
+                            nv.setDescription(video.getElementsByTag("description").first().text());
+                            nv.setUrl(video.getElementsByTag("link").first().text());
+                            nv.setThumbnail(video.getElementsByTag("enclosure").first().attr("url"));
+                            nv.setAuthor(chan.getTitle());
                             allVideos.add(nv);
-                            if (headless) {
-                                videoDao.insert(nv);
-                            } else {
-                                MainActivity.masterData.addVideo(nv);
-                            }
+                            videoDao.insert(nv);
                             newcount++;
                             if (chan.isNotify()) {
-                               createNotification(nv);
+                                createNotification(nv);
+                            }
+                        }
+                        else {
+                            dupecount++;
+
+                            Video match = (Video) matches.get(0);
+                            if (!match.isBitchute()) {
+                                match.setBitchuteID(match.getSourceID());
+                                videoDao.update(match);
                             }
                         }
                     }
@@ -405,25 +328,28 @@ channelloop:for (Channel chan :allChannels){
 
             }
             else{
-                Log.e("Channel-Update", "not updating channel at this time"+chan.getAuthor());
+                tooEarly++;
             }
         }
-        if (headless) {
-            for (Video v : allVideos) {
-                if (v.getMp4().isEmpty() && v.isBitchute()) {
-                    new VideoScrape().execute(v);
-                }
+        for (Video v : allVideos) {
+            if (v.getLastScrape() + (scrapeInterval * 60 * 1000) < new Date().getTime()) {
+                new VideoScrape().execute(v);
             }
         }
-        else{
-            for (Video v : allVideos) {
-                if (v.getMp4().isEmpty() && v.isBitchute()) {
-                    new VideoScrape().execute(v);
-                }
-            }
+
+        Log.v("Channel-Update",dupecount+" duplicate videos discarded,"+mirror+" videos mirrored," +newcount+" new videos added, "+tooOld+" videos too old, "+tooEarly+ " channels not checked ");
+        if (!headless){
+
             MainActivity.masterData.refreshChannels();
+            if (hideWatched) {
+                MainActivity.masterData.setVideos(videoDao.getUnWatchedVideos());
+            } else {
+                MainActivity.masterData.setVideos(videoDao.getVideos());
+            }
         }
-        Log.v("Channel-Update",dupecount+" duplicate videos discarded,"+mirror+" videos mirrored," +newcount+" new videos added");
+        if (!headless ||  backgroundSync) {
+            Util.scheduleJob(context);
+        }
         return true;
     }
     private void createNotification(Video vid){

@@ -3,21 +3,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="top"
-    android:orientation="horizontal"
-    android:textColor="#000000"
     android:buttonTint="#FFFFFF"
+    android:gravity="top"
+    android:orientation="vertical"
     android:paddingTop="16dp"
-    android:paddingEnd="16dp">
+    android:paddingEnd="16dp"
+    android:textColor="#000000">
 
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:textColor="#000000"
-        android:buttonTint="#FFFFFF"
-        android:paddingTop="16dp">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/search_button"
+            android:layout_width="108dp"
+            android:layout_height="wrap_content"
+            android:buttonTint="#FFFFFF"
+            android:text="Search"
+            android:textColor="#000000" />
 
         <EditText
             android:id="@+id/search_text"
@@ -27,64 +31,80 @@
             android:buttonTint="#FFFFFF"
             android:inputType="text"
             android:textColor="#FFFFFF" />
-            android:inputType="text" />
 
-        <Button
-            android:id="@+id/search_button"
-            android:layout_width="108dp"
-            android:layout_height="wrap_content"
-            android:textColor="#000000"
-            android:buttonTint="#FFFFFF"
-            android:text="Search" />
-
-        <RadioGroup
-            android:id="@+id/radio_search_type"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <RadioButton
-                android:id="@+id/radio_video"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:textColor="#FFFFFF"
-                android:buttonTint="#FFFFFF"
-                android:text="videos" />
-
-            <RadioButton
-                android:id="@+id/radio_channel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
-                android:buttonTint="#FFFFFF"
-                android:text="channels" />
-
-        </RadioGroup>
-
-        <CheckBox
-            android:id="@+id/search_youtube"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#FFFFFF"
-            android:buttonTint="#FFFFFF"
-            android:text="youtube" />
-
-        <CheckBox
-            android:id="@+id/search_bitchute"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#FFFFFF"
-            android:buttonTint="#FFFFFF"
-            android:text="bitchute" />
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/search_subfragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="8dp">
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:buttonTint="#FFFFFF"
+            android:orientation="vertical"
+            android:paddingTop="16dp"
+            android:textColor="#000000">
+            <RadioGroup
+                android:id="@+id/radio_search_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <RadioButton
+                    android:id="@+id/radio_video"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="#FFFFFF"
+                    android:checked="true"
+                    android:text="videos"
+                    android:textColor="#FFFFFF" />
+
+                <RadioButton
+                    android:id="@+id/radio_channel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="#FFFFFF"
+                    android:text="channels"
+                    android:textColor="#FFFFFF" />
+
+            </RadioGroup>
+
+            <CheckBox
+                android:id="@+id/search_youtube"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:buttonTint="#FFFFFF"
+                android:text="youtube"
+                android:textColor="#FFFFFF" />
+
+            <CheckBox
+                android:id="@+id/search_bitchute"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="#FFFFFF"
+                android:text="bitchute"
+                android:textColor="#FFFFFF" />
+
+            <CheckBox
+                android:id="@+id/search_Feed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="#FFFFFF"
+                android:text="Feed"
+                android:textColor="#FFFFFF" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/search_subfragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="8dp">
+
+        </LinearLayout>
 
     </LinearLayout>
 

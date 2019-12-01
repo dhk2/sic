@@ -1,5 +1,6 @@
 package anticlimacticteleservices.sic;
 
+import android.app.Activity;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
@@ -7,6 +8,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -58,10 +61,11 @@ public class Util {
     public static void scheduleJob(Context context) {
         ComponentName serviceComponent = new ComponentName(context, SicSync.class);
         JobInfo.Builder builder = new JobInfo.Builder(0, serviceComponent);
+        //TODO implement the ability to read preferences in here to properly set background updating.
         if (null==MainActivity.masterData){
             //running in background.
             builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED);
-            builder.setMinimumLatency(30 * 1000); // Wait at least 5m
+            builder.setMinimumLatency(60 * 1000); // Wait at least 5m
             builder.setOverrideDeadline(60 * 60 * 1000); // Maximum delay 60m
             //TODO figure out repercussions of adding annotiation.
             //builder.setRequiresBatteryNotLow(true);
@@ -69,8 +73,8 @@ public class Util {
         else {
             //running while app is running
             builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
-            builder.setMinimumLatency(30 * 1000); // Wait at least 5m
-            builder.setOverrideDeadline(60 * 60 * 1000); // Maximum delay 60m
+            builder.setMinimumLatency(MainActivity.masterData.activeUpdateInterval*60* 1000);
+            builder.setOverrideDeadline(MainActivity.masterData.activeUpdateInterval * 60 * 1000*2);
         }
         builder.setPersisted(true);
 
@@ -139,7 +143,13 @@ public class Util {
         printWriter.close();
         return output;
     }
-
+    public static void hideKeyboard(Activity activity) {
+        View view = activity.findViewById(android.R.id.content);
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
     public static class DownloadVideo extends AsyncTask<String, String, String>
     {
 

@@ -95,7 +95,7 @@ class Video implements Serializable,Comparable<Video>
         this.authorID=0;
         this.errors=0l;
         this.keep=false;
-        this.lastScrape=date;
+        this.lastScrape=0l;
     }
 
     public Video(String location)
@@ -134,7 +134,7 @@ class Video implements Serializable,Comparable<Video>
         this.authorID=0;
         this.errors=0l;
         this.keep=false;
-        this.lastScrape=date;
+        this.lastScrape=0l;
 
     }
 

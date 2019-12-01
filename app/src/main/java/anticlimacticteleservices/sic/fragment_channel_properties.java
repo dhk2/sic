@@ -117,7 +117,7 @@ public class fragment_channel_properties extends Fragment {
 
                 }
                 if (!subscribed.isChecked()) {
-                    MainActivity.masterData.removeChannel(chan.getSourceID());
+                    MainActivity.masterData.removeChannel(chan);
                 }
                 if (subscribed.isChecked()){
                     MainActivity.masterData.addChannel(chan);
