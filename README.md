@@ -1,7 +1,7 @@
 # Sharing Is Caring
 Download the apk from the release folder here, or at the play store
-
-https:/https://github.com/dhk2/sic/blob/master/app/release/app-release.apk/play.google.com/store/apps/details?id=anticlimacticteleservices.sic
+https://github.com/dhk2/sic/blob/master/app/release/app-release.apk
+https://play.google.com/store/apps/details?id=anticlimacticteleservices.sic
 
 Dox are in the wiki
 
