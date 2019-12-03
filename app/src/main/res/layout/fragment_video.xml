@@ -16,6 +16,7 @@
         android:paddingTop="8dp"
         android:orientation="horizontal"
         android:textColor="?attr/textColor"
+        android:numColumns="3"
         tools:layout_editor_absoluteX="-67dp"
         tools:layout_editor_absoluteY="270dp" />
 

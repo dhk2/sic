@@ -30,6 +30,7 @@ class Search {
         searching = true;
       //  MainActivity.masterData.getMainActionBar().setTitle("Searching..........");
         String fixedTerm = term.replaceAll("\\s+", "+");
+
         if (video) {
             videoFragment = new VideoFragment();
             MainActivity.masterData.sortsVideos();
@@ -127,7 +128,9 @@ class Search {
                 }
             }
         }
-
+        if (searchCount==0){
+            MainActivity.masterData.getMainActionBar().hide();
+        }
     }
 
     private class YoutubeVideoSearcher extends AsyncTask<String, String, String> {

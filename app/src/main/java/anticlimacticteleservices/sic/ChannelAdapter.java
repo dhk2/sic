@@ -62,7 +62,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.CustomVi
     @Override
     public void onBindViewHolder(CustomViewHolder hold, final int position) {
         Channel channel = channels.get(position);
-        Log.v("Channel-Adaptor","attempting to display a channel"+channel.toString() );
+        //Log.v("Channel-Adaptor","attempting to display a channel"+channel.toString() );
         if (!channel.getThumbnail().isEmpty()){
             Picasso.get().load(channel.getThumbnail()).resize(160,120).centerInside().into(hold.image);
         }

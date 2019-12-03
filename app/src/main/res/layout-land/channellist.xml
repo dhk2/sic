@@ -4,16 +4,17 @@
     android:layout_width="240dp"
     android:layout_height="match_parent"
     android:layout_marginBottom="5dp"
-    android:background="@color/colorPrimaryDark"
+    android:background="?attr/bgColor"
     cardview:cardCornerRadius="10dp"
     cardview:cardElevation="3dp"
-    cardview:cardUseCompatPadding="true">
+    cardview:cardUseCompatPadding="true"
+    android:focusable="true">
 
     <RelativeLayout
         android:id="@+id/ChannelRecView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#609C27B0">
+        android:background="@drawable/item_selector">
 
         <ImageView
             android:id="@+id/channelthumbnail"
