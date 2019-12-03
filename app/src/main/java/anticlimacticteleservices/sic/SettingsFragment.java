@@ -145,18 +145,7 @@ public class SettingsFragment extends Fragment {
                 webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
                 webView.setScrollbarFadingEnabled(false);
                 webView.loadUrl("https://www.bitchute.com/subscriptions/");
-                /*
-                Button closeButton = dialog.findViewById(R.id.closebutton);
-                closeButton.setText("close");
-                closeButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        webView.destroy();
-                        dialog.dismiss();
-                    }
-                });
-                 */
-            dialog.show();
+                dialog.show();
             }
         });
         importYoutube.setOnClickListener(new View.OnClickListener() {

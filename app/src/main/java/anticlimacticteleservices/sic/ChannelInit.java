@@ -127,7 +127,6 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                if (chan.isYoutube()) {
                    chan.setTitle(channelRss.title());
                    chan.setAuthor(channelRss.getElementsByTag("name").first().text());
-                   chan.setUrl(g);
                    chan.setDescription(channelPage.getElementsByAttributeValue("name", "description").attr("content"));
                    chan.setThumbnail(channelPage.getElementsByAttributeValue("itemprop", "thumbnailUrl").attr("href"));
                    MainActivity.masterData.addChannel(chan);
@@ -150,9 +149,9 @@ class ChannelInit extends AsyncTask <String,String,Integer>{
                            }
                        }
                        Video nv = new Video(entry.getElementsByTag("link").first().attr("href"));
-                       if (channelVideoCount <= 1) {
-                           nv.setKeep(true);
-                       }
+                      // if (channelVideoCount <= 1) {
+                      //     nv.setKeep(true);
+                      // }
                        nv.setDate(pd);
                        nv.setAuthor(chan.getAuthor());
                        nv.setAuthorID(chan.getID());

@@ -60,9 +60,9 @@ class Channel implements Serializable{
         this.sourceID ="";
         this.youtubeID="";
         this.bitchuteID="";
-        this.lastsync=new Date().getTime();
-        this.joined=lastsync;
-        this.lastCheck=lastsync-(6*60*60*1000);
+        this.lastsync=0l;
+        this.joined=new Date().getTime();
+        this.lastCheck=lastsync;
         this.subscribers="";
         this.notify = false;
         this.archive = false;
@@ -94,9 +94,9 @@ class Channel implements Serializable{
         if (url.indexOf("bitchute.com")>0) {
             bitchuteID = sourceID;
         }
-        lastsync = new Date().getTime();
-        joined = lastsync;
-        this.lastCheck=lastsync-(6*60*60*1000);
+        lastsync = 0l;
+        joined =new Date().getTime();
+        this.lastCheck=lastsync;
         this.notify = false;
         this.archive = false;
         this.errors=0;
