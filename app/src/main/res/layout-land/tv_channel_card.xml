@@ -4,7 +4,7 @@
     android:layout_width="240dp"
     android:layout_height="wrap_content"
     android:layout_marginBottom="5dp"
-    android:background="?attr/bgColor"
+    android:background="@color/black"
     android:focusable="true"
     cardview:cardCornerRadius="10dp"
     cardview:cardElevation="3dp"
@@ -25,7 +25,7 @@
             android:layout_alignParentBottom="false"
             android:layout_marginStart="0dp"
             android:layout_marginTop="0dp"
-            android:background="@drawable/item_selector"
+            android:background="#659C27B0"
             android:scaleType="fitXY" />
 
         <Button
@@ -64,7 +64,6 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         android:textColor="#444"
         android:textSize="14sp"
-        android:background="@drawable/item_selector"
         android:textStyle="bold" />
 
     <TextView
